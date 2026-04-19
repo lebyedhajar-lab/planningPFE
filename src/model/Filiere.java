@@ -1,16 +1,16 @@
 package model;
 
-public class Filiere {
+public class Filiere{
 	private int id , nbEtudiants;
 	private String code , nom ; 
-	public Filiere (int id , int nbEtudiants , String code , String nom) {
+	public Filiere (int id , int nbEtudiants ,String code ,String nom) {
 		this.id=id;
 		this.code=code;
 		this.nom=nom;
 		this.nbEtudiants= nbEtudiants ;
 	}
 	public int getID() {
-		return id ; 
+		return id; 
 	}
 	public String getNom() {
 		return nom;

@@ -1,13 +1,16 @@
 package model;
 
-public class Creneau {
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class Creneau{
 	private int id ;
 	private LocalDate dateJour;
-	private LocalDate heureDebut ; 
+	private LocalTime heureDebut ; 
 	private LocalTime heureFin; 
 	private boolean disponible ; 
 	
-	public Creneau (int id ,LocalDate dateJour,LocalDate heureDebu,LocalTime heureFin,boolean disponible) {
+	public Creneau (int id ,LocalDate dateJour,LocalTime heureDebut,LocalTime heureFin,boolean disponible){
 		this.id= id;
 		this.dateJour=dateJour;
 		this.heureDebut=heureDebut;
@@ -15,7 +18,7 @@ public class Creneau {
 		this.disponible=disponible ; 
 	}
 	public int getId() {
-		retuen id ;
+		return id ;
 	}
 	public LocalTime getHeureDebut() {
 		return heureDebut;
