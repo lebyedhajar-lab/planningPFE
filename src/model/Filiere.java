@@ -16,7 +16,7 @@ public class Filiere {
 		return nom;
 	}
 	public String getCode() {
-		return code ; 
+		return code ;  
 	}
 	public int getNbEtudiants() {
 		return nbEtudiants; 
