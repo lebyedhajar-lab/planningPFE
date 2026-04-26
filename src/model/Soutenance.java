@@ -42,4 +42,8 @@ public class Soutenance {
 	public String getLangue() {
 		return langue;
 	}
+	
+	public int getDureeMin() {
+	    return dureeMin;
+	}
 }
