@@ -39,4 +39,7 @@ public class Soutenance {
 	public Jury getJury() {
 		return jury;
 	}
+	public String getLangue() {
+		return langue;
+	}
 }
