@@ -35,6 +35,7 @@ public class ContrainteRepository implements IdRepository<Contrainte> {
     	        return true;
     	    }
     	}
+    	return false;
     }	
     public List<Contrainte> trouverParEnseignant(int ensId) {
         List<Contrainte> resultat = new ArrayList<>();

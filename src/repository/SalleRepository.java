@@ -1,7 +1,6 @@
 package repository;
 
 import model.Salle;
-import model.Contrainte;
 import model.Creneau;
 
 import java.util.ArrayList;
@@ -27,12 +26,13 @@ public class SalleRepository implements IdRepository<Salle> {
 	    }
 
 	    public boolean supprimer(int id) {
-	    	for (Contrainte c : salles) {
-	    	    if (c.getId() == id) {
-	    	        salles.remove(c);
+	    	for (Salle s : salles) {
+	    	    if (s.getId() == id) {
+	    	        salles.remove(s);
 	    	        return true;
 	    	    }
 	    	}
+	    	return false;
 	    }
 
 	    public List<Salle> chargerDisponibles() {
