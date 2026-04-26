@@ -1,46 +1,64 @@
-package model;
+package repository; 
 
+import model.FicheNotation;
+import model.Jury;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 
-public class FicheNotation {
+public class FicheNotationRepository implements IdRepository<FicheNotation> {
 
-    private int id;
-    private Jury jury;
-    private double note;
-    private String appreciation;
-    private LocalDate dateRemise;
+    private List<FicheNotation> fiches = new ArrayList<>();
 
-    public FicheNotation(int id, Jury jury, double note, String appreciation, LocalDate dateRemise) {
-        this.id = id;
-        this.jury = jury;
-        this.note = note;
-        this.appreciation = appreciation;
-        this.dateRemise = dateRemise;
+    public void sauvegarder(FicheNotation f) {
+        fiches.add(f);
     }
 
-    public int getId() {
-        return id;
+    public List<FicheNotation> chargerTous() {
+        return new ArrayList<>(fiches);
     }
 
-    public double getNote() {
-        return note;
+    public FicheNotation trouverParId(int id) {
+        for (FicheNotation f : fiches) {
+            if (f.getId() == id) return f;
+        }
+        return null;
     }
 
-    public String getAppreciation() {
-        return appreciation;
+    public boolean supprimer(int id) {
+        return fiches.removeIf(f -> f.getId() == id);
     }
 
-    // ✅ Getter manquant 1
-    public Jury getJury() {
-        return jury;
+    // Fiches d'un jury donné — utilisé lors des délibérations
+    public List<FicheNotation> trouverParJury(int juryId) {
+        List<FicheNotation> resultat = new ArrayList<>();
+        for (FicheNotation f : fiches) {
+            if (f.getJury() != null
+                && f.getJury().getId() == juryId) {
+                    resultat.add(f);
+            }
+        }
+        return resultat;
     }
 
-    // ✅ Getter manquant 2
-    public LocalDate getDateRemise() {
-        return dateRemise;
+    // Fiches remises à une date donnée
+    public List<FicheNotation> trouverParDate(LocalDate date) {
+        List<FicheNotation> resultat = new ArrayList<>();
+        for (FicheNotation f : fiches) {
+            if (f.getDateRemise() != null
+                && f.getDateRemise().equals(date)) {
+                    resultat.add(f);
+            }
+        }
+        return resultat;
     }
 
-    public void setNote(double n) {
-        this.note = n;
+    // Vérifier si la fiche d'un jury a été remise
+    public boolean ficheRemise(int juryId) {
+        for (FicheNotation f : fiches) {
+            if (f.getJury() != null
+                && f.getJury().getId() == juryId) return true;
+        }
+        return false;
     }
 }

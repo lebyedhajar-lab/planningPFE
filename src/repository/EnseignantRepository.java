@@ -14,7 +14,7 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
     }
 
     public List<Enseignant> chargerTous() {
-        return enseignants;
+        return new ArrayList<>(enseignants);
     }
 
     public Enseignant trouverParId(int id) {
