@@ -1,7 +1,7 @@
 package repository;
 
 import model.Enseignant;
-import model.Filiere;
+
 import java.util.ArrayList;
 import java.util.List;
 
