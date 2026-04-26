@@ -1,46 +1,74 @@
-package model;
+package repository;
 
-import java.time.LocalDate;
+import model.FicheNotation;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FicheNotation {
+public class FicheNotationRepository implements IdRepository<FicheNotation> {
 
-    private int id;
-    private Jury jury;
-    private double note;
-    private String appreciation;
-    private LocalDate dateRemise;
+    private List<FicheNotation> fiches = new ArrayList<>();
 
-    public FicheNotation(int id, Jury jury, double note, String appreciation, LocalDate dateRemise) {
-        this.id = id;
-        this.jury = jury;
-        this.note = note;
-        this.appreciation = appreciation;
-        this.dateRemise = dateRemise;
+    public void sauvegarder(FicheNotation f) {
+        fiches.add(f);
     }
 
-    public int getId() {
-        return id;
+    public List<FicheNotation> chargerTous() {
+        return new ArrayList<>(fiches);
     }
 
-    public double getNote() {
-        return note;
+    public FicheNotation trouverParId(int id) {
+        for (FicheNotation f : fiches) {
+            if (f.getId() == id) return f;
+        }
+        return null;
     }
 
-    public String getAppreciation() {
-        return appreciation;
+    public boolean supprimer(int id) {
+        for (FicheNotation f : fiches) {
+            if (f.getId() == id) {
+                fiches.remove(f);
+                return true;
+            }
+        }
+        return false;
     }
 
-    // ✅ Getter manquant 1
-    public Jury getJury() {
-        return jury;
+    public FicheNotation trouverParJury(int juryId) {
+        for (FicheNotation f : fiches) {
+            if (f.getJury() != null
+                && f.getJury().getId() == juryId) {
+                return f;
+            }
+        }
+        return null;
     }
 
-    // ✅ Getter manquant 2
-    public LocalDate getDateRemise() {
-        return dateRemise;
+    public double calculerMoyenne() {
+        if (fiches.isEmpty()) return 0.0;
+        double total = 0;
+        for (FicheNotation f : fiches) {
+            total += f.getNote();
+        }
+        return total / fiches.size();
     }
 
-    public void setNote(double n) {
-        this.note = n;
+    public List<FicheNotation> trouverParNoteSup(double seuil) {
+        List<FicheNotation> resultat = new ArrayList<>();
+        for (FicheNotation f : fiches) {
+            if (f.getNote() >= seuil) {
+                resultat.add(f);
+            }
+        }
+        return resultat;
+    }
+
+    public List<FicheNotation> trouverParNoteInf(double seuil) {
+        List<FicheNotation> resultat = new ArrayList<>();
+        for (FicheNotation f : fiches) {
+            if (f.getNote() < seuil) {
+                resultat.add(f);
+            }
+        }
+        return resultat;
     }
 }
