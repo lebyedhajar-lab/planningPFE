@@ -9,7 +9,7 @@ public class Contrainte {
 	Enseignant enseignant;
 	LocalDate jour;
 	LocalTime heureDebut;
-	LocalDate heureFin;
+	LocalTime heureFin;
 	
 	public Contrainte(int id, Enseignant enseignant, LocalDate jour, LocalTime heureDebut, LocalTime heureFin) {
 		this.id=id;
@@ -21,4 +21,11 @@ public class Contrainte {
 	public Enseignant getEnseignant(){return enseignant; }
 	public LocalDate getJour(){return jour; }
 	public boolean estDisponible(){return true; }
+	public int getId() {return id;}
+	public LocalTime getHeureFin() {
+		return null;
+	}
+	public LocalTime getHeureDebut() {
+		return null;
+	}
 }
