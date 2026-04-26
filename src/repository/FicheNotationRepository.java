@@ -1,82 +1,46 @@
-package repository;
+package model;
 
-import model.FicheNotation;
-import model.Jury;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-public class FicheNotationRepository {
+public class FicheNotation {
 
-    private List<FicheNotation> fiches = new ArrayList<>();
+    private int id;
+    private Jury jury;
+    private double note;
+    private String appreciation;
+    private LocalDate dateRemise;
 
-    public void ajouter(FicheNotation fiche) {
-        fiches.add(fiche);
+    public FicheNotation(int id, Jury jury, double note, String appreciation, LocalDate dateRemise) {
+        this.id = id;
+        this.jury = jury;
+        this.note = note;
+        this.appreciation = appreciation;
+        this.dateRemise = dateRemise;
     }
 
-    public FicheNotation findById(int id) {
-        for (FicheNotation f : fiches) {
-            if (f.getId() == id) {
-                return f;
-            }
-        }
-        return null;
+    public int getId() {
+        return id;
     }
 
-    public List<FicheNotation> findAll() {
-        return fiches;
+    public double getNote() {
+        return note;
     }
 
-    public boolean supprimer(int id) {
-        return fiches.removeIf(f -> f.getId() == id);
+    public String getAppreciation() {
+        return appreciation;
     }
 
-    public boolean modifier(FicheNotation fiche) {
-        for (int i = 0; i < fiches.size(); i++) {
-            if (fiches.get(i).getId() == fiche.getId()) {
-                fiches.set(i, fiche);
-                return true;
-            }
-        }
-        return false;
+    // ✅ Getter manquant 1
+    public Jury getJury() {
+        return jury;
     }
 
-    public List<FicheNotation> findByJury(Jury jury) {
-        List<FicheNotation> result = new ArrayList<>();
-        for (FicheNotation f : fiches) {
-            if (f.getJury().equals(jury)) {
-                result.add(f);
-            }
-        }
-        return result;
+    // ✅ Getter manquant 2
+    public LocalDate getDateRemise() {
+        return dateRemise;
     }
 
-    public List<FicheNotation> findByDateRemise(LocalDate date) {
-        List<FicheNotation> result = new ArrayList<>();
-        for (FicheNotation f : fiches) {
-            if (f.getDateRemise().equals(date)) {
-                result.add(f);
-            }
-        }
-        return result;
-    }
-
-    public double calculerMoyenne() {
-        if (fiches.isEmpty()) return 0;
-        double total = 0;
-        for (FicheNotation f : fiches) {
-            total += f.getNote();
-        }
-        return total / fiches.size();
-    }
-
-    public List<FicheNotation> findByNoteMin(double seuil) {
-        List<FicheNotation> result = new ArrayList<>();
-        for (FicheNotation f : fiches) {
-            if (f.getNote() >= seuil) {
-                result.add(f);
-            }
-        }
-        return result;
+    public void setNote(double n) {
+        this.note = n;
     }
 }
