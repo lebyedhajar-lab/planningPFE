@@ -33,7 +33,8 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
     public List<Enseignant> trouverParFiliere(int filiereId) {
         List<Enseignant> resultat = new ArrayList<>();
         for (Enseignant e : enseignants) {
-            if (e.getFiliere().getID() == filiereId) {
+            if (e.getFiliere() != null 
+                && e.getFiliere().getID() == filiereId) {
                 resultat.add(e);
             }
         }
