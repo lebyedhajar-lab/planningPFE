@@ -1,6 +1,8 @@
 package repository;
 
 import model.FicheNotation;
+import model.Jury;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public class FicheNotationRepository implements IdRepository<FicheNotation> {
     }
 
     public List<FicheNotation> chargerTous() {
-        return new ArrayList<>(fiches);
+        return fiches;
     }
 
     public FicheNotation trouverParId(int id) {
@@ -33,18 +35,24 @@ public class FicheNotationRepository implements IdRepository<FicheNotation> {
         return false;
     }
 
-    public FicheNotation trouverParJury(int juryId) {
+    public List<FicheNotation> findByJury(Jury jury) {
+        List<FicheNotation> result = new ArrayList<>();
         for (FicheNotation f : fiches) {
-            if (f.getJury() != null
-                && f.getJury().getId() == juryId) {
-                return f;
-            }
+            if (f.getJury().equals(jury)) result.add(f);
         }
-        return null;
+        return result;
+    }
+
+    public List<FicheNotation> findByDateRemise(LocalDate date) {
+        List<FicheNotation> result = new ArrayList<>();
+        for (FicheNotation f : fiches) {
+            if (f.getDateRemise().equals(date)) result.add(f);
+        }
+        return result;
     }
 
     public double calculerMoyenne() {
-        if (fiches.isEmpty()) return 0.0;
+        if (fiches.isEmpty()) return 0;
         double total = 0;
         for (FicheNotation f : fiches) {
             total += f.getNote();
@@ -52,23 +60,11 @@ public class FicheNotationRepository implements IdRepository<FicheNotation> {
         return total / fiches.size();
     }
 
-    public List<FicheNotation> trouverParNoteSup(double seuil) {
-        List<FicheNotation> resultat = new ArrayList<>();
+    public List<FicheNotation> findByNoteMin(double seuil) {
+        List<FicheNotation> result = new ArrayList<>();
         for (FicheNotation f : fiches) {
-            if (f.getNote() >= seuil) {
-                resultat.add(f);
-            }
+            if (f.getNote() >= seuil) result.add(f);
         }
-        return resultat;
-    }
-
-    public List<FicheNotation> trouverParNoteInf(double seuil) {
-        List<FicheNotation> resultat = new ArrayList<>();
-        for (FicheNotation f : fiches) {
-            if (f.getNote() < seuil) {
-                resultat.add(f);
-            }
-        }
-        return resultat;
+        return result;
     }
 }
