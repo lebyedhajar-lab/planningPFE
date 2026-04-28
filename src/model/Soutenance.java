@@ -19,7 +19,13 @@ public class Soutenance {
 		this.creneau = creneau;
 		this.jury = jury;
 	}
-	
+	public Soutenance(int id ,Etudiant e ,Jury  jury ,Creneau creneau) {
+		this.id=id;
+		this.etudiant = e ;
+		this.jury=jury;
+		this.creneau=creneau;
+	}
+
 	public int getId() {
 		return id;
 	}
