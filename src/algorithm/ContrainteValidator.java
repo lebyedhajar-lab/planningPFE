@@ -5,7 +5,6 @@ import repository.*;
 import java.util.List;
 import java.time.LocalDate;
 
-
 public class ContrainteValidator {
 	
 	private ContrainteRepository contrainteRepo;
