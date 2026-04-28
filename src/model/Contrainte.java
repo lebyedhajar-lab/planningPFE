@@ -25,5 +25,6 @@ public class Contrainte {
 	public int getId() {return id;}
 	public LocalTime getHeureFin()   { return heureFin; }
 	public LocalTime getHeureDebut() { return heureDebut; }
+
 }
 
