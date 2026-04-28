@@ -29,14 +29,9 @@ public class ContrainteRepository implements IdRepository<Contrainte> {
     }
 
     public boolean supprimer(int id) {
-    	for (Contrainte c : contraintes) {
-    	    if (c.getId() == id) {
-    	        contraintes.remove(c);
-    	        return true;
-    	    }
-    	}
-    	return false;
-    }	
+        return contraintes.removeIf(c -> c.getId() == id);
+    }
+    
     public List<Contrainte> trouverParEnseignant(int ensId) {
         List<Contrainte> resultat = new ArrayList<>();
         for (Contrainte c : contraintes) {

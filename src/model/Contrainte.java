@@ -16,16 +16,14 @@ public class Contrainte {
 		this.jour=jour;
 		this.enseignant=enseignant;
 		this.heureDebut=heureDebut;
+		this.heureFin = heureFin;
    	}
 	//Méthodes :
 	public Enseignant getEnseignant(){return enseignant; }
 	public LocalDate getJour(){return jour; }
 	public boolean estDisponible(){return true; }
 	public int getId() {return id;}
-	public LocalTime getHeureFin() {
-		return null;
-	}
-	public LocalTime getHeureDebut() {
-		return null;
-	}
+	public LocalTime getHeureFin()   { return heureFin; }
+	public LocalTime getHeureDebut() { return heureDebut; }
 }
+

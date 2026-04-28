@@ -26,13 +26,7 @@ public class SalleRepository implements IdRepository<Salle> {
 	    }
 
 	    public boolean supprimer(int id) {
-	    	for (Salle s : salles) {
-	    	    if (s.getId() == id) {
-	    	        salles.remove(s);
-	    	        return true;
-	    	    }
-	    	}
-	    	return false;
+	        return salles.removeIf(c -> c.getId() == id);
 	    }
 
 	    public List<Salle> chargerDisponibles() {
