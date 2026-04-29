@@ -25,7 +25,6 @@ public class ConfigPlanning {
 		this.joursDisponibles = new ArrayList<>();
 	}
 	
-	
 	//Getters
 	public int getdureeSoutenanceMin() { return dureeSoutenanceMin ;}
 	public LocalTime getHeureDebutJournee() { return heureDebutJournee;}
@@ -34,6 +33,7 @@ public class ConfigPlanning {
 	public int getMinSoutenanceParProfParJour() { return MinSoutenanceParProfParJour;}
 	public int getNbMembresJury() { return nbMembresJury;}
 	public List<LocalDate> getJoursDisponibles() { return joursDisponibles;}
+	public int getMaxSoutenanceParProfParJour() { return MaxSoutenanceParProfParJour; }
 	
 	//Setters 
 	public void setDureeSoutenanceMin(int d) {
@@ -50,6 +50,7 @@ public class ConfigPlanning {
     	this.MaxSoutenanceParProfParJour = max; }
     public void setNbMembresJury(int nb)                   {
     	this.nbMembresJury = nb; }
+    
     
     
  // Méthodes utilitaires
