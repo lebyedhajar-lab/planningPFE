@@ -1,6 +1,7 @@
 package model;
 
 public class Salle {
+	
     int id;
     String nom;
     String numero;
@@ -17,6 +18,7 @@ public class Salle {
     public String getNom()      { return nom; }        
     public String getNumero()   { return numero; }    
     public boolean isDisponible() { return disponible; } 
+    
     public void setDisponible(boolean disponible) {  
         this.disponible = disponible;
     }

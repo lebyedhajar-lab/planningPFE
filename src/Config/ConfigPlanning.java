@@ -17,7 +17,7 @@ public class ConfigPlanning {
 	
 	public ConfigPlanning() {
 		this.dureeSoutenanceMin = 60;
-		this.heureDebutJournee = LocalTime.of(8,0);
+		this.heureDebutJournee = LocalTime.of(9,0);
 		this.heureFinJournee = LocalTime.of(18, 0);
 		this.pauseMinimale = 60;
 		this.MinSoutenanceParProfParJour=3;

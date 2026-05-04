@@ -17,23 +17,11 @@ public class Creneau{
 		this.heureFin=heureFin;
 		this.disponible=disponible ; 
 	}
-	public int getId() {
-		return id ;
-	}
-	public LocalTime getHeureDebut() {
-		return heureDebut;
-	}
-	public boolean isDisponible() {
-		return disponible;
-	}
-	public void setDisponible( boolean b) {
-		this.disponible=b;
-	}
-	public LocalDate getDateJour() {
-        return dateJour;
-    }
-
-    public LocalTime getHeureFin() {
-        return heureFin;
-    }
+	
+	public int getId() {return id ;}
+	public LocalTime getHeureDebut() {return heureDebut;}
+	public boolean isDisponible() {return disponible;}
+	public void setDisponible( boolean b) {this.disponible=b;}
+	public LocalDate getDateJour() {return dateJour;}
+    public LocalTime getHeureFin() {return heureFin;}
 }

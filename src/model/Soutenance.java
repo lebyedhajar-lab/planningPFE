@@ -19,37 +19,12 @@ public class Soutenance {
 		this.creneau = creneau;
 		this.jury = jury;
 	}
-	public Soutenance(int id ,Etudiant e ,Jury  jury ,Creneau creneau) {
-		this.id=id;
-		this.etudiant = e ;
-		this.jury=jury;
-		this.creneau=creneau;
-	}
-
-	public int getId() {
-		return id;
-	}
 	
-	public Etudiant getEtudiant() {
-		return etudiant;
-	}
-	
-	public Salle getSalle() {
-		return salle;
-	}
-	
-	public Creneau getCreneau() {
-		return creneau;
-	}
-	
-	public Jury getJury() {
-		return jury;
-	}
-	public String getLangue() {
-		return langue;
-	}
-	
-	public int getDureeMin() {
-	    return dureeMin;
-	}
+	public int getId() {return id;}
+	public Etudiant getEtudiant() {return etudiant;}
+	public Salle getSalle() {return salle;}
+	public Creneau getCreneau() {return creneau;}
+	public Jury getJury() {return jury;}
+	public String getLangue() {return langue;}
+	public int getDureeMin() {return dureeMin;}
 }
