@@ -35,13 +35,13 @@ public class DeliberationService {
         return resultat;
     }
 
-    // ─── Générer tous les résultats ──────────────────────────────
+    // ─── Générer tous les résultats 
     public List<ResultatDeliberation> genererTousLesResultats(
                                       List<FicheNotation> fiches) {
         resultats.clear();
         for (FicheNotation fiche : fiches) {
             // vérifier que la fiche est remplie avant de générer
-            if (fiche.estRemplie()) {
+            if (fiche.estRemplie) {
                 ResultatDeliberation resultat = new ResultatDeliberation(
                     fiche.getEtudiant(), fiche);
                 resultats.add(resultat);
@@ -88,7 +88,7 @@ public class DeliberationService {
     public boolean toutesLesFichesRemises() {
         List<FicheNotation> fiches = ficheRepo.chargerTous();
         for (FicheNotation f : fiches) {
-            if (!f.estRemplie()) return false;
+            if (!f.estRemplie) return false;
         }
         return true;
     }

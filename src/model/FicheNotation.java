@@ -11,7 +11,7 @@ public class FicheNotation {
     private LocalDate dateRemise;
     private Etudiant etudiant;
     private Double note;   
-    private boolean estRemplie; 
+    public boolean estRemplie; 
 
     
 // Constructeur 1 — fiche vide générée avant la soutenance
