@@ -34,9 +34,7 @@ public class DistributionJuryAlgorithm {
     }
 
     // ── Former un jury pour un étudiant ───────────────────────
-    public Jury formerJury(Etudiant e, List<Enseignant> enseignants,
-                           String langue, Creneau creneau,
-                           ContrainteValidator validator) {
+    public Jury formerJury(Etudiant e, List<Enseignant> enseignants, String langue, Creneau creneau,ContrainteValidator validator) {
 
         Enseignant encadrant = e.getEncadrant();
 

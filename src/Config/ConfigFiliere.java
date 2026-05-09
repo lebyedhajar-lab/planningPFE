@@ -4,9 +4,8 @@ import model.Filiere;
 import java.time.LocalDate;
 
 public class ConfigFiliere {
-
-    private Filiere   filiere;
-    private int       nbJoursSoutenances;
+    private Filiere filiere;
+    private int nbJoursSoutenances;
     private LocalDate dateDebut;
 
     // ── Constructeur vide ─────────────────────────────────────────
@@ -21,15 +20,13 @@ public class ConfigFiliere {
     public LocalDate getDateFin() {
         return dateDebut.plusDays(nbJoursSoutenances - 1L);
     }
-
     public int getNbSoutenancesTotal() {
         return filiere.getNbEtudiants();
     }
-
     public double getMoyenneSoutenancesParJour() {
         return (double) filiere.getNbEtudiants() / nbJoursSoutenances;
     }
-
+    
     // ── Setters (appelés uniquement par ExcelConfigLoader) ────────
     public void setFiliere(Filiere filiere)                  { this.filiere = filiere; }
     public void setNbJoursSoutenances(int nb)                { this.nbJoursSoutenances = nb; }
@@ -50,10 +47,6 @@ public class ConfigFiliere {
     }
 
     public String toString() {
-        return String.format(
-            "ConfigFiliere{filiere=%s, nbJours=%d, du=%s au=%s, nbEtudiants=%d}",
-            filiere.getNom(), nbJoursSoutenances, dateDebut,
-            getDateFin(), filiere.getNbEtudiants()
-        );
+        return String.format("ConfigFiliere{filiere=%s, nbJours=%d, du=%s au=%s, nbEtudiants=%d}",filiere.getNom(), nbJoursSoutenances, dateDebut,getDateFin(), filiere.getNbEtudiants());
     }
 }
