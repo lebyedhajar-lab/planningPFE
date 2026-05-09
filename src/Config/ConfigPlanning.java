@@ -17,7 +17,9 @@ public class ConfigPlanning {
     private int       maxSoutenanceParProfParJour;
     private int       nbMembresJury;
     private List<LocalDate> joursDisponibles;
-
+    private int       nbJoursSoutenances;
+    private LocalDate dateDebut;
+    
     // ── Constructeur vide ─────────────────────────────────────────
     // Les valeurs sont injectées par ExcelConfigLoader
     public ConfigPlanning() {
@@ -35,6 +37,8 @@ public class ConfigPlanning {
     public int       getMaxSoutenanceParProfParJour(){ return maxSoutenanceParProfParJour; }
     public int       getNbMembresJury()              { return nbMembresJury; }
     public List<LocalDate> getJoursDisponibles()     { return joursDisponibles; }
+    public int       getNbJoursSoutenances() { return nbJoursSoutenances; }
+    public LocalDate getDateDebut()          { return dateDebut; }
 
     // ── Setters (appelés uniquement par ExcelConfigLoader) ────────
     public void setDureeSoutenanceMin(int d)                  { this.dureeSoutenanceMin = d; }
@@ -46,6 +50,8 @@ public class ConfigPlanning {
     public void setMinSoutenancesParProfParJour(int min)      { this.minSoutenanceParProfParJour = min; }
     public void setMaxSoutenancesParProfParJour(int max)      { this.maxSoutenanceParProfParJour = max; }
     public void setNbMembresJury(int nb)                      { this.nbMembresJury = nb; }
+    public void setNbJoursSoutenances(int nb)     { this.nbJoursSoutenances = nb; }
+    public void setDateDebut(LocalDate dateDebut) { this.dateDebut = dateDebut; }
 
     // ── Méthodes utilitaires ──────────────────────────────────────
     public void ajouterJour(LocalDate jour) {
@@ -93,6 +99,10 @@ public class ConfigPlanning {
             throw new IllegalStateException("Les heures de pause ne sont pas définies.");
         if (maxSoutenanceParProfParJour < minSoutenanceParProfParJour)
             throw new IllegalStateException("max doit être >= min pour soutenances par prof.");
+        if (nbJoursSoutenances <= 0)
+            throw new IllegalStateException("nbJoursSoutenances doit être positif.");
+        if (dateDebut == null)
+            throw new IllegalStateException("dateDebut ne peut pas être nulle.");
     }
 
     public String toString() {

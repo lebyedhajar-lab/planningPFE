@@ -30,11 +30,11 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
         return enseignants.removeIf(e -> e.getId() == id);
     }
 
-    public List<Enseignant> trouverParFiliere(int filiereId) {
+    public List<Enseignant> trouverParSpecialite(String specialite) {
         List<Enseignant> resultat = new ArrayList<>();
         for (Enseignant e : enseignants) {
-            if (e.getFiliere() != null 
-                && e.getFiliere().getID() == filiereId) {
+            if (e.getSpecialite() != null
+                && e.getSpecialite().equalsIgnoreCase(specialite)) {
                 resultat.add(e);
             }
         }

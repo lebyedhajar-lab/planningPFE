@@ -1,6 +1,5 @@
 package algorithm;
 
-import Config.ConfigFiliere;
 import Config.ConfigPlanning;
 import model.*;
 import repository.*;
@@ -12,11 +11,9 @@ import java.util.List;
 
 public class PlanningGenerator {
 
-    private final ConfigPlanning              configPlanning;
-    private final ConfigFiliere               configFiliere;
-    private final ContrainteValidator         validator;
-    private final DistributionJuryAlgorithm   distributionJury;
-    private final FilierePlanningStrategy     strategy;
+    private final ConfigPlanning            configPlanning;
+    private final ContrainteValidator       validator;
+    private final FilierePlanningStrategy   strategy;
 
     private final EtudiantRepository   etudiantRepo;
     private final EnseignantRepository enseignantRepo;
@@ -25,7 +22,6 @@ public class PlanningGenerator {
 
     public PlanningGenerator(
             ConfigPlanning configPlanning,
-            ConfigFiliere configFiliere,
             ContrainteValidator validator,
             FilierePlanningStrategy strategy,
             EtudiantRepository etudiantRepo,
@@ -34,9 +30,7 @@ public class PlanningGenerator {
             SoutenanceRepository soutenanceRepo) {
 
         this.configPlanning   = configPlanning;
-        this.configFiliere    = configFiliere;
         this.validator        = validator;
-        this.distributionJury = new DistributionJuryAlgorithm();
         this.strategy         = strategy;
         this.etudiantRepo     = etudiantRepo;
         this.enseignantRepo   = enseignantRepo;
@@ -47,24 +41,22 @@ public class PlanningGenerator {
     public List<Soutenance> generer() {
         List<Etudiant>   etudiants   = etudiantRepo.chargerTous();
         List<Enseignant> enseignants = enseignantRepo.chargerTous();
-        List<Salle>      salles      = salleRepo.chargerTous();
-
-        List<Creneau> creneaux = genererCreneaux();
+        List<Salle>      salles      = salleRepo.chargerDisponibles();
+        List<Creneau>    creneaux    = genererCreneaux();
 
         int capaciteTotale = creneaux.size() * salles.size();
 
-        if (!strategy.estRealisable(etudiants.size(), capaciteTotale, enseignants.size())) {
+        if (!strategy.estRealisable(etudiants.size(), capaciteTotale, enseignants.size()))
             throw new IllegalStateException(
-                "Planning impossible : " + etudiants.size() + " étudiants pour seulement "
-                + capaciteTotale + " places disponibles (" + creneaux.size()
-                + " créneaux × " + salles.size() + " salles).");
-        }
+                "Planning impossible : " + etudiants.size()
+                + " étudiants pour " + capaciteTotale + " places ("
+                + creneaux.size() + " créneaux × " + salles.size() + " salles).");
 
-        List<Soutenance> soutenances = strategy.genererPlanning(etudiants, enseignants, salles, creneaux);
+        List<Soutenance> soutenances = strategy.genererPlanning(
+                etudiants, enseignants, salles, creneaux);
 
-        for (Soutenance s : soutenances) {
+        for (Soutenance s : soutenances)
             soutenanceRepo.sauvegarder(s);
-        }
 
         return soutenances;
     }
@@ -73,13 +65,16 @@ public class PlanningGenerator {
         List<Creneau> creneaux = new ArrayList<>();
         int id = 0;
 
-        for (LocalDate jour : configPlanning.getJoursDisponibles()) {
-            if (!configFiliere.dateDansPeriode(jour)) continue;
+        LocalDate dateFin = configPlanning.getDateDebut()
+                .plusDays(configPlanning.getNbJoursSoutenances() - 1L);
 
+        LocalDate jour = configPlanning.getDateDebut();
+        while (!jour.isAfter(dateFin)) {
             for (LocalTime heure : calculerHeuresJournee()) {
                 LocalTime heureFin = configPlanning.calculerHeureFin(heure);
                 creneaux.add(new Creneau(id++, jour, heure, heureFin, true));
             }
+            jour = jour.plusDays(1);
         }
 
         return creneaux;
@@ -88,23 +83,19 @@ public class PlanningGenerator {
     private List<LocalTime> calculerHeuresJournee() {
         List<LocalTime> heures = new ArrayList<>();
         LocalTime heure = configPlanning.getHeureDebutJournee();
-
         while (configPlanning.estDansLaJournee(heure)) {
             heures.add(heure);
-            heure = heure.plusMinutes(configPlanning.getdureeSoutenanceMin());
+            heure = heure.plusMinutes(configPlanning.getDureeSoutenanceMin());
         }
-
         return heures;
     }
 
     public void afficherRapport(List<Soutenance> soutenances) {
         System.out.println("=== Rapport Planning ===");
-        System.out.println("Filière  : " + configFiliere.getFiliere().getNom());
-        System.out.println("Période  : " + configFiliere.getDateDebut()
-                           + " → " + configFiliere.getDateFin());
-        System.out.println("Total    : " + soutenances.size()
-                           + " / " + configFiliere.getNbSoutenancesTotal());
-        System.out.printf ("Moy/jour : %.1f%n", configFiliere.getMoyenneSoutenancesParJour());
+        System.out.println("Période  : " + configPlanning.getDateDebut()
+                         + " → " + configPlanning.getDateDebut()
+                           .plusDays(configPlanning.getNbJoursSoutenances() - 1L));
+        System.out.println("Total    : " + soutenances.size() + " soutenance(s)");
         System.out.println("========================");
 
         for (Soutenance s : soutenances) {
