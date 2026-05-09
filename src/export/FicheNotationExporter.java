@@ -15,15 +15,7 @@ public class FicheNotationExporter {
         run.setText(texte);
         run.setFontSize(12);
     }
-	public void genererToutesLesFiches(List<Soutenance> soutenances,String dossier) throws IOException {
-		for (Soutenance s : soutenances) {
-		String nomFichier = dossier 
-		+ s.getEtudiant().getNom() 
-		+ "_" + s.getEtudiant().getPrenom() 
-		+ "_fiche.docx";
-		genererFiche(s, nomFichier);
-		}
-		}
+
 
     public void genererFiche(Soutenance soutenance, String cheminFichier) throws IOException {
         XWPFDocument document = new XWPFDocument();
@@ -82,5 +74,14 @@ public class FicheNotationExporter {
     // ── Méthode utilitaire ────────────────────────────────────
     
     // ── Générer toutes les fiches d'un planning ───────────────
-    
+    public void genererToutesLesFiches(List<Soutenance> soutenances, 
+                                       String dossier) throws IOException {
+        for (Soutenance s : soutenances) {
+            String nomFichier = dossier 
+                + s.getEtudiant().getNom() 
+                + "_" + s.getEtudiant().getPrenom() 
+                + "_fiche.docx";
+            genererFiche(s, nomFichier);
+        }
+    }
 }
