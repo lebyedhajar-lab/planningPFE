@@ -6,88 +6,102 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigPlanning {
-	private int dureeSoutenanceMin ;
-	private LocalTime heureDebutJournee;
-	private LocalTime heureFinJournee;
-	private int pauseMinimale;
-	private int MinSoutenanceParProfParJour;
-	private int MaxSoutenanceParProfParJour;
-	private int nbMembresJury;
-	private List<LocalDate> joursDisponibles;
-	private LocalTime heureDebutPause;
-	private LocalTime heureFinPause;
-	
-	public ConfigPlanning() {
-		this.dureeSoutenanceMin = 60;
-		this.heureDebutJournee = LocalTime.of(9,0);
-		this.heureFinJournee = LocalTime.of(18, 0);
-		this.pauseMinimale = 60;
-		this.MinSoutenanceParProfParJour=3;
-		this.nbMembresJury = 3;
-		this.joursDisponibles = new ArrayList<>();
-		this.heureDebutPause = LocalTime.of(12, 0);
-		this.heureFinPause   = LocalTime.of(14, 0);
-	}
-	
-	//Getters
-	public int getdureeSoutenanceMin() { return dureeSoutenanceMin ;}
-	public LocalTime getHeureDebutJournee() { return heureDebutJournee;}
-	public LocalTime getHeureFinJournee() { return heureFinJournee;}
-	public int getPauseMinimale() { return pauseMinimale;}
-	public int getMinSoutenanceParProfParJour() { return MinSoutenanceParProfParJour;}
-	public int getNbMembresJury() { return nbMembresJury;}
-	public List<LocalDate> getJoursDisponibles() { return joursDisponibles;}
-	public int getMaxSoutenanceParProfParJour() { return MaxSoutenanceParProfParJour; }
-	
-	//Setters 
-	public void setDureeSoutenanceMin(int d) {
-		this.dureeSoutenanceMin = d;}
-	public void setHeureDebutJournee(LocalTime h) {
-		this.heureDebutJournee = h;}
-	public void setHeureFinJournee(LocalTime h){ 
-		this.heureFinJournee = h; }
-    public void setPauseMinimaleMin(int p) {
-    	this.pauseMinimale = p; }
-    public void setMinSoutenancesParProfParJour(int min)  {
-    	this.MinSoutenanceParProfParJour = min; }
-    public void setMaxSoutenancesParProfParJour(int max)   {
-    	this.MaxSoutenanceParProfParJour = max; }
-    public void setNbMembresJury(int nb)                   {
-    	this.nbMembresJury = nb; }
-    
-    
-    
- // Méthodes utilitaires
+
+    private int       dureeSoutenanceMin;
+    private LocalTime heureDebutJournee;
+    private LocalTime heureFinJournee;
+    private LocalTime heureDebutPause;
+    private LocalTime heureFinPause;
+    private int       pauseMinimale;
+    private int       minSoutenanceParProfParJour;
+    private int       maxSoutenanceParProfParJour;
+    private int       nbMembresJury;
+    private List<LocalDate> joursDisponibles;
+
+    // ── Constructeur vide ─────────────────────────────────────────
+    // Les valeurs sont injectées par ExcelConfigLoader
+    public ConfigPlanning() {
+        this.joursDisponibles = new ArrayList<>();
+    }
+
+    // ── Getters ───────────────────────────────────────────────────
+    public int       getDureeSoutenanceMin()         { return dureeSoutenanceMin; }
+    public LocalTime getHeureDebutJournee()          { return heureDebutJournee; }
+    public LocalTime getHeureFinJournee()            { return heureFinJournee; }
+    public LocalTime getHeureDebutPause()            { return heureDebutPause; }
+    public LocalTime getHeureFinPause()              { return heureFinPause; }
+    public int       getPauseMinimale()              { return pauseMinimale; }
+    public int       getMinSoutenanceParProfParJour(){ return minSoutenanceParProfParJour; }
+    public int       getMaxSoutenanceParProfParJour(){ return maxSoutenanceParProfParJour; }
+    public int       getNbMembresJury()              { return nbMembresJury; }
+    public List<LocalDate> getJoursDisponibles()     { return joursDisponibles; }
+
+    // ── Setters (appelés uniquement par ExcelConfigLoader) ────────
+    public void setDureeSoutenanceMin(int d)                  { this.dureeSoutenanceMin = d; }
+    public void setHeureDebutJournee(LocalTime h)             { this.heureDebutJournee = h; }
+    public void setHeureFinJournee(LocalTime h)               { this.heureFinJournee = h; }
+    public void setHeureDebutPause(LocalTime h)               { this.heureDebutPause = h; }
+    public void setHeureFinPause(LocalTime h)                 { this.heureFinPause = h; }
+    public void setPauseMinimale(int p)                       { this.pauseMinimale = p; }
+    public void setMinSoutenancesParProfParJour(int min)      { this.minSoutenanceParProfParJour = min; }
+    public void setMaxSoutenancesParProfParJour(int max)      { this.maxSoutenanceParProfParJour = max; }
+    public void setNbMembresJury(int nb)                      { this.nbMembresJury = nb; }
+
+    // ── Méthodes utilitaires ──────────────────────────────────────
     public void ajouterJour(LocalDate jour) {
-    	if (!joursDisponibles.contains(jour)) {
-    		joursDisponibles.add(jour);
-    	}
+        if (!joursDisponibles.contains(jour))
+            joursDisponibles.add(jour);
     }
-    
-    public int nbCreneauxParJour() {
-        int dureeJournee = (int) java.time.Duration
-            .between(heureDebutJournee, heureFinJournee)
-            .toMinutes();
-        return dureeJournee / dureeSoutenanceMin;
-    }
-    
+
     public LocalTime calculerHeureFin(LocalTime heureDebut) {
         return heureDebut.plusMinutes(dureeSoutenanceMin);
     }
-    
+
     public boolean estDansLaJournee(LocalTime heureDebut) {
         LocalTime heureFin = calculerHeureFin(heureDebut);
-        return !heureDebut.isBefore(heureDebutJournee)
-            && !heureFin.isAfter(heureFinJournee);
+
+        if (heureDebut.isBefore(heureDebutJournee) || heureFin.isAfter(heureFinJournee))
+            return false;
+
+        if (!heureDebut.isBefore(heureDebutPause) && heureDebut.isBefore(heureFinPause))
+            return false;
+
+        if (heureFin.isAfter(heureDebutPause) && !heureFin.isAfter(heureFinPause))
+            return false;
+
+        return true;
     }
-    
+
+    public int nbCreneauxParJour() {
+        int matin     = (int) java.time.Duration
+                            .between(heureDebutJournee, heureDebutPause).toMinutes();
+        int apresMidi = (int) java.time.Duration
+                            .between(heureFinPause, heureFinJournee).toMinutes();
+        return (matin + apresMidi) / dureeSoutenanceMin;
+    }
+
+    // ── Validation après chargement ───────────────────────────────
+    // Appelé par ExcelConfigLoader après avoir tout injecté
+    public void valider() {
+        if (dureeSoutenanceMin <= 0)
+            throw new IllegalStateException("dureeSoutenanceMin doit être positif.");
+        if (nbMembresJury <= 0)
+            throw new IllegalStateException("nbMembresJury doit être positif.");
+        if (heureDebutJournee == null || heureFinJournee == null)
+            throw new IllegalStateException("Les heures de journée ne sont pas définies.");
+        if (heureDebutPause == null || heureFinPause == null)
+            throw new IllegalStateException("Les heures de pause ne sont pas définies.");
+        if (maxSoutenanceParProfParJour < minSoutenanceParProfParJour)
+            throw new IllegalStateException("max doit être >= min pour soutenances par prof.");
+    }
+
     public String toString() {
         return "ConfigPlanning{"
             + "dureeSoutenance=" + dureeSoutenanceMin + "min"
             + ", journee=" + heureDebutJournee + "-" + heureFinJournee
-            + ", pauseMin=" + pauseMinimale + "min"
-            + ", maxParProf=" + MaxSoutenanceParProfParJour
+            + ", pause=" + heureDebutPause + "-" + heureFinPause
+            + ", min/maxParProf=" + minSoutenanceParProfParJour + "/" + maxSoutenanceParProfParJour
+            + ", nbMembresJury=" + nbMembresJury
             + ", nbJours=" + joursDisponibles.size() + "}";
     }
 }
-
