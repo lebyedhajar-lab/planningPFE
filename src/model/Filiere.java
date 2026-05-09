@@ -16,8 +16,8 @@ public class Filiere{
 	public void setNom(String Nom) {this.nom=Nom;}
 	public void setnbEtudiants(int nbEtudiants) {this.nbEtudiants=nbEtudiants ;}
 	
-	@Override
 	public String toString() {
 	    return "Filiere{id=" + id + ", nom='" + nom + "', nbEtudiants=" + nbEtudiants + "}";
 	}
+	public void incrementerNbEtudiants() { this.nbEtudiants++; }
 }

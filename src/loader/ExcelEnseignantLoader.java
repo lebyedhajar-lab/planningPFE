@@ -18,10 +18,10 @@ public class ExcelEnseignantLoader {
     public void charger(EnseignantRepository enseignantRepo) throws IOException {
 
         try (Workbook wb = new XSSFWorkbook(new FileInputStream(cheminFichier))) {
-            Sheet sheet = wb.getSheet("Feuil1");
+        	Sheet sheet = wb.getSheet("profs"); 
 
             if (sheet == null)
-                throw new IllegalArgumentException("Feuille 'Feuil1' introuvable.");
+            	throw new IllegalArgumentException("Feuille 'profs' introuvable.");
 
             int id = 1;
             boolean premiereLigne = true;
