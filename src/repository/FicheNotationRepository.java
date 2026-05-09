@@ -38,7 +38,7 @@ public class FicheNotationRepository implements IdRepository<FicheNotation> {
     public List<FicheNotation> findByJury(Jury jury) {
         List<FicheNotation> result = new ArrayList<>();
         for (FicheNotation f : fiches) {
-            if (f.getJury().equals(jury)) result.add(f);
+        	if (f.getJury().getId() == jury.getId()) result.add(f);
         }
         return result;
     }
@@ -54,16 +54,21 @@ public class FicheNotationRepository implements IdRepository<FicheNotation> {
     public double calculerMoyenne() {
         if (fiches.isEmpty()) return 0;
         double total = 0;
+        int count = 0;
         for (FicheNotation f : fiches) {
-            total += f.getNote();
+            if (f.getNote() != null) { 
+                total += f.getNote();
+                count++;
+            }
         }
-        return total / fiches.size();
+        return count == 0 ? 0 : total / count;
     }
 
     public List<FicheNotation> findByNoteMin(double seuil) {
         List<FicheNotation> result = new ArrayList<>();
         for (FicheNotation f : fiches) {
-            if (f.getNote() >= seuil) result.add(f);
+            if (f.getNote() != null && f.getNote() >= seuil)
+                result.add(f);
         }
         return result;
     }
