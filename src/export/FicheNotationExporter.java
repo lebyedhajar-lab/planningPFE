@@ -1,5 +1,6 @@
 package export;
 
+
 import model.Soutenance;
 import model.Enseignant;
 import org.apache.poi.xwpf.usermodel.*;
@@ -30,7 +31,7 @@ public class FicheNotationExporter {
         // ── INFOS ÉTUDIANT ────────────────────────────────────
         ajouterLigne(document, "Nom & Prénom : " + soutenance.getEtudiant().getNom()  + " " + soutenance.getEtudiant().getPrenom());
         ajouterLigne(document, "Titre PFE : " + soutenance.getEtudiant().getTitrePFE());
-        ajouterLigne(document, "Filière : "  + soutenance.getEtudiant().getFiliere().getNom());
+        ajouterLigne(document, "Filière : " + soutenance.getEtudiant().getFiliere().getNom());
 
         // ── INFOS SOUTENANCE ──────────────────────────────────
         ajouterLigne(document, "Date : "  + soutenance.getCreneau().getDateJour());
