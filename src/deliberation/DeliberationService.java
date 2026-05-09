@@ -41,8 +41,7 @@ public class DeliberationService {
         resultats.clear();
         for (FicheNotation fiche : fiches) {
             // vérifier que la fiche est remplie avant de générer
-            if (fiche.estRemplie) {
-                ResultatDeliberation resultat = new ResultatDeliberation(
+        	if (fiche.isEstRemplie()) {                ResultatDeliberation resultat = new ResultatDeliberation(
                     fiche.getEtudiant(), fiche);
                 resultats.add(resultat);
             }
@@ -88,11 +87,10 @@ public class DeliberationService {
     public boolean toutesLesFichesRemises() {
         List<FicheNotation> fiches = ficheRepo.chargerTous();
         for (FicheNotation f : fiches) {
-            if (!f.estRemplie) return false;
+        	if (!f.isEstRemplie()) return false;  
         }
         return true;
     }
-
     // ─── Getter résultats ────────────────────────────────────────
     public List<ResultatDeliberation> getResultats() {
         return new ArrayList<>(resultats);

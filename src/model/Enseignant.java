@@ -18,7 +18,7 @@ public class Enseignant {
 	
 	
 	public int getId() {return id ;}
-	public int getNbSoutenace() {return nbSoutenance;}
+	public int getNbSoutenance() {return nbSoutenance;}
 	public String getNom() {return nom;}
 	public String getPrenom() {return prenom; }
 	public boolean isAnglophone() {return estAnglophone;}

@@ -11,9 +11,8 @@ public class FicheNotation {
     private LocalDate dateRemise;
     private Etudiant etudiant;
     private Double note;   
-    public boolean estRemplie; 
+    private boolean estRemplie;
 
-    
 // Constructeur 1 — fiche vide générée avant la soutenance
     public FicheNotation(int id, Jury jury,String appreciation, LocalDate dateRemise) {
         this.id = id;
@@ -43,6 +42,8 @@ public class FicheNotation {
     public String     getAppreciation() {return appreciation;}
     public LocalDate  getDateRemise() {return dateRemise; }
     public Etudiant   getEtudiant() {return etudiant; }
+    public boolean isEstRemplie() { return estRemplie; }
+
     
     public void saisirNote(double note, String appreciation,LocalDate dateRemise) {
     	this.note         = note;

@@ -2,10 +2,10 @@ package model;
 
 public class Salle {
 	
-    int id;
-    String nom;
-    String numero;
-    boolean disponible;
+    private int id;
+    private String nom;
+    private String numero;
+    private boolean disponible;
 
     public Salle(int id, String nom, String numero, boolean disponible) {
         this.id = id;

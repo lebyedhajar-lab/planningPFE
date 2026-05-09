@@ -14,6 +14,8 @@ public class ConfigPlanning {
 	private int MaxSoutenanceParProfParJour;
 	private int nbMembresJury;
 	private List<LocalDate> joursDisponibles;
+	private LocalTime heureDebutPause;
+	private LocalTime heureFinPause;
 	
 	public ConfigPlanning() {
 		this.dureeSoutenanceMin = 60;
@@ -23,6 +25,8 @@ public class ConfigPlanning {
 		this.MinSoutenanceParProfParJour=3;
 		this.nbMembresJury = 3;
 		this.joursDisponibles = new ArrayList<>();
+		this.heureDebutPause = LocalTime.of(12, 0);
+		this.heureFinPause   = LocalTime.of(14, 0);
 	}
 	
 	//Getters
