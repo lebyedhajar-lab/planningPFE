@@ -4,12 +4,13 @@ import model.Etudiant;
 import model.Filiere;
 import model.Enseignant;
 import repository.EtudiantRepository;
-import repository.FiliereRepository;
 import repository.EnseignantRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExcelEtudiantLoader {
 
@@ -20,14 +21,16 @@ public class ExcelEtudiantLoader {
     }
 
     public void charger(EtudiantRepository etudiantRepo,
-                        FiliereRepository filiereRepo,
                         EnseignantRepository enseignantRepo) throws IOException {
+
+        List<Filiere> filieres = new ArrayList<>();
+        int filiereId = 1;
 
         try (Workbook wb = new XSSFWorkbook(new FileInputStream(cheminFichier))) {
             Sheet sheet = wb.getSheet("etudiants");
 
             if (sheet == null)
-                throw new IllegalArgumentException("Feuille 'etudiants' introuvable dans le fichier Excel.");
+                throw new IllegalArgumentException("Feuille 'etudiants' introuvable.");
 
             int id = 1;
             boolean premiereLigne = true;
@@ -49,15 +52,20 @@ public class ExcelEtudiantLoader {
                 String langue   = cellLangue != null ? cellLangue.getStringCellValue().trim() : "français";
                 String titrePFE = cellTitrePFE != null ? cellTitrePFE.getStringCellValue().trim() : "";
 
-                // Trouver la filière par nom
+                // Trouver ou créer la filière
                 Filiere filiere = null;
                 if (cellFiliere != null) {
                     String nomFiliere = cellFiliere.getStringCellValue().trim();
-                    for (Filiere f : filiereRepo.chargerTous()) {
+                    for (Filiere f : filieres) {
                         if (f.getNom().equalsIgnoreCase(nomFiliere)) {
                             filiere = f;
                             break;
                         }
+                    }
+                    if (filiere == null) {
+                        filiere = new Filiere(filiereId++, 0, nomFiliere);
+                        filieres.add(filiere);
+                        System.out.println("✅ Filière créée : " + nomFiliere);
                     }
                 }
 
@@ -75,7 +83,13 @@ public class ExcelEtudiantLoader {
 
                 Etudiant etudiant = new Etudiant(id++, nom, prenom, langue, filiere, encadrant, titrePFE);
                 etudiantRepo.sauvegarder(etudiant);
-                System.out.println(  nom + " " + prenom + " | " + langue + " | " + (filiere != null ? filiere.getNom() : "—"));
+                
+                // Incrémenter nbEtudiants de la filière
+                if (filiere != null) filiere.incrementerNbEtudiants();
+                
+                System.out.println(nom + " " + prenom 
+                    + " | " + langue 
+                    + " | " + (filiere != null ? filiere.getNom() : "—"));
             }
         }
     }

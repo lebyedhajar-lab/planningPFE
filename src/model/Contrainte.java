@@ -27,3 +27,4 @@ public class Contrainte {
 	public LocalTime getHeureFin()   { return heureFin; }
 	public LocalTime getHeureDebut() { return heureDebut; }
 }
+

@@ -17,7 +17,6 @@ public class MainWindow {
 
         // Quand on clique sur le bouton → ton algorithme se lance
         btnGenerer.addActionListener(e -> {
-            PlanningGenerator generator = new PlanningGenerator();
             //generator.generer(); // adapte selon le nom de ta méthode
             JOptionPane.showMessageDialog(fenetre, "Planning généré !");
         });

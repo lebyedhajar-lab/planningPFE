@@ -11,21 +11,24 @@ public class ResultatDeliberation {
     private Mention mention;          // AB, Bien, TB,EXCELLENT
     
     
-    public ResultatDeliberation(Etudiant etudiant,FicheNotation fiche) {
-    	this.etudiant=etudiant;
-        this.fiche=fiche;
-        this.decision=calculerDecision();
-        this.mention=calculerMention();    
+    public ResultatDeliberation(Etudiant etudiant, FicheNotation fiche) {
+        if (fiche.getNote() == null)
+            throw new IllegalStateException(
+                "La fiche de " + etudiant.getNom() + " n'est pas encore remplie.");
+        this.etudiant = etudiant;
+        this.fiche    = fiche;
+        this.decision = calculerDecision();
+        this.mention  = calculerMention();
     }
     
     
     public Mention calculerMention() {
-    	double note = this.fiche.getNote();
-    	if (note>=18)return Mention.EXCELLENT;
-    	else if (note >= 16) return Mention.TRES_BIEN;
-    	else if (note >= 14) return Mention.BIEN;
-    	else if (note >= 12) return Mention.ASSEZ_BIEN;
-    	else                 return Mention.PASSABLE;
+        double note = this.fiche.getNote();
+        if (note >= 18) return Mention.EXCELLENT;
+        else if (note >= 16) return Mention.TRES_BIEN;
+        else if (note >= 14) return Mention.BIEN;
+        else if (note >= 12) return Mention.ASSEZ_BIEN;
+        else                 return Mention.AUCUNE;
     }
     	    
     public DecisionJury calculerDecision() {
@@ -39,7 +42,7 @@ public class ResultatDeliberation {
     public FicheNotation getFiche()     { return fiche; }
     public DecisionJury getDecision()   { return decision; }
     public Mention getMention()         { return mention; }
-    public double getNote()             { return fiche.getNote(); }
+    public Double getNote()             { return fiche.getNote(); }
     public boolean estAdmis()           { return decision == DecisionJury.ADMIS; }
     
     public String toString() {
