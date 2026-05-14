@@ -26,8 +26,8 @@ public class ExcelConfigLoader {
                 throw new IllegalArgumentException("Feuille 'configs' introuvable.");
 
             for (Row row : sheet) {
-                Cell cellParam  = row.getCell(0);
-                Cell cellValeur = row.getCell(1);
+                Cell cellParam  = row.getCell(1);
+                Cell cellValeur = row.getCell(2);
                 if (cellParam == null || cellValeur == null) continue;
                 if (cellParam.getCellType() != CellType.STRING) continue;
 

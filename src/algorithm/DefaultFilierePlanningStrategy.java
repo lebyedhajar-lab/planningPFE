@@ -3,8 +3,7 @@ package algorithm;
 import model.*;
 import java.util.List;
 
-public class DefaultFilierePlanningStrategy
-        implements FilierePlanningStrategy {
+public class DefaultFilierePlanningStrategy implements FilierePlanningStrategy {
 
     private final ContrainteValidator validator;
 

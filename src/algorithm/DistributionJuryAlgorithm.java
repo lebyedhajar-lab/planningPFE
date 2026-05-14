@@ -19,23 +19,26 @@ public class DistributionJuryAlgorithm {
     }
 
     // ── Enseignant le moins chargé parmi les candidats ────────
-    public Enseignant enseignantLePlusDispo(List<Enseignant> candidats) {
+    public Enseignant enseignantLePlusDispo(
+            List<Enseignant> candidats) {
         if (candidats == null || candidats.isEmpty()) return null;
-        Enseignant meilleur = candidats.get(0);
-        int minCharge = calculerCharge(meilleur);
+        Enseignant meilleur  = candidats.get(0);
+        int        minCharge = calculerCharge(meilleur);
         for (Enseignant e : candidats) {
             int charge = calculerCharge(e);
             if (charge < minCharge) {
                 minCharge = charge;
-                meilleur = e;
+                meilleur  = e;
             }
         }
         return meilleur;
     }
 
     // ── Former un jury pour un étudiant ───────────────────────
-    public Jury formerJury(Etudiant e, List<Enseignant> enseignants,
-                           String langue, Creneau creneau,
+    public Jury formerJury(Etudiant e,
+                           List<Enseignant> enseignants,
+                           String langue,
+                           Creneau creneau,
                            ContrainteValidator validator) {
 
         Enseignant encadrant = e.getEncadrant();
@@ -44,20 +47,23 @@ public class DistributionJuryAlgorithm {
         List<Enseignant> candidats = new ArrayList<>();
         for (Enseignant ens : enseignants) {
             if (ens.getId() == encadrant.getId()) continue;
-            if (!validator.enseignantDisponible(ens, creneau)) continue;
+            if (!validator.enseignantDisponible(ens, creneau))
+                continue;
             candidats.add(ens);
         }
 
-        // Contrainte : au moins 2 informaticiens
+        // ✅ Contrainte : au moins 2 informaticiens
         List<Enseignant> informaticiens = new ArrayList<>();
         for (Enseignant ens : candidats) {
-            if (ens.getSpecialite().equalsIgnoreCase("informatique"))
+            if (ens.getSpecialite()
+                   .equalsIgnoreCase("informatique"))
                 informaticiens.add(ens);
         }
         if (informaticiens.size() < 2)
             throw new IllegalStateException(
-                "Pas assez de profs informatique disponibles pour : "
-                + e.getNom() + " " + e.getPrenom());
+                "Pas assez de profs informatique pour : "
+                + e.getNom() + " " + e.getPrenom()
+                + " (dispo: " + informaticiens.size() + ")");
 
         // Choisir les 2 informaticiens les moins chargés
         Enseignant info1 = enseignantLePlusDispo(informaticiens);
@@ -67,16 +73,17 @@ public class DistributionJuryAlgorithm {
         Enseignant info2 = enseignantLePlusDispo(informaticiens);
         candidats.remove(info2);
 
-        // 3ème membre : anglophone si soutenance en anglais
+        // ✅ 3ème membre : anglophone si soutenance en anglais
         Enseignant troisieme;
-        if (langue.equalsIgnoreCase("anglais")) {
+        if (langue != null
+            && langue.equalsIgnoreCase("anglais")) {
             List<Enseignant> anglophones = new ArrayList<>();
             for (Enseignant ens : candidats) {
                 if (ens.isAnglophone()) anglophones.add(ens);
             }
             if (anglophones.isEmpty())
                 throw new IllegalStateException(
-                    "Pas de prof anglophone disponible pour : "
+                    "Pas de prof anglophone pour : "
                     + e.getNom() + " " + e.getPrenom());
             troisieme = enseignantLePlusDispo(anglophones);
         } else {
@@ -103,32 +110,55 @@ public class DistributionJuryAlgorithm {
     }
 
     // ── Distribuer tous les jurys ─────────────────────────────
-    public List<Soutenance> distribuer(List<Etudiant> etudiants,
-                                       List<Enseignant> enseignants,
-                                       List<Creneau> creneaux,
-                                       List<Salle> salles,
-                                       int dureeMin,
-                                       ContrainteValidator validator) {
+    public List<Soutenance> distribuer(
+            List<Etudiant>      etudiants,
+            List<Enseignant>    enseignants,
+            List<Creneau>       creneaux,
+            List<Salle>         salles,
+            int                 dureeMin,
+            ContrainteValidator validator) {
 
-        if (etudiants.size() > creneaux.size())
+        // ✅ Vérification correcte — créneaux × salles
+        int capacite = creneaux.size() * salles.size();
+        if (etudiants.size() > capacite)
             throw new IllegalStateException(
-                "Créneaux insuffisants : " + creneaux.size()
-                + " pour " + etudiants.size() + " étudiants.");
+                "Creneaux insuffisants : " + capacite
+                + " places pour " + etudiants.size()
+                + " etudiants.");
 
         if (salles.isEmpty())
-            throw new IllegalStateException("Aucune salle disponible.");
+            throw new IllegalStateException(
+                "Aucune salle disponible.");
 
-        int i = 0;
-        for (Etudiant e : etudiants) {
-            Creneau creneau = creneaux.get(i);
-            Salle   salle   = salles.get(i % salles.size());
-            String  langue  = e.getLangue();
-            Jury    jury    = formerJury(e, enseignants, langue, creneau, validator);
+        int idxEtudiant = 0;
 
-            Soutenance s = new Soutenance(i, langue, dureeMin, e, salle, creneau, jury);
-            soutenances.add(s);
-            i++;
+        // ✅ Boucle créneaux × salles
+        for (Creneau creneau : creneaux) {
+            for (Salle salle : salles) {
+                if (idxEtudiant >= etudiants.size()) break;
+
+                Etudiant etudiant = etudiants.get(idxEtudiant);
+                String   langue   = etudiant.getLangue();
+
+                Jury jury = formerJury(
+                    etudiant, enseignants,
+                    langue, creneau, validator);
+
+                Soutenance s = new Soutenance(
+                    idxEtudiant,
+                    langue,
+                    dureeMin,
+                    etudiant,
+                    salle,
+                    creneau,
+                    jury);
+
+                soutenances.add(s);
+                idxEtudiant++;
+            }
+            if (idxEtudiant >= etudiants.size()) break;
         }
+
         return soutenances;
     }
 }
