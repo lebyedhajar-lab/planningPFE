@@ -2,8 +2,12 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+<<<<<<< HEAD
 import java.io.File;
+=======
+>>>>>>> branch 'main' of https://github.com/lebyedhajar-lab/planningPFE.git
 
+<<<<<<< HEAD
 // Importation de vos classes
 import model.*;
 import repository.*;
@@ -68,6 +72,11 @@ public class MainWindow extends JFrame {
         panel.add(btnDashboard);
         panel.add(btnQuitter);
         add(panel);
+=======
+public class MainWindow {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new EcranPrincipal().setVisible(true));
+>>>>>>> branch 'main' of https://github.com/lebyedhajar-lab/planningPFE.git
     }
 
     public static void main(String[] args) {
