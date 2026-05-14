@@ -93,7 +93,7 @@ public class PlanningGenerator {
     public void afficherRapport(List<Soutenance> soutenances) {
         System.out.println("=== Rapport Planning ===");
         System.out.println("Période  : " + configPlanning.getDateDebut()
-                         + " → " + configPlanning.getDateDebut()
+                         + " → " +configPlanning.getDateDebut()
                            .plusDays(configPlanning.getNbJoursSoutenances() - 1L));
         System.out.println("Total    : " + soutenances.size() + " soutenance(s)");
         System.out.println("========================");
