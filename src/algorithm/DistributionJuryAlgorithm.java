@@ -67,10 +67,24 @@ public class DistributionJuryAlgorithm {
 
         // 3ème membre : anglophone si soutenance en anglais
         Enseignant troisieme;
-        if (langue.equalsIgnoreCase("anglais")) {
+        /*if (langue.equalsIgnoreCase("anglais")) {
             List<Enseignant> anglophones = new ArrayList<>();
             for (Enseignant ens : candidats) {
                 if (ens.isAnglophone()) anglophones.add(ens);
+            }
+            if (anglophones.isEmpty())
+                throw new IllegalStateException(
+                    "Pas de prof anglophone disponible pour : "
+                    + e.getNom() + " " + e.getPrenom());
+            troisieme = enseignantLePlusDispo(anglophones);
+        } else {
+            troisieme = enseignantLePlusDispo(candidats);
+        }*/
+        if (langue.equalsIgnoreCase("anglais")) {
+            List<Enseignant> anglophones = new ArrayList<>();
+            for (Enseignant ens : candidats) {
+                if ("Anglais".equalsIgnoreCase(ens.getSpecialite()))
+                    anglophones.add(ens);
             }
             if (anglophones.isEmpty())
                 throw new IllegalStateException(

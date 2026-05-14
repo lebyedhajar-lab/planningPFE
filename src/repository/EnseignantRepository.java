@@ -41,7 +41,7 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
         return resultat;
     }
 
-    public List<Enseignant> trouverAnglophones() {
+    /*public List<Enseignant> trouverAnglophones() {
         List<Enseignant> resultat = new ArrayList<>();
         for (Enseignant e : enseignants) {
             if (e.isAnglophone()) {
@@ -49,5 +49,9 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
             }
         }
         return resultat;
+    }*/
+    public List<Enseignant> trouverAnglophones() {
+        return trouverParSpecialite("Anglais");
     }
+    
 }
