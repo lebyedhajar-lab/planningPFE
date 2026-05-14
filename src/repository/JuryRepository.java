@@ -82,7 +82,7 @@ public class JuryRepository implements IdRepository<Jury> {
 
     // Jurys qui contiennent au moins un prof anglophone
     // Utilisé pour les soutenances en anglais
-    /*public List<Jury> trouverJurysAnglophones() {
+    public List<Jury> trouverJurysAnglophones() {
         List<Jury> resultat = new ArrayList<>();
         for (Jury j : jurys) {
             // vérifier encadrant
@@ -94,25 +94,6 @@ public class JuryRepository implements IdRepository<Jury> {
             // vérifier membres
             for (Enseignant m : j.getMembres()) {
                 if (m.isAnglophone()) {
-                    resultat.add(j);
-                    break;
-                }
-            }
-        }
-        return resultat;
-    }*/
-    public List<Jury> trouverJurysAnglophones() {
-        List<Jury> resultat = new ArrayList<>();
-        for (Jury j : jurys) {
-            // vérifier encadrant
-            if (j.getEncadrant() != null
-                && "Anglais".equalsIgnoreCase(j.getEncadrant().getSpecialite())) {
-                    resultat.add(j);
-                    continue;
-            }
-            // vérifier membres
-            for (Enseignant m : j.getMembres()) {
-                if ("Anglais".equalsIgnoreCase(m.getSpecialite())) {
                     resultat.add(j);
                     break;
                 }

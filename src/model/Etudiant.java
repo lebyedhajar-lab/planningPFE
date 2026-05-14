@@ -26,10 +26,5 @@ public class Etudiant {
     public Filiere getFiliere()       { return filiere; } 
     public Enseignant getEncadrant()  { return encadrant; }
     public String getTitrePFE() { return titrePFE; }
-    
-    public void setEncadrant(Enseignant encadrant) {
-        this.encadrant = encadrant;
-    }
-    
 
 }

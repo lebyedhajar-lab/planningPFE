@@ -1,5 +1,7 @@
 package algorithm;
 
+
+
 import model.*;
 import repository.*;
 import java.util.List;
@@ -31,7 +33,7 @@ public class ContrainteValidator {
     }
 	
 	//Jury adapté à la langue de la soutenance ?
-	/*public boolean juryRespecteLangue(Jury jury,String langue) {
+	public boolean juryRespecteLangue(Jury jury,String langue) {
         if(!langue.equalsIgnoreCase("anglais")) {
             return true; // pas de contrainte en français
         }
@@ -46,24 +48,7 @@ public class ContrainteValidator {
             }
         }
         return false;
-    }*/
-	// Jury adapté à la langue de la soutenance ?
-	public boolean juryRespecteLangue(Jury jury, String langue) {
-	    if (!langue.equalsIgnoreCase("anglais")) {
-	        return true; // pas de contrainte en français
-	    }
-	    // Vérifie si l'encadrant est anglophone
-	    if ("Anglais".equalsIgnoreCase(jury.getEncadrant().getSpecialite())) {
-	        return true;
-	    }
-	    // Vérifier les membres un par un
-	    for (Enseignant membre : jury.getMembres()) {
-	        if ("Anglais".equalsIgnoreCase(membre.getSpecialite())) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
+    }
 	
 	// Enseignant pas surchargé ce jour-là ?
 	public boolean respecteMaxParJour(Enseignant e, LocalDate jour, int maxParJour) {
