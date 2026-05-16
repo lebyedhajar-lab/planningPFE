@@ -158,7 +158,6 @@ public class DistributionJuryAlgorithm {
             }
             if (idxEtudiant >= etudiants.size()) break;
         }
-
         return soutenances;
     }
 }
