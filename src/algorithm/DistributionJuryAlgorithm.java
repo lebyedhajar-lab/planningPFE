@@ -63,7 +63,7 @@ public class DistributionJuryAlgorithm {
             throw new IllegalStateException(
                 "Pas assez de profs informatique pour : "
                 + e.getNom() + " " + e.getPrenom()
-                + " (dispo: " + informaticiens.size() + ")");
+                + " (dispo: " + informaticiens.size()+")");
 
         // Choisir les 2 informaticiens les moins chargés
         Enseignant info1 = enseignantLePlusDispo(informaticiens);
