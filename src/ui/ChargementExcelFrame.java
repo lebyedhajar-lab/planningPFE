@@ -126,7 +126,7 @@ public class ChargementExcelFrame extends JInternalFrame {
             log("\n✅ Chargement terminé avec succès !");
 
         } catch (Exception ex) {
-            log("\n❌ Erreur : " + ex.getMessage());
+            log("\n❌ Erreur : " +ex.getMessage());
             JOptionPane.showMessageDialog(this,
                 "Erreur lors du chargement :\n" + ex.getMessage(),
                 "Erreur", JOptionPane.ERROR_MESSAGE);

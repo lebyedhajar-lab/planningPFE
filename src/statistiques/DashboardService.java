@@ -65,7 +65,7 @@ public class DashboardService {
     // ─── Récupérer filières depuis les étudiants ─────────────────
     // FiliereRepository supprimé → on extrait les filières
     // directement depuis les étudiants
-    public List<Filiere> getFilieres() {
+    public List<Filiere> getFilieres(){
         List<Filiere> filieres  = new ArrayList<>();
         List<Integer> idsVus    = new ArrayList<>();
         for (Etudiant e : etudiantRepo.chargerTous()) {

@@ -8,7 +8,7 @@ import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class VoirPlanningFrame extends JInternalFrame {
+public class VoirPlanningFrame extends JInternalFrame{
 
     private final SoutenanceRepository soutenanceRepo;
     private static final DateTimeFormatter FMT =
@@ -24,7 +24,7 @@ public class VoirPlanningFrame extends JInternalFrame {
 
     private void initUI() {
         String[] cols = {
-            "#", "Étudiant", "Filière", "Date", "Heure", "Salle",
+            "#", "Étudiant", "Filière", "Date","Heure", "Salle",
             "Encadrant", "Langue"
         };
 

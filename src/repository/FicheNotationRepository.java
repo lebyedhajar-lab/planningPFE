@@ -55,7 +55,7 @@ public class FicheNotationRepository implements IdRepository<FicheNotation> {
         if (fiches.isEmpty()) return 0;
         double total = 0;
         int count = 0;
-        for (FicheNotation f : fiches) {
+        for (FicheNotation f : fiches){
             if (f.getNote() != null) { 
                 total += f.getNote();
                 count++;

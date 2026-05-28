@@ -67,9 +67,9 @@ public class JuryRepository implements IdRepository<Jury> {
 
     // Jurys où ce prof est simple membre
     // Utilisé pour vérifier l'équité de distribution
-    public List<Jury> trouverParMembre(int enseignantId) {
+    public List<Jury> trouverParMembre(int enseignantId){
         List<Jury> resultat = new ArrayList<>();
-        for (Jury j : jurys) {
+        for (Jury j : jurys){
             for (Enseignant m : j.getMembres()) {
                 if (m.getId() == enseignantId) {
                     resultat.add(j);
@@ -86,7 +86,7 @@ public class JuryRepository implements IdRepository<Jury> {
         List<Jury> resultat = new ArrayList<>();
         for (Jury j : jurys) {
             // vérifier encadrant
-            if (j.getEncadrant() != null
+            if (j.getEncadrant() !=null
                 && j.getEncadrant().isAnglophone()) {
                     resultat.add(j);
                     continue;

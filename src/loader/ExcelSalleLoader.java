@@ -11,13 +11,13 @@ public class ExcelSalleLoader {
 
     private final String cheminFichier;
 
-    public ExcelSalleLoader(String cheminFichier) {
+    public ExcelSalleLoader(String cheminFichier){
         this.cheminFichier = cheminFichier;
     }
 
-    public void charger(SalleRepository salleRepo) throws IOException {
+    public void charger(SalleRepository salleRepo)throws IOException{
 
-        try (Workbook wb = new XSSFWorkbook(new FileInputStream(cheminFichier))) {
+        try (Workbook wb = new XSSFWorkbook(new FileInputStream(cheminFichier))){
             Sheet sheet = wb.getSheet("salles");
 
             if (sheet == null)

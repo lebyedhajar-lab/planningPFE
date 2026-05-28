@@ -41,7 +41,7 @@ public class SalleRepository implements IdRepository<Salle> {
 
 	    public Salle trouverParNom(String nom) {
 	        for (Salle s : salles) {
-	            if (s.getNom().equalsIgnoreCase(nom)) return s;
+	            if (s.getNom().equalsIgnoreCase(nom))return s;
 	        }
 	        return null;
 	    }
@@ -54,7 +54,6 @@ public class SalleRepository implements IdRepository<Salle> {
 	        }
 	        return false;
 	    }
-
 	    public List<Salle> chargerDisponiblesPourCreneau(Creneau c) {
 	        List<Salle> resultat = new ArrayList<>();
 	        for (Salle s : salles) {

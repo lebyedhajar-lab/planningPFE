@@ -37,7 +37,7 @@ public class PlanningGenerator {
         this.soutenanceRepo = soutenanceRepo;
     }
 
-    // ─── Générer le planning complet ─────────────────────────────
+    // ─── Générer le planning complet 
     public List<Soutenance> generer() {
         List<Etudiant>   etudiants   = etudiantRepo.chargerTous();
         List<Enseignant> enseignants = enseignantRepo.chargerTous();
@@ -49,7 +49,7 @@ public class PlanningGenerator {
             (double) etudiants.size() / nbJours);
         int capacite = creneaux.size() * salles.size();
 
-        // ── Affichage infos ──────────────────────────────────────
+        // ── Affichage infos 
         System.out.println("Etudiants   : " + etudiants.size());
         System.out.println("Jours       : " + nbJours);
         System.out.println("Par jour    : " + parJour);
@@ -57,7 +57,7 @@ public class PlanningGenerator {
         System.out.println("Salles      : " + salles.size());
         System.out.println("Capacite    : " + capacite);
 
-        // ── Vérification capacité globale ────────────────────────
+        // ── Vérification capacité globale 
         if (capacite < etudiants.size())
             throw new IllegalStateException(
                 "Creneaux insuffisants : " + capacite

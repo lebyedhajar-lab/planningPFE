@@ -52,7 +52,7 @@ public class DistributionJuryAlgorithm {
             candidats.add(ens);
         }
 
-        // ✅ Contrainte : au moins 2 informaticiens
+        //  Contrainte : au moins 2 informaticiens
         List<Enseignant> informaticiens = new ArrayList<>();
         for (Enseignant ens : candidats) {
             if (ens.getSpecialite()
@@ -73,7 +73,7 @@ public class DistributionJuryAlgorithm {
         Enseignant info2 = enseignantLePlusDispo(informaticiens);
         candidats.remove(info2);
 
-        // ✅ 3ème membre : anglophone si soutenance en anglais
+        //  3ème membre : anglophone si soutenance en anglais
         Enseignant troisieme;
         if (langue != null
             && langue.equalsIgnoreCase("anglais")) {
@@ -109,7 +109,7 @@ public class DistributionJuryAlgorithm {
         return new Jury(soutenances.size(), encadrant, membres);
     }
 
-    // ── Distribuer tous les jurys ─────────────────────────────
+    // ── Distribuer tous les jurys 
     public List<Soutenance> distribuer(
             List<Etudiant>      etudiants,
             List<Enseignant>    enseignants,
@@ -118,26 +118,33 @@ public class DistributionJuryAlgorithm {
             int                 dureeMin,
             ContrainteValidator validator) {
 
-        // ✅ Vérification correcte — créneaux × salles
-        int capacite = creneaux.size() * salles.size();
-        if (etudiants.size() > capacite)
-            throw new IllegalStateException(
-                "Creneaux insuffisants : " + capacite
-                + " places pour " + etudiants.size()
-                + " etudiants.");
-
         if (salles.isEmpty())
+            throw new IllegalStateException("Aucune salle disponible.");
+
+        //  Filtrer les étudiants sans encadrant
+        List<Etudiant> etudiantsValides = new ArrayList<>();
+        for (Etudiant e : etudiants) {
+            if (e.getEncadrant() == null) {
+                System.out.println("⚠️ Ignoré (encadrant null) : "
+                    + e.getNom() + " " + e.getPrenom());
+            } else {
+                etudiantsValides.add(e);
+            }
+        }
+
+        int capacite = creneaux.size() * salles.size();
+        if (etudiantsValides.size() > capacite)
             throw new IllegalStateException(
-                "Aucune salle disponible.");
+                "Créneaux insuffisants : " + capacite
+                + " places pour " +etudiantsValides.size()
+                + " étudiants.");
 
         int idxEtudiant = 0;
-
-        // ✅ Boucle créneaux × salles
         for (Creneau creneau : creneaux) {
             for (Salle salle : salles) {
-                if (idxEtudiant >= etudiants.size()) break;
+                if (idxEtudiant >= etudiantsValides.size()) break;
 
-                Etudiant etudiant = etudiants.get(idxEtudiant);
+                Etudiant etudiant = etudiantsValides.get(idxEtudiant);
                 String   langue   = etudiant.getLangue();
 
                 Jury jury = formerJury(
@@ -145,19 +152,13 @@ public class DistributionJuryAlgorithm {
                     langue, creneau, validator);
 
                 Soutenance s = new Soutenance(
-                    idxEtudiant,
-                    langue,
-                    dureeMin,
-                    etudiant,
-                    salle,
-                    creneau,
-                    jury);
+                    idxEtudiant, langue, dureeMin,
+                    etudiant, salle, creneau, jury);
 
                 soutenances.add(s);
                 idxEtudiant++;
             }
-            if (idxEtudiant >= etudiants.size()) break;
+            if (idxEtudiant >= etudiantsValides.size()) break;
         }
         return soutenances;
     }
-}

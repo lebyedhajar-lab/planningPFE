@@ -1,5 +1,4 @@
 package loader;
-
 import model.Etudiant;
 import model.Filiere;
 import model.Enseignant;
@@ -7,13 +6,11 @@ import repository.EtudiantRepository;
 import repository.EnseignantRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExcelEtudiantLoader {
-
     private final String cheminFichier;
 
     public ExcelEtudiantLoader(String cheminFichier) {
@@ -22,13 +19,11 @@ public class ExcelEtudiantLoader {
 
     public void charger(EtudiantRepository etudiantRepo,
                         EnseignantRepository enseignantRepo) throws IOException {
-
         List<Filiere> filieres = new ArrayList<>();
         int filiereId = 1;
 
         try (Workbook wb = new XSSFWorkbook(new FileInputStream(cheminFichier))) {
             Sheet sheet = wb.getSheet("etudiants");
-
             if (sheet == null)
                 throw new IllegalArgumentException("Feuille 'etudiants' introuvable.");
 
@@ -52,9 +47,9 @@ public class ExcelEtudiantLoader {
                 String langue   = cellLangue != null ? cellLangue.getStringCellValue().trim() : "français";
                 String titrePFE = cellTitrePFE != null ? cellTitrePFE.getStringCellValue().trim() : "";
 
-                // Trouver ou créer la filière
+                // ── Filière ───────────────────────────────────
                 Filiere filiere = null;
-                if (cellFiliere != null) {
+                if (cellFiliere != null && !cellFiliere.getStringCellValue().isBlank()) {
                     String nomFiliere = cellFiliere.getStringCellValue().trim();
                     for (Filiere f : filieres) {
                         if (f.getNom().equalsIgnoreCase(nomFiliere)) {
@@ -65,31 +60,52 @@ public class ExcelEtudiantLoader {
                     if (filiere == null) {
                         filiere = new Filiere(filiereId++, 0, nomFiliere);
                         filieres.add(filiere);
-                        System.out.println("✅ Filière créée : " + nomFiliere);
+                        System.out.println(" Filière créée : " + nomFiliere);
                     }
                 }
 
-                // Trouver l'encadrant par nom
+                // ── Encadrant ─────────────────────────────────
                 Enseignant encadrant = null;
-                if (cellEncadrant != null) {
+                if (cellEncadrant != null && !cellEncadrant.getStringCellValue().isBlank()) {
                     String nomEncadrant = cellEncadrant.getStringCellValue().trim();
+
                     for (Enseignant e : enseignantRepo.chargerTous()) {
-                        if ((e.getNom() + " " + e.getPrenom()).equalsIgnoreCase(nomEncadrant)) {
+                        String v1 = e.getNom() + " " + e.getPrenom(); // Benali Mohammed
+                        String v2 = e.getPrenom() + " " + e.getNom(); // Mohammed Benali
+                        if (v1.equalsIgnoreCase(nomEncadrant)
+                            || v2.equalsIgnoreCase(nomEncadrant)) {
                             encadrant = e;
                             break;
                         }
                     }
+
+                    //  Avertissement si non trouvé
+                    if (encadrant == null) {
+                        System.out.println("⚠️ Encadrant introuvable : '"
+                            + nomEncadrant + "' pour : " + nom + " " + prenom);
+                        System.out.println("   Enseignants disponibles :");
+                        for (Enseignant e : enseignantRepo.chargerTous()) {
+                            System.out.println("     → '" + e.getNom()
+                                + " " + e.getPrenom() + "'");
+                        }
+                    }
+                } else {
+                    System.out.println(" Colonne encadrant vide pour : "
+                        + nom + " " + prenom);
                 }
 
-                Etudiant etudiant = new Etudiant(id++, nom, prenom, langue, filiere, encadrant, titrePFE);
+                Etudiant etudiant = new Etudiant(
+                    id++, nom, prenom, langue, filiere, encadrant, titrePFE);
                 etudiantRepo.sauvegarder(etudiant);
-                
-                // Incrémenter nbEtudiants de la filière
+
                 if (filiere != null) filiere.incrementerNbEtudiants();
-                
-                System.out.println(nom + " " + prenom 
-                    + " | " + langue 
-                    + " | " + (filiere != null ? filiere.getNom() : "—"));
+
+                System.out.println( nom + " " + prenom
+                    + " | " + langue
+                    + " | " + (filiere  != null ? filiere.getNom()   : "—")
+                    + " | encadrant: "
+                    + (encadrant != null ? encadrant.getNom() + " "
+                                        + encadrant.getPrenom() : " NULL"));
             }
         }
     }

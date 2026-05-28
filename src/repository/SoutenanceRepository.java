@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SoutenanceRepository implements IdRepository<Soutenance> {
 
-    private List<Soutenance> soutenances = new ArrayList<>();
+    private List<Soutenance> soutenances= new ArrayList<>();
 
     public void sauvegarder(Soutenance s) {
         soutenances.add(s);

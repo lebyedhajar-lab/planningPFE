@@ -5,7 +5,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlanningVerificateur {
+public class PlanningVerificateur{
 
     public List<String> verifier(List<Soutenance> soutenances, List<Enseignant> enseignants) {
         List<String> anomalies = new ArrayList<>();

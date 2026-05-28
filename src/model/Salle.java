@@ -20,6 +20,6 @@ public class Salle {
     public boolean isDisponible() { return disponible; } 
     
     public void setDisponible(boolean disponible) {  
-        this.disponible = disponible;
+        this.disponible =disponible;
     }
 }

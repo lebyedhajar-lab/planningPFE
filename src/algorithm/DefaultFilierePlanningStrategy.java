@@ -11,7 +11,6 @@ public class DefaultFilierePlanningStrategy implements FilierePlanningStrategy {
         this.validator = validator;
     }
 
-    @Override
     public List<Soutenance> genererPlanning(List<Etudiant> etudiants,
                                              List<Enseignant> enseignants,
                                              List<Salle> salles,

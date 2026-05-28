@@ -34,7 +34,7 @@ public class ExcelConfigLoader {
                 String parametre = cellParam.getStringCellValue().trim();
                 if (parametre.isEmpty()) continue;
 
-                switch (parametre) {
+                switch (parametre){
                     case "dureeSoutenanceMin":
                         config.setDureeSoutenanceMin((int) getNumeric(cellValeur));
                         break;

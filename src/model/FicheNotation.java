@@ -36,7 +36,7 @@ public class FicheNotation {
     
     
     public int        getId() {return id;}
-    public Double getNote()          { return note; }
+    public Double getNote()          {return note; }
     public Soutenance getSoutenance(){ return soutenance; }
     public Jury       getJury() {return jury;}
     public String     getAppreciation() {return appreciation;}

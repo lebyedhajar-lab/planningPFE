@@ -18,8 +18,7 @@ public class Etudiant {
         this.encadrant = encadrant;
         this.titrePFE = titrePFE;
     }
-
-    public int getId()                { return id; }
+    public int getId()               { return id; }
     public String getNom()            { return nom; }
     public String getPrenom()         { return prenom; }  
     public String getLangue()         { return langue; }

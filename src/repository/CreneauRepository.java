@@ -35,7 +35,7 @@ public class CreneauRepository implements IdRepository<Creneau> {
         return false;
     }
 
-    public List<Creneau> findDisponibles() {
+    public List<Creneau> findDisponibles(){
         List<Creneau> result = new ArrayList<>();
         for (Creneau c : creneaux) {
             if (c.isDisponible()) result.add(c);

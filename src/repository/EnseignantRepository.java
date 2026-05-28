@@ -26,7 +26,7 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
         return null;
     }
 
-    public boolean supprimer(int id) {
+    public boolean supprimer(int id){
         return enseignants.removeIf(e -> e.getId() == id);
     }
 

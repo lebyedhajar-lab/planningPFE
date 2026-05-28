@@ -15,12 +15,11 @@ public class Enseignant {
 		this.estAnglophone = estAnglophone;
 		this.specialite = specialite;
 	}
-	
 	public int getId() {return id ;}
 	public int getNbSoutenance() {return nbSoutenance;}
 	public String getNom() {return nom;}
 	public String getPrenom() {return prenom; }
-	public boolean isAnglophone() {return estAnglophone;}
+	public boolean isAnglophone(){return estAnglophone;}
 	public String getSpecialite() {return specialite;}
 	public void incrementerSoutenances() {nbSoutenance++;}
 	}

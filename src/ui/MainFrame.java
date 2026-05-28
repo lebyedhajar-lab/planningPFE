@@ -1,6 +1,8 @@
 package ui;
 
 import javax.swing.*;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -11,7 +13,7 @@ import repository.*;
 import algorithm.*;
 import statistiques.DashboardService;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame{
 
     // ── Repositories ──────────────────────────────────────────
     private final ConfigPlanning        config          = new ConfigPlanning();
@@ -64,8 +66,8 @@ public class MainFrame extends JFrame {
         add(buildHeader(), BorderLayout.NORTH);
     }
 
-    // ── Header ────────────────────────────────────────────────
-    private JPanel buildHeader() {
+    // ── Header
+    private JPanel buildHeader(){
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(COLOR_HEADER);
         header.setPreferredSize(new Dimension(0, 50));
