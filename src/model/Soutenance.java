@@ -10,7 +10,7 @@ public class Soutenance {
 	private Creneau creneau;
 	private Jury jury;
 	
-	public Soutenance(int id, String langue, int dureeMin, Etudiant etudiant, Salle salle, Creneau creneau, Jury jury) {
+	public Soutenance(int id,String langue, int dureeMin, Etudiant etudiant, Salle salle, Creneau creneau, Jury jury) {
 		this.id = id;
 		this.langue = langue;
 		this.dureeMin = dureeMin;

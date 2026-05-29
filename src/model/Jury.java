@@ -14,7 +14,7 @@ public class Jury {
         this.membres = membres;
     }
 	
-	public int getId() {return id;}
+	public int getId(){return id;}
 	public Enseignant getEncadrant() {return encadrant;}
 	public List<Enseignant> getMembres() {return membres;}
 	

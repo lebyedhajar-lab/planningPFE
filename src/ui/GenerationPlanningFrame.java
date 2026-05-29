@@ -1,6 +1,7 @@
 package ui;
 
 import Config.ConfigPlanning;
+import java.io.*;
 import algorithm.*;
 import model.*;
 import repository.*;
@@ -80,6 +81,26 @@ public class GenerationPlanningFrame extends JInternalFrame {
 
     private void generer() {
         logArea.setText("");
+
+        //  Rediriger System.out vers le logArea
+        PrintStream ps = new PrintStream(new OutputStream() {
+            private StringBuilder sb = new StringBuilder();
+            public void write(int b) {
+                char c = (char) b;
+                sb.append(c);
+                if (c == '\n') {
+                    final String line = sb.toString();
+                    SwingUtilities.invokeLater(() -> {
+                        logArea.append(line);
+                        logArea.setCaretPosition(
+                            logArea.getDocument().getLength());
+                    });
+                    sb.setLength(0);
+                }
+            }
+        });
+        System.setOut(ps);
+
         log("Démarrage de la génération...");
         log("  Étudiants  : " + etudiantRepo.chargerTous().size());
         log("  Enseignants: " + enseignantRepo.chargerTous().size());
@@ -94,7 +115,8 @@ public class GenerationPlanningFrame extends JInternalFrame {
 
             PlanningGenerator generator = new PlanningGenerator(
                 config, validator,
-                new DefaultFilierePlanningStrategy(validator),
+                new DefaultFilierePlanningStrategy(
+                    validator),
                 etudiantRepo, enseignantRepo,
                 salleRepo, soutenanceRepo);
 

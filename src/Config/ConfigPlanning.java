@@ -54,12 +54,12 @@ public class ConfigPlanning {
     public void setDateDebut(LocalDate dateDebut) { this.dateDebut = dateDebut; }
 
     // ── Méthodes utilitaires ──────────────────────────────────────
-    public void ajouterJour(LocalDate jour) {
+    public void ajouterJour(LocalDate jour){
         if (!joursDisponibles.contains(jour))
             joursDisponibles.add(jour);
     }
 
-    public LocalTime calculerHeureFin(LocalTime heureDebut) {
+    public LocalTime calculerHeureFin(LocalTime heureDebut){
         return heureDebut.plusMinutes(dureeSoutenanceMin);
     }
 

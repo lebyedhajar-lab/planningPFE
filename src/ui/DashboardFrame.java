@@ -44,7 +44,7 @@ public class DashboardFrame extends JInternalFrame {
     }
 
     private JPanel buildStatCards() {
-        JPanel panel = new JPanel(new GridLayout(1, 4, 10, 0));
+        JPanel panel =new JPanel(new GridLayout(1, 4, 10, 0));
         panel.setBackground(COLOR_BG);
         panel.add(buildCard("Soutenances",
             String.valueOf(dashboardService.totalSoutenances()), COLOR_PRIMARY));

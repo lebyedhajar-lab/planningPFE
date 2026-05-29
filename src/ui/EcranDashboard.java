@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class EcranDashboard extends JFrame {
+public class EcranDashboard extends JFrame{
 
     private SoutenanceRepository soutenanceRepo;
     private EnseignantRepository enseignantRepo;

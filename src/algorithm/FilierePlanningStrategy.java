@@ -11,7 +11,7 @@ public interface FilierePlanningStrategy {
                                      List<Salle>      salles,
                                      List<Creneau>    creneaux);
 
-    default String getNom() {
+    default String getNom(){
         return this.getClass().getSimpleName();
     }
 

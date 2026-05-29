@@ -18,18 +18,12 @@ public class Etudiant {
         this.encadrant = encadrant;
         this.titrePFE = titrePFE;
     }
-
-    public int getId()                { return id; }
+    public int getId()               { return id; }
     public String getNom()            { return nom; }
     public String getPrenom()         { return prenom; }  
     public String getLangue()         { return langue; }
     public Filiere getFiliere()       { return filiere; } 
     public Enseignant getEncadrant()  { return encadrant; }
     public String getTitrePFE() { return titrePFE; }
-    
-    public void setEncadrant(Enseignant encadrant) {
-        this.encadrant = encadrant;
-    }
-    
 
 }

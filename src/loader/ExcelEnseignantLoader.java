@@ -27,7 +27,7 @@ public class ExcelEnseignantLoader {
             boolean premiereLigne = true;
 
             for (Row row : sheet) {
-                if (premiereLigne) { premiereLigne = false; continue; }
+                if (premiereLigne) {premiereLigne = false; continue; }
 
                 Cell cellNom        = row.getCell(0);
                 Cell cellPrenom     = row.getCell(1);

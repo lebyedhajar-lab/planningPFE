@@ -9,16 +9,13 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
 
     private List<Etudiant> etudiants = new ArrayList<>();
 
-
     public void sauvegarder(Etudiant e) {
         etudiants.add(e);
     }
 
-
     public List<Etudiant> chargerTous() {
         return new ArrayList<>(etudiants);
     }
-
  
     public Etudiant trouverParId(int id) {
         for (Etudiant e : etudiants) {
@@ -26,7 +23,6 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
         }
         return null;
     }
-
 
     public boolean supprimer(int id) {
         return etudiants.removeIf(e -> e.getId() == id);

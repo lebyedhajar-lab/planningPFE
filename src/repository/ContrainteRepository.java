@@ -44,7 +44,7 @@ public class ContrainteRepository implements IdRepository<Contrainte> {
         return resultat;
     }
 
-    public boolean estDisponible(int ensId, LocalDate j, LocalTime h) {
+    public boolean estDisponible(int ensId,LocalDate j, LocalTime h) {
         for (Contrainte c : contraintes) {
             if (c.getEnseignant().getId() == ensId
                 && c.getJour().equals(j)
