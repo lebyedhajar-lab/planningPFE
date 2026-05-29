@@ -13,12 +13,20 @@ public class DefaultFilierePlanningStrategy
     }
 
     @Override
-    public List<Soutenance> genererPlanning(List<Etudiant> etudiants,
+    /*public List<Soutenance> genererPlanning(List<Etudiant> etudiants,
                                              List<Enseignant> enseignants,
                                              List<Salle> salles,
                                              List<Creneau> creneaux) {
         DistributionJuryAlgorithm algo = new DistributionJuryAlgorithm();
         return algo.distribuer(etudiants, enseignants, creneaux,
                                salles, 30, validator);
+    }*/
+    public List<Soutenance> genererPlanning(List<Etudiant> etudiants,
+                                             List<Enseignant> enseignants,
+                                             List<Salle> salles,
+                                             List<Creneau> creneaux) {
+        DistributionJuryAlgorithm algo = new DistributionJuryAlgorithm();
+        return algo.distribuer(etudiants, enseignants, creneaux,
+                               salles, creneaux.size(), validator);
     }
 }

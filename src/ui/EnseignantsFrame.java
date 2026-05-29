@@ -30,7 +30,7 @@ public class EnseignantsFrame extends JInternalFrame {
             data[i][1] = e.getNom();
             data[i][2] = e.getPrenom();
             data[i][3] = e.getSpecialite();
-            data[i][4] = e.isAnglophone() ? "Oui" : "Non";
+            //data[i][4] = e.isAnglophone() ? "Oui" : "Non";
             data[i][5] = e.getNbSoutenance();
         }
 

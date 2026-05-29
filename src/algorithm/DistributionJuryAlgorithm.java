@@ -122,17 +122,24 @@ public class DistributionJuryAlgorithm {
                                        int dureeMin,
                                        ContrainteValidator validator) {
 
-        if (etudiants.size() > creneaux.size())
+        /*if (etudiants.size() > creneaux.size())
             throw new IllegalStateException(
                 "Créneaux insuffisants : " + creneaux.size()
                 + " pour " + etudiants.size() + " étudiants.");
+*/
+        java.util.Collections.shuffle(etudiants);
 
+    	int capaciteTotale = creneaux.size() * salles.size();
+    	if (etudiants.size() > capaciteTotale)
+    	    throw new IllegalStateException(
+    	        "Créneaux insuffisants : " + capaciteTotale
+    	        + " pour " + etudiants.size() + " étudiants.");
         if (salles.isEmpty())
             throw new IllegalStateException("Aucune salle disponible.");
 
-        int i = 0;
+        int i = 1;
         for (Etudiant e : etudiants) {
-            Creneau creneau = creneaux.get(i);
+        	Creneau creneau = creneaux.get(i / salles.size()); 
             Salle   salle   = salles.get(i % salles.size());
             String  langue  = e.getLangue();
             Jury    jury    = formerJury(e, enseignants, langue, creneau, validator);

@@ -86,6 +86,9 @@ public class GenerationPlanningFrame extends JInternalFrame {
         log("  Salles     : " + salleRepo.chargerDisponibles().size());
 
         try {
+        	EncadrantAffectationService affectation = new EncadrantAffectationService();
+            affectation.affecter(etudiantRepo.chargerTous(), enseignantRepo.chargerTous());
+            log("✅ Encadrants affectés.");
             ContrainteValidator validator =
                 new ContrainteValidator(contrainteRepo, soutenanceRepo);
 

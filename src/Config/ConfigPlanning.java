@@ -63,7 +63,7 @@ public class ConfigPlanning {
         return heureDebut.plusMinutes(dureeSoutenanceMin);
     }
 
-    public boolean estDansLaJournee(LocalTime heureDebut) {
+    /*public boolean estDansLaJournee(LocalTime heureDebut) {
         LocalTime heureFin = calculerHeureFin(heureDebut);
 
         if (heureDebut.isBefore(heureDebutJournee) || heureFin.isAfter(heureFinJournee))
@@ -73,6 +73,19 @@ public class ConfigPlanning {
             return false;
 
         if (heureFin.isAfter(heureDebutPause) && !heureFin.isAfter(heureFinPause))
+            return false;
+
+        return true;
+    }*/ 
+    public boolean estDansLaJournee(LocalTime heureDebut) {
+        LocalTime heureFin = calculerHeureFin(heureDebut);
+
+        // Dépasse la journée
+        if (heureDebut.isBefore(heureDebutJournee) || heureFin.isAfter(heureFinJournee))
+            return false;
+
+        // Chevauche la pause (début avant fin de pause ET fin après début de pause)
+        if (heureDebut.isBefore(heureFinPause) && heureFin.isAfter(heureDebutPause))
             return false;
 
         return true;

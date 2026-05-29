@@ -1,29 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="src/" kind="src" path=""/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-<<<<<<< HEAD
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/poi-jars/commons-collections4-4.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/poi-jars/commons-compress-1.26.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/poi-jars/log4j-api-2.23.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/poi-jars/poi-5.5.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/poi-jars/poi-ooxml-5.5.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/poi-jars/poi-ooxml-full-5.5.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/poi-jars/xmlbeans-5.2.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Destock Afric/Downloads/commons-io-2.16.1.jar"/>
-=======
 	<classpathentry kind="lib" path="C:/poi-jars/commons-collections4-4.4.jar"/>
 	<classpathentry kind="lib" path="C:/poi-jars/commons-compress-1.26.1.jar"/>
+	<classpathentry kind="lib" path="C:/poi-jars/commons-io-2.16.1.jar"/>
 	<classpathentry kind="lib" path="C:/poi-jars/log4j-api-2.23.1.jar"/>
 	<classpathentry kind="lib" path="C:/poi-jars/poi-5.5.1.jar"/>
 	<classpathentry kind="lib" path="C:/poi-jars/poi-ooxml-5.5.1.jar"/>
 	<classpathentry kind="lib" path="C:/poi-jars/poi-ooxml-full-5.5.1.jar"/>
 	<classpathentry kind="lib" path="C:/poi-jars/xmlbeans-5.2.1.jar"/>
->>>>>>> db7c6bf49039e01e563d1cc6c4c632b1e41b4ae2
 	<classpathentry kind="output" path="bin"/>
 </classpath>
