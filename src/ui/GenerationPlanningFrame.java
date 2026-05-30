@@ -135,7 +135,7 @@ public class GenerationPlanningFrame extends JInternalFrame {
                 soutenanceRepo);
 
             List<Soutenance> soutenances = generator.generer();
-            log("\n✅ Planning généré : "
+            log("\n Planning généré : "
                 + soutenances.size() + " soutenances.");
             generator.afficherRapport(soutenances);
 

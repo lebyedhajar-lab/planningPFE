@@ -37,7 +37,7 @@ public class EnseignantsFrame extends JInternalFrame {
             data[i][2] = e.getPrenom();
             data[i][3] = e.getSpecialite();
             data[i][4] = e.isAnglophone() ? "Oui" : "Non";
-            data[i][5] = compterSoutenances(e); // ✅ calculé depuis soutenances réelles
+            data[i][5] = compterSoutenances(e); 
         }
 
         JTable table = buildTable(data, cols);
