@@ -43,30 +43,32 @@ public class GenerationPlanningFrame extends JInternalFrame {
         JPanel root = new JPanel(new BorderLayout(10, 10));
         root.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        // ── Résumé config ─────────────────────────────────────
         JPanel infoPanel = new JPanel(new GridLayout(4, 2, 6, 6));
-        infoPanel.setBorder(BorderFactory.createTitledBorder("Configuration chargée"));
+        infoPanel.setBorder(BorderFactory.createTitledBorder(
+            "Configuration chargée"));
         infoPanel.add(new JLabel("Date début :"));
         infoPanel.add(new JLabel(config.getDateDebut() != null
             ? config.getDateDebut().toString() : "—"));
         infoPanel.add(new JLabel("Nb jours :"));
-        infoPanel.add(new JLabel(String.valueOf(config.getNbJoursSoutenances())));
+        infoPanel.add(new JLabel(
+            String.valueOf(config.getNbJoursSoutenances())));
         infoPanel.add(new JLabel("Durée soutenance :"));
-        infoPanel.add(new JLabel(config.getDureeSoutenanceMin() + " min"));
+        infoPanel.add(new JLabel(
+            config.getDureeSoutenanceMin() + " min"));
         infoPanel.add(new JLabel("Nb membres jury :"));
-        infoPanel.add(new JLabel(String.valueOf(config.getNbMembresJury())));
+        infoPanel.add(new JLabel(
+            String.valueOf(config.getNbMembresJury())));
         root.add(infoPanel, BorderLayout.NORTH);
 
-        // ── Log ───────────────────────────────────────────────
         logArea = new JTextArea();
         logArea.setEditable(false);
         logArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
         logArea.setBackground(new Color(245, 245, 248));
         JScrollPane scroll = new JScrollPane(logArea);
-        scroll.setBorder(BorderFactory.createTitledBorder("Journal de génération"));
+        scroll.setBorder(BorderFactory.createTitledBorder(
+            "Journal de génération"));
         root.add(scroll, BorderLayout.CENTER);
 
-        // ── Bouton ────────────────────────────────────────────
         JButton btnGenerer = new JButton("Générer le Planning");
         btnGenerer.setBackground(COLOR_PRIMARY);
         btnGenerer.setForeground(Color.WHITE);
@@ -82,7 +84,6 @@ public class GenerationPlanningFrame extends JInternalFrame {
     private void generer() {
         logArea.setText("");
 
-        //  Rediriger System.out vers le logArea
         PrintStream ps = new PrintStream(new OutputStream() {
             private StringBuilder sb = new StringBuilder();
             public void write(int b) {
@@ -105,20 +106,33 @@ public class GenerationPlanningFrame extends JInternalFrame {
         log("  Étudiants  : " + etudiantRepo.chargerTous().size());
         log("  Enseignants: " + enseignantRepo.chargerTous().size());
         log("  Salles     : " + salleRepo.chargerDisponibles().size());
+        log("  Nb membres jury : " + config.getNbMembresJury());
 
         try {
-        	EncadrantAffectationService affectation = new EncadrantAffectationService();
-            affectation.affecter(etudiantRepo.chargerTous(), enseignantRepo.chargerTous());
+            // Étape 1 : Affecter encadrants
+            log("\n[1] Affectation des encadrants...");
+            new EncadrantAffectationService()
+                .affecter(
+                    etudiantRepo.chargerTous(),
+                    enseignantRepo.chargerTous());
             log("✅ Encadrants affectés.");
+
+            // Étape 2 : Générer planning
+            log("\n[2] Génération du planning...");
             ContrainteValidator validator =
                 new ContrainteValidator(contrainteRepo, soutenanceRepo);
 
             PlanningGenerator generator = new PlanningGenerator(
-                config, validator,
+                config,
+                validator,
                 new DefaultFilierePlanningStrategy(
-                    validator),
-                etudiantRepo, enseignantRepo,
-                salleRepo, soutenanceRepo);
+                    validator,
+                    config.getDureeSoutenanceMin(),
+                    config),
+                etudiantRepo,
+                enseignantRepo,
+                salleRepo,
+                soutenanceRepo);
 
             List<Soutenance> soutenances = generator.generer();
             log("\n✅ Planning généré : "

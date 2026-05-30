@@ -6,28 +6,43 @@ import java.util.List;
 
 public class EncadrantAffectationService {
 
-    public void affecter(List<Etudiant> etudiants, List<Enseignant> enseignants) {
-        for (Etudiant etudiant : etudiants) {
-            if (etudiant.getEncadrant() != null) continue; // déjà affecté
+    public void affecter(List<Etudiant> etudiants,
+                         List<Enseignant> enseignants) {
 
-            // Trouver l'enseignant le moins chargé
+        for (Etudiant etudiant : etudiants) {
+            if (etudiant.getEncadrant() != null) continue;
+
+            // Trouver l'enseignant avec le moins d'étudiants encadrés
             Enseignant meilleur = null;
             int minCharge = Integer.MAX_VALUE;
 
             for (Enseignant ens : enseignants) {
-                if (ens.getNbSoutenance() < minCharge) {
-                    minCharge = ens.getNbSoutenance();
-                    meilleur = ens;
+                int charge = compterEtudiantsEncadres(ens, etudiants);
+                if (charge < minCharge) {
+                    minCharge = charge;
+                    meilleur  = ens;
                 }
             }
 
             if (meilleur == null)
                 throw new IllegalStateException(
-                    "Aucun enseignant disponible pour encadrer : "
+                    "Aucun enseignant disponible pour : "
                     + etudiant.getNom());
 
             etudiant.setEncadrant(meilleur);
-            meilleur.incrementerSoutenances();
+           
         }
+    }
+
+    // ── Compter les étudiants déjà encadrés par cet enseignant ──
+    private int compterEtudiantsEncadres(Enseignant ens,
+                                          List<Etudiant> etudiants) {
+        int count = 0;
+        for (Etudiant e : etudiants) {
+            if (e.getEncadrant() != null
+                && e.getEncadrant().getId() == ens.getId())
+                count++;
+        }
+        return count;
     }
 }

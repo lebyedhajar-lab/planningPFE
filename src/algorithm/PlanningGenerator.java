@@ -14,20 +14,20 @@ public class PlanningGenerator {
     private final ConfigPlanning          configPlanning;
     private final ContrainteValidator     validator;
     private final FilierePlanningStrategy strategy;
-
-    private final EtudiantRepository   etudiantRepo;
-    private final EnseignantRepository enseignantRepo;
-    private final SalleRepository      salleRepo;
-    private final SoutenanceRepository soutenanceRepo;
+    private final EtudiantRepository      etudiantRepo;
+    private final EnseignantRepository    enseignantRepo;
+    private final SalleRepository         salleRepo;
+    private final SoutenanceRepository    soutenanceRepo;
 
     public PlanningGenerator(
-            ConfigPlanning configPlanning,
-            ContrainteValidator validator,
+            ConfigPlanning          configPlanning,
+            ContrainteValidator     validator,
             FilierePlanningStrategy strategy,
-            EtudiantRepository etudiantRepo,
-            EnseignantRepository enseignantRepo,
-            SalleRepository salleRepo,
-            SoutenanceRepository soutenanceRepo) {
+            EtudiantRepository      etudiantRepo,
+            EnseignantRepository    enseignantRepo,
+            SalleRepository         salleRepo,
+            SoutenanceRepository    soutenanceRepo) {
+
         this.configPlanning = configPlanning;
         this.validator      = validator;
         this.strategy       = strategy;
@@ -37,92 +37,38 @@ public class PlanningGenerator {
         this.soutenanceRepo = soutenanceRepo;
     }
 
-    // ─── Générer le planning complet 
     public List<Soutenance> generer() {
         List<Etudiant>   etudiants   = etudiantRepo.chargerTous();
         List<Enseignant> enseignants = enseignantRepo.chargerTous();
-        List<Salle>      salles      = salleRepo.chargerTous();
+        List<Salle>      salles      = salleRepo.chargerDisponibles();
         List<Creneau>    creneaux    = genererCreneaux();
 
-        int nbJours  = configPlanning.getNbJoursSoutenances();
-        int parJour  = (int) Math.ceil(
-            (double) etudiants.size() / nbJours);
-        int capacite = creneaux.size() * salles.size();
+        int capaciteTotale = creneaux.size() * salles.size();
 
-        // ── Affichage infos 
         System.out.println("Etudiants   : " + etudiants.size());
-        System.out.println("Jours       : " + nbJours);
-        System.out.println("Par jour    : " + parJour);
+        System.out.println("Jours       : " + configPlanning.getNbJoursSoutenances());
+        System.out.println("Par jour    : " + configPlanning.nbCreneauxParJour());
         System.out.println("Creneaux    : " + creneaux.size());
         System.out.println("Salles      : " + salles.size());
-        System.out.println("Capacite    : " + capacite);
+        System.out.println("Capacite    : " + capaciteTotale);
 
-        // ── Vérification capacité globale 
-        if (capacite < etudiants.size())
+        if (!strategy.estRealisable(
+                etudiants.size(), capaciteTotale,
+                enseignants.size()))
             throw new IllegalStateException(
-                "Creneaux insuffisants : " + capacite
-                + " places pour " + etudiants.size()
-                + " etudiants.");
+                "Planning impossible : " + etudiants.size()
+                + " étudiants pour " + capaciteTotale + " places.");
 
-        // ── Répartition équitable par jour ───────────────────────
-        List<Soutenance> touteSoutenances = new ArrayList<>();
-        int idxEtudiant = 0;
-        LocalDate debut = configPlanning.getDateDebut();
+        List<Soutenance> soutenances =
+            strategy.genererPlanning(
+                etudiants, enseignants, salles, creneaux);
 
-        for (int j = 0; j < nbJours; j++) {
-            if (idxEtudiant >= etudiants.size()) break;
-
-            LocalDate jour = debut.plusDays(j);
-
-            // Étudiants de ce jour
-            int fin = Math.min(
-                idxEtudiant + parJour,
-                etudiants.size());
-            List<Etudiant> etudiantsJour = new ArrayList<>(
-                etudiants.subList(idxEtudiant, fin));
-
-            // Créneaux de ce jour
-            List<Creneau> creneauxJour = new ArrayList<>();
-            for (Creneau c : creneaux) {
-                if (c.getDateJour().equals(jour))
-                    creneauxJour.add(c);
-            }
-
-            // ── Vérification capacité du jour ────────────────────
-            int capaciteJour = creneauxJour.size() * salles.size();
-            if (capaciteJour < etudiantsJour.size())
-                throw new IllegalStateException(
-                    "Jour " + jour
-                    + " : capacite insuffisante : "
-                    + capaciteJour + " places pour "
-                    + etudiantsJour.size() + " etudiants.");
-
-            System.out.println("Jour " + (j + 1)
-                + " (" + jour + ") : "
-                + etudiantsJour.size() + " etudiants / "
-                + creneauxJour.size() + " creneaux / "
-                + capaciteJour + " places");
-
-            // Générer les soutenances de ce jour
-            List<Soutenance> soutenancesJour =
-                strategy.genererPlanning(
-                    etudiantsJour, enseignants,
-                    salles, creneauxJour);
-
-            touteSoutenances.addAll(soutenancesJour);
-            idxEtudiant = fin;
-        }
-
-        // ── Sauvegarder ──────────────────────────────────────────
-        for (Soutenance s : touteSoutenances)
+        for (Soutenance s : soutenances)
             soutenanceRepo.sauvegarder(s);
 
-        System.out.println("Total soutenances : "
-            + touteSoutenances.size());
-        return touteSoutenances;
+        return soutenances;
     }
 
-    // ─── Générer tous les créneaux ───────────────────────────────
     private List<Creneau> genererCreneaux() {
         List<Creneau> creneaux = new ArrayList<>();
         int id = 0;
@@ -132,45 +78,35 @@ public class PlanningGenerator {
 
         LocalDate jour = configPlanning.getDateDebut();
         while (!jour.isAfter(dateFin)) {
-
-            // Matin : heureDebut → heureDebutPause
-            LocalTime heure = configPlanning.getHeureDebutJournee();
-            while (true) {
-                LocalTime fin = heure.plusMinutes(
-                    configPlanning.getDureeSoutenanceMin());
-                if (fin.isAfter(configPlanning.getHeureDebutPause()))
-                    break;
+            for (LocalTime heure : calculerHeuresJournee()) {
+                LocalTime heureFin =
+                    configPlanning.calculerHeureFin(heure);
                 creneaux.add(new Creneau(
-                    id++, jour, heure, fin, true));
-                heure = fin;
+                    id++, jour, heure, heureFin, true));
             }
-
-            // Après-midi : heureFinPause → heureFinJournee
-            heure = configPlanning.getHeureFinPause();
-            while (true) {
-                LocalTime fin = heure.plusMinutes(
-                    configPlanning.getDureeSoutenanceMin());
-                if (fin.isAfter(configPlanning.getHeureFinJournee()))
-                    break;
-                creneaux.add(new Creneau(
-                    id++, jour, heure, fin, true));
-                heure = fin;
-            }
-
             jour = jour.plusDays(1);
         }
         return creneaux;
     }
 
-    // ─── Afficher le rapport ─────────────────────────────────────
+    private List<LocalTime> calculerHeuresJournee() {
+        List<LocalTime> heures = new ArrayList<>();
+        LocalTime heure = configPlanning.getHeureDebutJournee();
+        while (configPlanning.estDansLaJournee(heure)) {
+            heures.add(heure);
+            heure = heure.plusMinutes(
+                configPlanning.getDureeSoutenanceMin());
+        }
+        return heures;
+    }
+
     public void afficherRapport(List<Soutenance> soutenances) {
         System.out.println("=== Rapport Planning ===");
         System.out.println("Periode : "
             + configPlanning.getDateDebut()
             + " -> "
             + configPlanning.getDateDebut()
-              .plusDays(configPlanning
-                  .getNbJoursSoutenances() - 1L));
+              .plusDays(configPlanning.getNbJoursSoutenances() - 1L));
         System.out.println("Total   : "
             + soutenances.size() + " soutenance(s)");
         System.out.println("========================");

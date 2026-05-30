@@ -1,5 +1,6 @@
 package algorithm;
 
+import Config.ConfigPlanning;
 import model.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,11 @@ import java.util.List;
 public class DistributionJuryAlgorithm {
 
     private List<Soutenance> soutenances = new ArrayList<>();
+    private final int nbMembres;
+
+    public DistributionJuryAlgorithm(ConfigPlanning config) {
+        this.nbMembres = config.getNbMembresJury() - 1;
+    }
 
     public int calculerCharge(Enseignant enseignant) {
         int compteur = 0;
@@ -44,53 +50,58 @@ public class DistributionJuryAlgorithm {
             candidats.add(ens);
         }
 
+        if (candidats.size() < nbMembres)
+            throw new IllegalStateException(
+                "Pas assez d'enseignants pour : "
+                + e.getNom() + " (besoin: " + nbMembres
+                + ", dispo: " + candidats.size() + ")");
+
+        List<Enseignant> membres = new ArrayList<>();
+
+        // Membre 1 : toujours un informaticien
         List<Enseignant> informaticiens = new ArrayList<>();
         for (Enseignant ens : candidats) {
             if (ens.getSpecialite().equalsIgnoreCase("informatique"))
                 informaticiens.add(ens);
         }
-        if (informaticiens.size() < 2)
+        if (informaticiens.isEmpty())
             throw new IllegalStateException(
-                "Pas assez de profs informatique pour : "
+                "Pas de prof informatique pour : "
                 + e.getNom() + " " + e.getPrenom());
 
-        Enseignant info1 = enseignantLePlusDispo(informaticiens);
-        informaticiens.remove(info1);
-        candidats.remove(info1);
+        Enseignant membre1 = enseignantLePlusDispo(informaticiens);
+        membres.add(membre1);
+        candidats.remove(membre1);
 
-        Enseignant info2 = enseignantLePlusDispo(informaticiens);
-        candidats.remove(info2);
+        // Membres restants
+        for (int i = 1; i < nbMembres; i++) {
+            Enseignant membre;
+            boolean dernierMembre = (i == nbMembres - 1);
 
-        Enseignant troisieme;
-        if (langue != null && langue.equalsIgnoreCase("anglais")) {
-            List<Enseignant> anglophones = new ArrayList<>();
-            for (Enseignant ens : candidats) {
-                if ("Anglais".equalsIgnoreCase(ens.getSpecialite()))
-                    anglophones.add(ens);
+            if (dernierMembre && langue != null
+                    && langue.equalsIgnoreCase("anglais")) {
+                List<Enseignant> anglophones = new ArrayList<>();
+                for (Enseignant ens : candidats) {
+                    if ("Anglais".equalsIgnoreCase(ens.getSpecialite()))
+                        anglophones.add(ens);
+                }
+                if (anglophones.isEmpty())
+                    throw new IllegalStateException(
+                        "Pas de prof anglophone pour : "
+                        + e.getNom() + " " + e.getPrenom());
+                membre = enseignantLePlusDispo(anglophones);
+            } else {
+                membre = enseignantLePlusDispo(candidats);
             }
-            if (anglophones.isEmpty())
+
+            if (membre == null)
                 throw new IllegalStateException(
-                    "Pas de prof anglophone pour : "
+                    "Pas assez d'enseignants pour : "
                     + e.getNom() + " " + e.getPrenom());
-            troisieme = enseignantLePlusDispo(anglophones);
-        } else {
-            troisieme = enseignantLePlusDispo(candidats);
+
+            membres.add(membre);
+            candidats.remove(membre);
         }
-
-        if (troisieme == null)
-            throw new IllegalStateException(
-                "Pas assez d'enseignants pour : "
-                + e.getNom() + " " + e.getPrenom());
-
-        encadrant.incrementerSoutenances();
-        info1.incrementerSoutenances();
-        info2.incrementerSoutenances();
-        troisieme.incrementerSoutenances();
-
-        List<Enseignant> membres = new ArrayList<>();
-        membres.add(info1);
-        membres.add(info2);
-        membres.add(troisieme);
 
         return new Jury(soutenances.size(), encadrant, membres);
     }
@@ -102,8 +113,6 @@ public class DistributionJuryAlgorithm {
                                        int dureeMin,
                                        ContrainteValidator validator) {
 
-        java.util.Collections.shuffle(etudiants);
-
         int capaciteTotale = creneaux.size() * salles.size();
         if (etudiants.size() > capaciteTotale)
             throw new IllegalStateException(
@@ -113,14 +122,15 @@ public class DistributionJuryAlgorithm {
         if (salles.isEmpty())
             throw new IllegalStateException("Aucune salle disponible.");
 
-        int i = 1;
+        int i = 0;
         for (Etudiant e : etudiants) {
             Creneau creneau = creneaux.get(i / salles.size());
             Salle   salle   = salles.get(i % salles.size());
             String  langue  = e.getLangue();
-            Jury    jury    = formerJury(e, enseignants, langue, creneau, validator);
-
-            Soutenance s = new Soutenance(i, langue, dureeMin, e, salle, creneau, jury);
+            Jury    jury    = formerJury(e, enseignants,
+                                        langue, creneau, validator);
+            Soutenance s = new Soutenance(
+                i, langue, dureeMin, e, salle, creneau, jury);
             soutenances.add(s);
             i++;
         }

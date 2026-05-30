@@ -102,19 +102,19 @@ public class MainFrame extends JFrame{
         sidebar.add(logo);
 
         // Boutons
-        sidebar.add(buildSidebarBtn("📂  Charger Excel",      this::ouvrirChargementExcel));
+        sidebar.add(buildSidebarBtn(" Charger Excel",      this::ouvrirChargementExcel));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn("📅  Générer Planning",   this::ouvrirGenerationPlanning));
+        sidebar.add(buildSidebarBtn(" Générer Planning",   this::ouvrirGenerationPlanning));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn("📋  Voir Planning",      this::ouvrirVoirPlanning));
+        sidebar.add(buildSidebarBtn(" Voir Planning",      this::ouvrirVoirPlanning));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn("👨‍🏫  Enseignants",       this::ouvrirEnseignants));
+        sidebar.add(buildSidebarBtn(" Enseignants",       this::ouvrirEnseignants));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn("🎓  Étudiants",          this::ouvrirEtudiants));
+        sidebar.add(buildSidebarBtn(" Étudiants",          this::ouvrirEtudiants));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn("📊  Dashboard",          this::ouvrirDashboard));
+        sidebar.add(buildSidebarBtn(" Dashboard",          this::ouvrirDashboard));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn("📤  Exporter",           this::ouvrirExport));
+        sidebar.add(buildSidebarBtn(" Exporter",           this::ouvrirExport));
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -149,16 +149,12 @@ public class MainFrame extends JFrame{
         return btn;
     }
 
-    // ── Utilitaire : ajouter une InternalFrame ─────────────────
+    
     private void addInternalFrame(JInternalFrame frame) {
         desktop.add(frame);
         frame.setVisible(true);
         try { frame.setSelected(true); } catch (Exception ignored) {}
     }
-
-    // ════════════════════════════════════════════════════════════
-    // ACTIONS SIDEBAR
-    // ════════════════════════════════════════════════════════════
 
     private void ouvrirChargementExcel() {
         addInternalFrame(new ChargementExcelFrame(this));
@@ -187,7 +183,7 @@ public class MainFrame extends JFrame{
     }
 
     private void ouvrirEnseignants() {
-        addInternalFrame(new EnseignantsFrame(enseignantRepo));
+        addInternalFrame(new EnseignantsFrame(enseignantRepo, soutenanceRepo)); 
     }
 
     private void ouvrirEtudiants() {
