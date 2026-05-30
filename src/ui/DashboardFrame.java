@@ -1,6 +1,7 @@
 package ui;
 
 import statistiques.DashboardService;
+import repository.*;
 import model.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -12,7 +13,8 @@ import java.util.LinkedHashMap;
 public class DashboardFrame extends JInternalFrame {
 
     private final DashboardService dashboardService;
-
+    private final EnseignantRepository enseignantRepo;
+    
     private static final Color COLOR_PRIMARY = new Color(83, 74, 183);
     private static final Color COLOR_GREEN   = new Color(15, 110, 86);
     private static final Color COLOR_CORAL   = new Color(153, 60, 29);
@@ -21,9 +23,11 @@ public class DashboardFrame extends JInternalFrame {
     private static final Font  FONT_TITLE    = new Font("Segoe UI", Font.BOLD, 13);
     private static final Font  FONT_STAT     = new Font("Segoe UI", Font.BOLD, 24);
 
-    public DashboardFrame(DashboardService dashboardService) {
+    public DashboardFrame(DashboardService dashboardService,
+                          EnseignantRepository enseignantRepo) {
         super("Dashboard", true, true, true, true);
         this.dashboardService = dashboardService;
+        this.enseignantRepo   = enseignantRepo;
         setSize(860, 600);
         setLocation(60, 50);
         initUI();
@@ -115,10 +119,7 @@ public class DashboardFrame extends JInternalFrame {
     }
 
     private List<Enseignant> getEnseignants() {
-        // Extraire depuis les maps du service
-        Map<String, Integer> map = new LinkedHashMap<>();
-        // On passe par le service
-        return new java.util.ArrayList<>(); // Remplacer par enseignantRepo si injecté
+        return enseignantRepo.chargerTous();
     }
 
     private JPanel buildMixedPanel(Map<String, Integer> data,

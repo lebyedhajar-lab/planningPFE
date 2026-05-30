@@ -191,11 +191,9 @@ public class MainFrame extends JFrame{
     }
 
     private void ouvrirDashboard() {
-        if (dashboardService == null) {
-            dashboardService = new DashboardService(
-                soutenanceRepo, etudiantRepo, enseignantRepo, config);
-        }
-        addInternalFrame(new DashboardFrame(dashboardService));
+        dashboardService = new DashboardService(
+            soutenanceRepo, etudiantRepo, enseignantRepo, config);
+        addInternalFrame(new DashboardFrame( dashboardService, enseignantRepo));
     }
 
     private void ouvrirExport() {
