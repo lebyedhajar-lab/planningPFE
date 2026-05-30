@@ -112,6 +112,10 @@ public class PlanningGenerator {
             touteSoutenances.addAll(soutenancesJour);
             idxEtudiant = fin;
         }
+        int id = 1;
+        for (Soutenance s : touteSoutenances) {
+            s.setId(id++);
+        }
 
         // ── Sauvegarder ──────────────────────────────────────────
         for (Soutenance s : touteSoutenances)
