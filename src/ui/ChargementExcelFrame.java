@@ -98,13 +98,13 @@ public class ChargementExcelFrame extends JInternalFrame {
             // On recharge et on copie les valeurs
             ConfigPlanning tmp = cfgLoader.chargerConfig();
             copyConfig(tmp, cfg);
-            log("     ✅ Config chargée : " + cfg);
+            log("  Config chargée : " + cfg);
 
             // Enseignants
             log("\n[2/4] Chargement enseignants...");
             new ExcelEnseignantLoader(cheminChoisi)
                 .charger(mainFrame.getEnseignantRepo());
-            log("     ✅ " + mainFrame.getEnseignantRepo()
+            log( mainFrame.getEnseignantRepo()
                 .chargerTous().size() + " enseignants chargés.");
 
             // Étudiants
@@ -112,18 +112,18 @@ public class ChargementExcelFrame extends JInternalFrame {
             new ExcelEtudiantLoader(cheminChoisi)
                 .charger(mainFrame.getEtudiantRepo(),
                          mainFrame.getEnseignantRepo());
-            log("     ✅ " + mainFrame.getEtudiantRepo()
+            log(mainFrame.getEtudiantRepo()
                 .chargerTous().size() + " étudiants chargés.");
 
             // Salles
             log("\n[4/4] Chargement salles...");
             new ExcelSalleLoader(cheminChoisi)
                 .charger(mainFrame.getSalleRepo());
-            log("     ✅ " + mainFrame.getSalleRepo()
+            log(mainFrame.getSalleRepo()
                 .chargerDisponibles().size() + " salles chargées.");
 
             mainFrame.setCheminExcel(cheminChoisi);
-            log("\n✅ Chargement terminé avec succès !");
+            log("Chargement terminé avec succès !");
 
         } catch (Exception ex) {
             log("\n❌ Erreur : " +ex.getMessage());

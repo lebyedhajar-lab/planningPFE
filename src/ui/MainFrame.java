@@ -16,7 +16,7 @@ import statistiques.DashboardService;
 public class MainFrame extends JFrame{
 
     // ── Repositories ──────────────────────────────────────────
-    private final ConfigPlanning        config          = new ConfigPlanning();
+	private ConfigPlanning config = new ConfigPlanning();
     private final EnseignantRepository  enseignantRepo  = new EnseignantRepository();
     private final EtudiantRepository    etudiantRepo    = new EtudiantRepository();
     private final SalleRepository       salleRepo       = new SalleRepository();
@@ -148,8 +148,8 @@ public class MainFrame extends JFrame{
         btn.addActionListener(e -> action.run());
         return btn;
     }
+   
 
-    
     private void addInternalFrame(JInternalFrame frame) {
         desktop.add(frame);
         frame.setVisible(true);
@@ -213,6 +213,7 @@ public class MainFrame extends JFrame{
     public SalleRepository      getSalleRepo()       { return salleRepo; }
     public SoutenanceRepository getSoutenanceRepo()  { return soutenanceRepo; }
     public void setCheminExcel(String chemin)        { this.cheminExcel = chemin; }
+    public void setConfig(ConfigPlanning config) {this.config = config;}
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainFrame::new);
