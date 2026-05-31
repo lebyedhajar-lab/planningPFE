@@ -1,6 +1,8 @@
 package export;
 
 import model.*;
+import org.apache.poi.xwpf.usermodel.*;
+import org.apache.poi.util.Units;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,95 +10,127 @@ import java.util.List;
 
 public class ExportDocx {
 
-    public void generer(List<Soutenance> soutenances, String cheminFichier) throws IOException {
+    private static final DateTimeFormatter FMT =
+        DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        StringBuilder contenu = new StringBuilder();
+    public void generer(List<Soutenance> soutenances,
+                        String cheminFichier) throws IOException {
 
-        contenu.append("<html><head><meta charset='UTF-8'>");
-        contenu.append("<style>");
-        contenu.append("body { font-family: Calibri, sans-serif; margin: 40px; }");
-        contenu.append("h1 { color: #1F3864; text-align: center; font-size: 22px; }");
-        contenu.append("p  { text-align: center; color: #595959; font-style: italic; }");
-        contenu.append("table { width: 100%; border-collapse: collapse; margin-top: 20px; }");
-        contenu.append("th { background-color: #1F3864; color: white; padding: 8px; font-size: 11px; }");
-        contenu.append("td { padding: 7px; font-size: 11px; border: 1px solid #cccccc; }");
-        contenu.append(".pair   { background-color: #D9E1F2; }");
-        contenu.append(".impair { background-color: #FFFFFF; }");
-        contenu.append("</style></head><body>");
+        XWPFDocument doc = new XWPFDocument();
 
-        String dateAujourdhui = LocalDate.now()
-                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        // ── Titre ─────────────────────────────────────────────
+        XWPFParagraph titre = doc.createParagraph();
+        titre.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun runTitre = titre.createRun();
+        runTitre.setText("Planning des Soutenances PFE");
+        runTitre.setBold(true);
+        runTitre.setFontSize(16);
+        runTitre.setColor("1F3864");
 
-        contenu.append("<h1>Planning des Soutenances</h1>");
-        contenu.append("<p>Généré le " + dateAujourdhui
-                + " &nbsp;|&nbsp; Total : " + soutenances.size()
-                + " soutenance(s)</p>");
+        // ── Sous-titre ────────────────────────────────────────
+        XWPFParagraph sousTitre = doc.createParagraph();
+        sousTitre.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun runSous = sousTitre.createRun();
+        runSous.setText("Généré le "
+            + LocalDate.now().format(FMT)
+            + "  |  Total : " + soutenances.size()
+            + " soutenance(s)");
+        runSous.setItalic(true);
+        runSous.setFontSize(11);
+        runSous.setColor("595959");
+        runSous.addBreak();
 
-        contenu.append("<table>");
-        contenu.append("<tr>");
-        contenu.append("<th>Étudiant</th>");
-        contenu.append("<th>Filière</th>");
-        contenu.append("<th>Encadrant</th>");
-        contenu.append("<th>Membres du Jury</th>");
-        contenu.append("<th>Date / Heure</th>");
-        contenu.append("<th>Salle</th>");
-        contenu.append("<th>Langue</th>");
-        contenu.append("</tr>");
+        // ── Tableau ───────────────────────────────────────────
+        XWPFTable table = doc.createTable(
+            soutenances.size() + 1, 7);
+        table.setWidth("100%");
 
-        for (int i = 0; i < soutenances.size(); i++) {
-            Soutenance s = soutenances.get(i);
-            String style = (i % 2 == 0) ? "pair" : "impair";
-
-            contenu.append("<tr class='" + style + "'>");
-            String etudiant = s.getEtudiant() != null
-                    ? s.getEtudiant().getNom() + " " + s.getEtudiant().getPrenom()
-                    : "—";
-            contenu.append("<td>" + etudiant + "</td>");
-
-            String filiere = (s.getEtudiant() != null && s.getEtudiant().getFiliere() != null)
-                    ? s.getEtudiant().getFiliere().getNom()
-                    : "—";
-            contenu.append("<td>" + filiere + "</td>");
-
-            String encadrant = (s.getJury() != null && s.getJury().getEncadrant() != null)
-                    ? s.getJury().getEncadrant().getNom() + " " + s.getJury().getEncadrant().getPrenom()
-                    : "—";
-            contenu.append("<td>" + encadrant + "</td>");
-
-            contenu.append("<td>" + construireListeMembres(s.getJury()) + "</td>");
-
-            String dateHeure = s.getCreneau() != null
-                    ? s.getCreneau().getDateJour().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                      + " " + s.getCreneau().getHeureDebut()
-                      + " – " + s.getCreneau().getHeureFin()
-                    : "—";
-            contenu.append("<td>" + dateHeure + "</td>");
-
-            String salle = s.getSalle() != null ? s.getSalle().getNom() : "—";
-            contenu.append("<td>" + salle + "</td>");
-
-            String langue = s.getLangue() != null ? s.getLangue() : "—";
-            contenu.append("<td>" + langue + "</td>");
-
-            contenu.append("</tr>");
+        // En-têtes
+        String[] headers = {
+            "Étudiant", "Filière", "Encadrant",
+            "Membres Jury", "Date / Heure", "Salle", "Langue"
+        };
+        XWPFTableRow headerRow = table.getRow(0);
+        for (int j = 0; j < headers.length; j++) {
+            XWPFTableCell cell = headerRow.getCell(j);
+            cell.setColor("1F3864");
+            cell.getParagraphs().get(0).setAlignment(
+                ParagraphAlignment.CENTER);
+            XWPFRun run = cell.getParagraphs().get(0).createRun();
+            run.setText(headers[j]);
+            run.setBold(true);
+            run.setColor("FFFFFF");
+            run.setFontSize(10);
         }
 
-        contenu.append("</table></body></html>");
+        // ── Lignes de données ─────────────────────────────────
+        for (int i = 0; i < soutenances.size(); i++) {
+            Soutenance s    = soutenances.get(i);
+            String bgColor  = (i % 2 == 0) ? "D9E1F2" : "FFFFFF";
 
-        FileWriter writer = new FileWriter(cheminFichier);
-        writer.write(contenu.toString());
-        writer.close();
+            String etudiant = s.getEtudiant() != null
+                ? s.getEtudiant().getNom() + " "
+                  + s.getEtudiant().getPrenom() : "—";
 
-        System.out.println("Fichier généré : " + cheminFichier);
+            String filiere  = (s.getEtudiant() != null
+                && s.getEtudiant().getFiliere() != null)
+                ? s.getEtudiant().getFiliere().getNom() : "—";
+
+            String encadrant = (s.getJury() != null
+                && s.getJury().getEncadrant() != null)
+                ? s.getJury().getEncadrant().getNom() + " "
+                  + s.getJury().getEncadrant().getPrenom() : "—";
+
+            String membres  = construireListeMembres(s.getJury());
+
+            String dateHeure = s.getCreneau() != null
+                ? s.getCreneau().getDateJour().format(FMT)
+                  + " " + s.getCreneau().getHeureDebut()
+                  + "–" + s.getCreneau().getHeureFin() : "—";
+
+            String salle    = s.getSalle() != null
+                ? s.getSalle().getNom() : "—";
+
+            String langue   = s.getLangue() != null
+                ? s.getLangue() : "—";
+
+            String[] values = {
+                etudiant, filiere, encadrant,
+                membres, dateHeure, salle, langue
+            };
+
+            XWPFTableRow row = table.getRow(i + 1);
+            for (int j = 0; j < values.length; j++) {
+                XWPFTableCell cell = row.getCell(j);
+                cell.setColor(bgColor);
+                // Vider le contenu existant
+                cell.getParagraphs().get(0)
+                    .getRuns().forEach(r -> r.setText("", 0));
+                XWPFRun run = cell.getParagraphs()
+                    .get(0).createRun();
+                run.setText(values[j]);
+                run.setFontSize(9);
+            }
+        }
+
+        // ── Sauvegarder ───────────────────────────────────────
+        FileOutputStream out = new FileOutputStream(cheminFichier);
+        doc.write(out);
+        out.close();
+        doc.close();
+
+        System.out.println("✅ Fichier DOCX généré : "
+            + cheminFichier);
     }
 
     private String construireListeMembres(Jury jury) {
-        if (jury == null || jury.getMembres() == null || jury.getMembres().isEmpty()) return "—";
-        StringBuilder resultat = new StringBuilder();
-        for (Enseignant membre : jury.getMembres()) {
-            if (resultat.length() > 0) resultat.append(", ");
-            resultat.append(membre.getNom()).append(" ").append(membre.getPrenom());
+        if (jury == null || jury.getMembres() == null
+            || jury.getMembres().isEmpty()) return "—";
+        StringBuilder sb = new StringBuilder();
+        for (Enseignant m : jury.getMembres()) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(m.getNom()).append(" ").append(m.getPrenom());
         }
-        return resultat.length() > 0 ? resultat.toString() : "—";
+        return sb.length() > 0 ? sb.toString() : "—";
     }
 }
