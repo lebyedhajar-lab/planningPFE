@@ -9,18 +9,20 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class EcranVerification extends JFrame {
+public class EcranVerification extends JInternalFrame {
 
     private SoutenanceRepository soutenanceRepo;
     private DefaultTableModel modele;
 
-    public EcranVerification() {
-        setTitle("Vérification du Planning");
+    public EcranVerification(SoutenanceRepository soutenanceRepo) {
+        super("Vérification du Planning", true, true, true, true);
+    	this.soutenanceRepo = soutenanceRepo;
+
+    	setTitle("Vérification du Planning");
         setSize(850, 550);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        soutenanceRepo = new SoutenanceRepository();
+        //soutenanceRepo = new SoutenanceRepository();
 
         // ── Panel principal ──────────────────────────────────────
         JPanel panel = new JPanel(new BorderLayout(10, 10));

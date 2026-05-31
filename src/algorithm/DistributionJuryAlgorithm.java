@@ -37,6 +37,26 @@ public class DistributionJuryAlgorithm {
         }
         return meilleur;
     }
+    private boolean dejaDansJuryMemeHoraire(Enseignant e, Creneau c) {
+        for (Soutenance s : soutenances) {
+            if (s.getCreneau().getDateJour().equals(c.getDateJour())
+                && s.getCreneau().getHeureDebut().equals(c.getHeureDebut())
+                && s.getJury().contientEnseignant(e)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean salleOccupee(Salle s, Creneau c) {
+        for (Soutenance sout : soutenances) {
+            if (sout.getSalle().getId() == s.getId()
+                && sout.getCreneau().getDateJour().equals(c.getDateJour())
+                && sout.getCreneau().getHeureDebut().equals(c.getHeureDebut())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public Jury formerJury(Etudiant e,
                            List<Enseignant> enseignants,
@@ -52,6 +72,7 @@ public class DistributionJuryAlgorithm {
             if (ens.getId() == encadrant.getId()) continue;
             if (!validator.enseignantDisponible(ens, creneau))
                 continue;
+            if (dejaDansJuryMemeHoraire(ens, creneau)) continue;
             candidats.add(ens);
         }
 
@@ -154,10 +175,30 @@ public class DistributionJuryAlgorithm {
                 + " étudiants.");
 
         // Distribuer
-        int i = 0;
+        int i = soutenances.size()+1;
+        int idx = 0;
         for (Etudiant et : etudiantsValides) {
-            Creneau creneau = creneaux.get(i / salles.size());
-            Salle   salle   = salles.get(i % salles.size());
+        	// Trouver un créneau où l'encadrant est libre
+        	Creneau creneau = null;
+        	Salle salle = null;
+        	for (int c = 0; c < creneaux.size(); c++) {
+        	    Creneau candidatCreneau = creneaux.get(c);
+        	    if (!dejaDansJuryMemeHoraire(et.getEncadrant(), candidatCreneau)) {
+        	        // Trouver une salle libre à ce créneau
+        	        for (int s2 = 0; s2 < salles.size(); s2++) {
+        	            if (!salleOccupee(salles.get(s2), candidatCreneau)) {
+        	                creneau = candidatCreneau;
+        	                salle = salles.get(s2);
+        	                break;
+        	            }
+        	        }
+        	        if (creneau != null) break;
+        	    }
+        	}
+        	if (creneau == null)
+        	    throw new IllegalStateException(
+        	        "Pas de créneau disponible pour : "
+        	        + et.getNom());
             String  langue  = et.getLangue();
 
             Jury jury = formerJury(
@@ -169,6 +210,7 @@ public class DistributionJuryAlgorithm {
 
             soutenances.add(s);
             i++;
+            idx++;
         }
 
         // Rapport

@@ -23,17 +23,26 @@ public class VoirPlanningFrame extends JInternalFrame{
     }
 
     private void initUI() {
-        String[] cols = {
-            "#", "Étudiant", "Filière", "Date","Heure", "Salle",
-            "Encadrant", "Langue"
-        };
-
+    	String[] cols = {
+    		    "#", "Étudiant", "Filière", "Date", "Heure", "Salle",
+    		    "Encadrant", "Membre 1", "Membre 2", "Langue"
+    		};
         List<Soutenance> list = soutenanceRepo.chargerTous();
+        list.sort((a, b) -> {
+            int cmp = a.getCreneau().getDateJour()
+                       .compareTo(b.getCreneau().getDateJour());
+            if (cmp != 0) return cmp;
+            cmp = a.getCreneau().getHeureDebut()
+                   .compareTo(b.getCreneau().getHeureDebut());
+            if (cmp != 0) return cmp;
+            return a.getSalle().getNom()
+                    .compareTo(b.getSalle().getNom());
+        });
         Object[][] data = new Object[list.size()][cols.length];
 
         for (int i = 0; i < list.size(); i++) {
             Soutenance s = list.get(i);
-            data[i][0] = s.getId();
+            data[i][0] = i+1;
             data[i][1] = s.getEtudiant().getNom()
                        + " " + s.getEtudiant().getPrenom();
             data[i][2] = s.getEtudiant().getFiliere() != null
@@ -43,8 +52,14 @@ public class VoirPlanningFrame extends JInternalFrame{
                        + " - " + s.getCreneau().getHeureFin();
             data[i][5] = s.getSalle().getNom();
             data[i][6] = s.getJury().getEncadrant().getNom()
-                       + " " + s.getJury().getEncadrant().getPrenom();
-            data[i][7] = s.getLangue();
+                    + " " + s.getJury().getEncadrant().getPrenom();
+
+            List<Enseignant> membres = s.getJury().getMembres();
+            data[i][7] = membres.size() > 0
+             ? membres.get(0).getNom() + " " + membres.get(0).getPrenom() : "—";
+            data[i][8] = membres.size() > 1
+             ? membres.get(1).getNom() + " " + membres.get(1).getPrenom() : "—";
+            data[i][9] = s.getLangue();
         }
 
         DefaultTableModel model = new DefaultTableModel(data, cols) {
