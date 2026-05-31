@@ -11,7 +11,9 @@ public class DashboardService {
     private final SoutenanceRepository soutenanceRepo;
     private final EtudiantRepository   etudiantRepo;
     private final EnseignantRepository enseignantRepo;
+    private final SalleRepository salleRepo;
     private final ConfigPlanning        config;
+
 
     private static final int TOLERANCE = 1;
 
@@ -19,11 +21,14 @@ public class DashboardService {
     public DashboardService(SoutenanceRepository soutenanceRepo,
                             EtudiantRepository   etudiantRepo,
                             EnseignantRepository enseignantRepo,
+                            SalleRepository      salleRepo,
                             ConfigPlanning        config) {
         this.soutenanceRepo = soutenanceRepo;
         this.etudiantRepo   = etudiantRepo;
         this.enseignantRepo = enseignantRepo;
+        this.salleRepo      = salleRepo;
         this.config         = config;
+
     }
 
     // ════════════════════════════════════════════════════════════
@@ -103,8 +108,9 @@ public class DashboardService {
 
     // ─── Capacité totale du planning ─────────────────────────────
     public int capaciteTotale() {
+        int nbSalles = salleRepo.chargerTous().size();
         return config.getNbJoursSoutenances()
-             * config.nbCreneauxParJour();
+             * config.nbCreneauxParJour()* nbSalles;
     }
 
     // ─── Taux de remplissage ─────────────────────────────────────
@@ -136,7 +142,11 @@ public class DashboardService {
     public double calculerMoyenneSoutenances() {
         List<Enseignant> profs = enseignantRepo.chargerTous();
         if (profs.isEmpty()) return 0;
-        return (double) totalSoutenances() / profs.size();
+        int totalParticipations = 0;
+        for (Enseignant prof : profs) {
+            totalParticipations += nbSoutenancesParProf(prof);
+        }
+        return (double) totalParticipations / profs.size();
     }
 
     // ─── Moyenne étudiants encadrés par prof ─────────────────────

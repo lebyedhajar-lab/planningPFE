@@ -114,6 +114,8 @@ public class MainFrame extends JFrame{
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Dashboard",          this::ouvrirDashboard));
         sidebar.add(Box.createVerticalStrut(6));
+        sidebar.add(buildSidebarBtn(" Vérification", this::ouvrirVerification)); // ← ici
+        sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Exporter",           this::ouvrirExport));
 
         sidebar.add(Box.createVerticalGlue());
@@ -191,11 +193,19 @@ public class MainFrame extends JFrame{
     }
 
     private void ouvrirDashboard() {
-        dashboardService = new DashboardService(
-            soutenanceRepo, etudiantRepo, enseignantRepo, config);
+    	dashboardService = new DashboardService(
+    		    soutenanceRepo, etudiantRepo, enseignantRepo, salleRepo, config);
         addInternalFrame(new DashboardFrame( dashboardService, enseignantRepo));
     }
-
+    private void ouvrirVerification() {
+        if (soutenanceRepo.chargerTous().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Aucune soutenance générée.",
+                "Planning vide", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        addInternalFrame(new EcranVerification(soutenanceRepo));
+    }
     private void ouvrirExport() {
         if (soutenanceRepo.chargerTous().isEmpty()) {
             JOptionPane.showMessageDialog(this,
