@@ -119,7 +119,7 @@ public class ExportDocx {
         out.close();
         doc.close();
 
-        System.out.println("✅ Fichier DOCX généré : "
+        System.out.println(" Fichier DOCX généré : "
             + cheminFichier);
     }
 
