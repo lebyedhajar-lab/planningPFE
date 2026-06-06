@@ -109,6 +109,11 @@ public class GenerationPlanningFrame extends JInternalFrame {
         log("  Nb membres jury : " + config.getNbMembresJury());
 
         try {
+            soutenanceRepo.vider();
+            for (Enseignant ens : enseignantRepo.chargerTous()) {
+                ens.reinitialiserSoutenances();
+            }
+
             // Étape 1 : Affecter encadrants
             log("\n[1] Affectation des encadrants...");
             new EncadrantAffectationService()
