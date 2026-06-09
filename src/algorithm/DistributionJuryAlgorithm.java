@@ -11,9 +11,11 @@ public class DistributionJuryAlgorithm {
 
     private List<Soutenance> soutenances = new ArrayList<>();
     private final int nbMembres;
+    private final int ecartMin;
 
     public DistributionJuryAlgorithm(ConfigPlanning config) {
         this.nbMembres = config.getNbMembresJury() - 1; // 2
+        this.ecartMin  = config.getEcartMinEntreSoutenances();
     }
 
     public int calculerCharge(Enseignant enseignant) {
@@ -58,6 +60,28 @@ public class DistributionJuryAlgorithm {
         }
         return false;
     }
+
+    /** Écart minimum entre deux débuts de soutenance (même logique que EcranVerification). */
+    private boolean respecteEcartMinimum(Enseignant e, Creneau c) {
+        return respecteEcartMinimum(e, c, null);
+    }
+
+    private boolean respecteEcartMinimum(Enseignant e, Creneau c,
+                                         Soutenance exclure) {
+        for (Soutenance s : soutenances) {
+            if (exclure != null && s == exclure) continue;
+            if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
+            if (!s.getJury().contientEnseignant(e)) continue;
+
+            long ecart = Math.abs(
+                c.getHeureDebut().toSecondOfDay() -
+                s.getCreneau().getHeureDebut().toSecondOfDay()
+            ) / 60;
+            if (ecart > 0 && ecart < ecartMin) return false;
+        }
+        return true;
+    }
+
     private boolean salleOccupee(Salle s, Creneau c) {
         for (Soutenance sout : soutenances) {
             if (sout.getSalle().getId() == s.getId()
@@ -84,6 +108,7 @@ public class DistributionJuryAlgorithm {
             if (!validator.enseignantDisponible(ens, creneau))
                 continue;
             if (dejaDansJuryMemeHoraire(ens, creneau)) continue;
+            if (!respecteEcartMinimum(ens, creneau)) continue;
             candidats.add(ens);
         }
 
@@ -190,31 +215,38 @@ public class DistributionJuryAlgorithm {
         // Distribuer
         int i = soutenances.size()+1;
         for (Etudiant et : etudiantsValides) {
-        	// Trouver un créneau où l'encadrant est libre
         	Creneau creneau = null;
         	Salle salle = null;
-        	for (int c = 0; c < creneaux.size(); c++) {
+        	Jury jury = null;
+
+        	for (int c = 0; c < creneaux.size() && creneau == null; c++) {
         	    Creneau candidatCreneau = creneaux.get(c);
-        	    if (!dejaDansJuryMemeHoraire(et.getEncadrant(), candidatCreneau)) {
-        	        // Trouver une salle libre à ce créneau
-        	        for (int s2 = 0; s2 < salles.size(); s2++) {
-        	            if (!salleOccupee(salles.get(s2), candidatCreneau)) {
-        	                creneau = candidatCreneau;
-        	                salle = salles.get(s2);
-        	                break;
-        	            }
+        	    if (dejaDansJuryMemeHoraire(et.getEncadrant(), candidatCreneau)
+        	        || !respecteEcartMinimum(et.getEncadrant(), candidatCreneau)) {
+        	        continue;
+        	    }
+        	    for (int s2 = 0; s2 < salles.size(); s2++) {
+        	        if (salleOccupee(salles.get(s2), candidatCreneau)) continue;
+        	        try {
+        	            jury = formerJury(
+        	                et, enseignants, et.getLangue(),
+        	                candidatCreneau, validator);
+        	            creneau = candidatCreneau;
+        	            salle = salles.get(s2);
+        	            break;
+        	        } catch (IllegalStateException ignored) {
+        	            // créneau suivant si jury impossible (contraintes)
         	        }
-        	        if (creneau != null) break;
         	    }
         	}
-        	if (creneau == null)
+
+        	if (creneau == null || jury == null)
         	    throw new IllegalStateException(
         	        "Pas de créneau disponible pour : "
-        	        + et.getNom());
-            String  langue  = et.getLangue();
+        	        + et.getNom() + " " + et.getPrenom()
+        	        + " (écart minimum " + ecartMin + " min requis)");
 
-            Jury jury = formerJury(
-                et, enseignants, langue, creneau, validator);
+            String langue = et.getLangue();
 
             Soutenance s = new Soutenance(
                 i, langue, dureeMin,
@@ -225,6 +257,7 @@ public class DistributionJuryAlgorithm {
         }
 
         reequilibrerMembresJury(enseignants, validator);
+        corrigerViolationsEcart(enseignants, validator);
 
         // Rapport
         System.out.println("\n=== Rapport Jury ===");
@@ -340,6 +373,7 @@ public class DistributionJuryAlgorithm {
         if (jury.contientEnseignant(remplacant)) return false;
         if (!validator.enseignantDisponible(remplacant, creneau)) return false;
         if (dejaDansJuryMemeHoraire(remplacant, creneau)) return false;
+        if (!respecteEcartMinimum(remplacant, creneau, s)) return false;
 
         if (indexMembre == 0
             && !remplacant.getSpecialite().equalsIgnoreCase("informatique")) {
@@ -373,5 +407,31 @@ public class DistributionJuryAlgorithm {
             }
         }
         return aInformatique;
+    }
+
+    /** Corrige les membres de jury qui violent encore l'écart minimum. */
+    private void corrigerViolationsEcart(List<Enseignant> enseignants,
+                                          ContrainteValidator validator) {
+        int maxIter = soutenances.size() * enseignants.size();
+        for (int n = 0; n < maxIter; n++) {
+            boolean corrige = false;
+            for (Soutenance s : soutenances) {
+                List<Enseignant> membres = s.getJury().getMembres();
+                for (int i = 0; i < membres.size(); i++) {
+                    Enseignant m = membres.get(i);
+                    if (respecteEcartMinimum(m, s.getCreneau(), s)) continue;
+
+                    for (Enseignant candidat : enseignants) {
+                        if (candidat.getId() == m.getId()) continue;
+                        if (peutRemplacerMembre(s, i, candidat, validator)) {
+                            membres.set(i, candidat);
+                            corrige = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!corrige) break;
+        }
     }
 }

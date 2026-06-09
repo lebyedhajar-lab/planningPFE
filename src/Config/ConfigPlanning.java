@@ -63,6 +63,35 @@ public class ConfigPlanning {
         return heureDebut.plusMinutes(dureeSoutenanceMin);
     }
 
+    /** Écart minimum entre deux débuts de soutenance (aligné sur la vérification). */
+    public int getEcartMinEntreSoutenances() {
+        int ecart = pauseMinimale > 0 ? pauseMinimale : 60;
+        return Math.max(ecart, 60);
+    }
+
+    /** Intervalle entre le début de deux créneaux consécutifs. */
+    public int getIntervalEntreCreneaux() {
+        return Math.max(dureeSoutenanceMin, getEcartMinEntreSoutenances());
+    }
+
+    /** Heures de début des créneaux d'une journée (matin + après-midi). */
+    public List<LocalTime> genererHeuresCreneauxJournee() {
+        List<LocalTime> heures = new ArrayList<>();
+        LocalTime heure = heureDebutJournee;
+        int interval = getIntervalEntreCreneaux();
+
+        while (!heure.isAfter(heureFinJournee)) {
+            if (estDansLaJournee(heure)) {
+                heures.add(heure);
+            }
+            heure = heure.plusMinutes(interval);
+            if (heure.isBefore(heureFinPause) && !heure.isBefore(heureDebutPause)) {
+                heure = heureFinPause;
+            }
+        }
+        return heures;
+    }
+
     /*public boolean estDansLaJournee(LocalTime heureDebut) {
         LocalTime heureFin = calculerHeureFin(heureDebut);
 
@@ -92,11 +121,7 @@ public class ConfigPlanning {
     }
 
     public int nbCreneauxParJour() {
-        int matin     = (int) java.time.Duration
-                            .between(heureDebutJournee, heureDebutPause).toMinutes();
-        int apresMidi = (int) java.time.Duration
-                            .between(heureFinPause, heureFinJournee).toMinutes();
-        return (matin + apresMidi) / dureeSoutenanceMin;
+        return genererHeuresCreneauxJournee().size();
     }
 
     // ── Validation après chargement ───────────────────────────────
