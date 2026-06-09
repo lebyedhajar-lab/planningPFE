@@ -6,7 +6,6 @@ public class Enseignant {
 	private boolean estAnglophone ; 
 	private String specialite;
 	
-	
 	public Enseignant(int id, int nbSoutenance, String nom, String prenom,boolean estAnglophone, String specialite) {
 		this.id = id;
 		this.nbSoutenance = nbSoutenance;
@@ -21,6 +20,8 @@ public class Enseignant {
 	public String getPrenom() {return prenom; }
 	public boolean isAnglophone(){return estAnglophone;}
 	public String getSpecialite() {return specialite;}
+	
 	public void incrementerSoutenances() {nbSoutenance++;}
 	public void reinitialiserSoutenances() { nbSoutenance = 0; }
-	}
+
+}

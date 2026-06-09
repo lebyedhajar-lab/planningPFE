@@ -28,6 +28,4 @@ public class Soutenance {
 	public String getLangue() {return langue;}
 	public int getDureeMin() {return dureeMin;}
 	
-	public void setId(int id) { this.id = id; }
-
 }
