@@ -60,18 +60,18 @@ public class ContrainteValidator{
 	    return count < maxParJour;
 	}
 	
-	// Écart suffisant entre deux soutenances ?
+	// Écart suffisant entre deux soutenances (entre les heures de début) ?
 	public boolean respecteEcartMinimum(Enseignant e, Creneau c, int ecartMin) {
 	    for (Soutenance s : soutenanceRepo.chargerTous()) {
 	        if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
 	        if (!estDansJury(e, s.getJury())) continue;
 
-	        long diff = Math.abs(
+	        long ecart = Math.abs(
 	            c.getHeureDebut().toSecondOfDay() -
-	            s.getCreneau().getHeureFin().toSecondOfDay()
+	            s.getCreneau().getHeureDebut().toSecondOfDay()
 	        ) / 60;
 
-	        if (diff < ecartMin) return false;
+	        if (ecart > 0 && ecart < ecartMin) return false;
 	    }
 	    return true;
 	}

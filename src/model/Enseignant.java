@@ -22,4 +22,5 @@ public class Enseignant {
 	public boolean isAnglophone(){return estAnglophone;}
 	public String getSpecialite() {return specialite;}
 	public void incrementerSoutenances() {nbSoutenance++;}
+	public void reinitialiserSoutenances() { nbSoutenance = 0; }
 	}

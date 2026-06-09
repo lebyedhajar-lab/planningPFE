@@ -39,7 +39,6 @@ public class PlanningGenerator {
 
     public List<Soutenance> generer() {
         List<Etudiant>   etudiants   = etudiantRepo.chargerTous();
-        java.util.Collections.shuffle(etudiants);
         List<Enseignant> enseignants = enseignantRepo.chargerTous();
         List<Salle>      salles      = salleRepo.chargerDisponibles();
         List<Creneau>    creneaux    = genererCreneaux();
@@ -91,14 +90,7 @@ public class PlanningGenerator {
     }
 
     private List<LocalTime> calculerHeuresJournee() {
-        List<LocalTime> heures = new ArrayList<>();
-        LocalTime heure = configPlanning.getHeureDebutJournee();
-        while (configPlanning.estDansLaJournee(heure)) {
-            heures.add(heure);
-            heure = heure.plusMinutes(
-                configPlanning.getDureeSoutenanceMin());
-        }
-        return heures;
+        return configPlanning.genererHeuresCreneauxJournee();
     }
 
     public void afficherRapport(List<Soutenance> soutenances) {

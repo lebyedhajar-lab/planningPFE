@@ -1,6 +1,7 @@
 package ui;
 
 import Config.ConfigPlanning;
+import historique.PlanningHistoriqueService;
 import java.io.*;
 import algorithm.*;
 import model.*;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class GenerationPlanningFrame extends JInternalFrame {
 
+    private final MainFrame             mainFrame;
     private final ConfigPlanning        config;
     private final EnseignantRepository  enseignantRepo;
     private final EtudiantRepository    etudiantRepo;
@@ -21,13 +23,15 @@ public class GenerationPlanningFrame extends JInternalFrame {
     private JTextArea logArea;
     private static final Color COLOR_PRIMARY = new Color(83, 74, 183);
 
-    public GenerationPlanningFrame(ConfigPlanning config,
+    public GenerationPlanningFrame(MainFrame mainFrame,
+                                    ConfigPlanning config,
                                     EnseignantRepository enseignantRepo,
                                     EtudiantRepository etudiantRepo,
                                     SalleRepository salleRepo,
                                     SoutenanceRepository soutenanceRepo,
                                     ContrainteRepository contrainteRepo) {
         super("Génération du Planning", true, true, true, true);
+        this.mainFrame      = mainFrame;
         this.config         = config;
         this.enseignantRepo = enseignantRepo;
         this.etudiantRepo   = etudiantRepo;
@@ -109,6 +113,11 @@ public class GenerationPlanningFrame extends JInternalFrame {
         log("  Nb membres jury : " + config.getNbMembresJury());
 
         try {
+            soutenanceRepo.vider();
+            for (Enseignant ens : enseignantRepo.chargerTous()) {
+                ens.reinitialiserSoutenances();
+            }
+
             // Étape 1 : Affecter encadrants
             log("\n[1] Affectation des encadrants...");
             new EncadrantAffectationService()
@@ -138,6 +147,10 @@ public class GenerationPlanningFrame extends JInternalFrame {
             log("\n Planning généré : "
                 + soutenances.size() + " soutenances.");
             generator.afficherRapport(soutenances);
+
+            String id = new PlanningHistoriqueService().sauvegarder(
+                soutenances, mainFrame.getCheminExcel());
+            log("\n✅ Sauvegardé dans l'historique : " + id);
 
         } catch (Exception ex) {
             log("\n❌ Erreur : " + ex.getMessage());

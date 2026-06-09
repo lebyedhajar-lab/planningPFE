@@ -116,6 +116,8 @@ public class MainFrame extends JFrame{
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Vérification", this::ouvrirVerification)); // ← ici
         sidebar.add(Box.createVerticalStrut(6));
+        sidebar.add(buildSidebarBtn(" Historique",       this::ouvrirHistorique));
+        sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Exporter",           this::ouvrirExport));
 
         sidebar.add(Box.createVerticalGlue());
@@ -170,7 +172,7 @@ public class MainFrame extends JFrame{
             return;
         }
         addInternalFrame(new GenerationPlanningFrame(
-            config, enseignantRepo, etudiantRepo,
+            this, config, enseignantRepo, etudiantRepo,
             salleRepo, soutenanceRepo, contrainteRepo));
     }
 
@@ -204,8 +206,12 @@ public class MainFrame extends JFrame{
                 "Planning vide", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        addInternalFrame(new EcranVerification(soutenanceRepo));
+        addInternalFrame(new EcranVerification(soutenanceRepo, config));
     }
+    private void ouvrirHistorique() {
+        addInternalFrame(new HistoriquePlanningFrame(this));
+    }
+
     private void ouvrirExport() {
         if (soutenanceRepo.chargerTous().isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -216,12 +222,28 @@ public class MainFrame extends JFrame{
         addInternalFrame(new ExportFrame(soutenanceRepo));
     }
 
+    /** Restaure un planning depuis l'historique. */
+    public void appliquerPlanning(java.util.List<model.Soutenance> soutenances) {
+        soutenanceRepo.vider();
+        for (model.Enseignant ens : enseignantRepo.chargerTous()) {
+            ens.reinitialiserSoutenances();
+        }
+        for (model.Soutenance s : soutenances) {
+            soutenanceRepo.sauvegarder(s);
+            s.getJury().getEncadrant().incrementerSoutenances();
+            for (model.Enseignant m : s.getJury().getMembres()) {
+                m.incrementerSoutenances();
+            }
+        }
+    }
+
     // ── Getters pour sous-fenêtres ────────────────────────────
     public ConfigPlanning       getConfig()         { return config; }
     public EnseignantRepository getEnseignantRepo() { return enseignantRepo; }
     public EtudiantRepository   getEtudiantRepo()   { return etudiantRepo; }
     public SalleRepository      getSalleRepo()       { return salleRepo; }
     public SoutenanceRepository getSoutenanceRepo()  { return soutenanceRepo; }
+    public String getCheminExcel()                   { return cheminExcel; }
     public void setCheminExcel(String chemin)        { this.cheminExcel = chemin; }
     public void setConfig(ConfigPlanning config) {this.config = config;}
 

@@ -2,6 +2,9 @@ package algorithm;
 
 import model.Enseignant;
 import model.Etudiant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class EncadrantAffectationService {
@@ -9,28 +12,30 @@ public class EncadrantAffectationService {
     public void affecter(List<Etudiant> etudiants,
                          List<Enseignant> enseignants) {
 
+        List<Etudiant> sansEncadrant = new ArrayList<>();
         for (Etudiant etudiant : etudiants) {
-            if (etudiant.getEncadrant() != null) continue;
+            if (etudiant.getEncadrant() == null) {
+                sansEncadrant.add(etudiant);
+            }
+        }
 
-            // Trouver l'enseignant avec le moins d'étudiants encadrés
-            Enseignant meilleur = null;
-            int minCharge = Integer.MAX_VALUE;
+        while (!sansEncadrant.isEmpty()) {
+            List<Enseignant> candidats = new ArrayList<>(enseignants);
+            candidats.sort(Comparator.comparingInt(
+                ens -> compterEtudiantsEncadres(ens, etudiants)));
 
-            for (Enseignant ens : enseignants) {
-                int charge = compterEtudiantsEncadres(ens, etudiants);
-                if (charge < minCharge) {
-                    minCharge = charge;
-                    meilleur  = ens;
+            int minCharge = compterEtudiantsEncadres(candidats.get(0), etudiants);
+            List<Enseignant> moinsCharges = new ArrayList<>();
+            for (Enseignant ens : candidats) {
+                if (compterEtudiantsEncadres(ens, etudiants) == minCharge) {
+                    moinsCharges.add(ens);
                 }
             }
 
-            if (meilleur == null)
-                throw new IllegalStateException(
-                    "Aucun enseignant disponible pour : "
-                    + etudiant.getNom());
-
+            Collections.shuffle(moinsCharges);
+            Enseignant meilleur = moinsCharges.get(0);
+            Etudiant etudiant = sansEncadrant.remove(0);
             etudiant.setEncadrant(meilleur);
-           
         }
     }
 

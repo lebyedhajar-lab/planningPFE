@@ -1,5 +1,6 @@
 package ui;
 
+import Config.ConfigPlanning;
 import model.*;
 import repository.*;
 
@@ -13,10 +14,13 @@ public class EcranVerification extends JInternalFrame {
 
     private SoutenanceRepository soutenanceRepo;
     private DefaultTableModel modele;
+    private final int ecartMin;
 
-    public EcranVerification(SoutenanceRepository soutenanceRepo) {
+    public EcranVerification(SoutenanceRepository soutenanceRepo,
+                             ConfigPlanning config) {
         super("Vérification du Planning", true, true, true, true);
     	this.soutenanceRepo = soutenanceRepo;
+    	this.ecartMin = config.getEcartMinEntreSoutenances();
 
     	setTitle("Vérification du Planning");
         setSize(850, 550);
@@ -199,10 +203,11 @@ public class EcranVerification extends JInternalFrame {
                             s1.getCreneau().getHeureDebut().toSecondOfDay() -
                             s2.getCreneau().getHeureDebut().toSecondOfDay()
                         ) / 60;
-                        if (ecart > 0 && ecart < 60) {
+                        if (ecart > 0 && ecart < ecartMin) {
                             modele.addRow(new Object[]{
                                 "Écart minimum",
-                                e.getNom() + " : écart de " + ecart + " min (minimum requis : 60 min)",
+                                e.getNom() + " : écart de " + ecart
+                                    + " min (minimum requis : " + ecartMin + " min)",
                                 "PROBLÈME"
                             });
                             ok = false;
@@ -211,7 +216,9 @@ public class EcranVerification extends JInternalFrame {
                 }
             }
         }
-        if (ok) modele.addRow(new Object[]{ "Écart minimum", "Tous les écarts respectés (≥ 60 min)", "OK" });
+        if (ok) modele.addRow(new Object[]{
+            "Écart minimum",
+            "Tous les écarts respectés (≥ " + ecartMin + " min)", "OK" });
     }
 
     // Vérification 4 : répartition déséquilibrée des encadrants
