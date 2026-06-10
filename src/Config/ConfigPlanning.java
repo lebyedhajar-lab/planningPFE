@@ -20,13 +20,13 @@ public class ConfigPlanning {
     private int       nbJoursSoutenances;
     private LocalDate dateDebut;
     
-    // ── Constructeur vide ─────────────────────────────────────────
+   // Constructeur vide 
     // Les valeurs sont injectées par ExcelConfigLoader
     public ConfigPlanning() {
         this.joursDisponibles = new ArrayList<>();
     }
 
-    // ── Getters ───────────────────────────────────────────────────
+    // ── Getters 
     public int       getDureeSoutenanceMin()         { return dureeSoutenanceMin; }
     public LocalTime getHeureDebutJournee()          { return heureDebutJournee; }
     public LocalTime getHeureFinJournee()            { return heureFinJournee; }
@@ -63,15 +63,15 @@ public class ConfigPlanning {
         return heureDebut.plusMinutes(dureeSoutenanceMin);
     }
 
-    /** Écart minimum entre deux débuts de soutenance (aligné sur la vérification). */
+    /** Écart minimum entre deux débuts de soutenance (aligné sur la vérification) **/
     public int getEcartMinEntreSoutenances() {
-        int ecart = pauseMinimale > 0 ? pauseMinimale : 60;
-        return Math.max(ecart, 60);
+        return pauseMinimale > 0 ? pauseMinimale : 0;
     }
 
     /** Intervalle entre le début de deux créneaux consécutifs. */
+ 
     public int getIntervalEntreCreneaux() {
-        return Math.max(dureeSoutenanceMin, getEcartMinEntreSoutenances());
+        return dureeSoutenanceMin; 
     }
 
     /** Heures de début des créneaux d'une journée (matin + après-midi). */
@@ -92,20 +92,6 @@ public class ConfigPlanning {
         return heures;
     }
 
-    /*public boolean estDansLaJournee(LocalTime heureDebut) {
-        LocalTime heureFin = calculerHeureFin(heureDebut);
-
-        if (heureDebut.isBefore(heureDebutJournee) || heureFin.isAfter(heureFinJournee))
-            return false;
-
-        if (!heureDebut.isBefore(heureDebutPause) && heureDebut.isBefore(heureFinPause))
-            return false;
-
-        if (heureFin.isAfter(heureDebutPause) && !heureFin.isAfter(heureFinPause))
-            return false;
-
-        return true;
-    }*/ 
     public boolean estDansLaJournee(LocalTime heureDebut) {
         LocalTime heureFin = calculerHeureFin(heureDebut);
 
@@ -124,7 +110,7 @@ public class ConfigPlanning {
         return genererHeuresCreneauxJournee().size();
     }
 
-    // ── Validation après chargement ───────────────────────────────
+    // Validation après chargement
     // Appelé par ExcelConfigLoader après avoir tout injecté
     public void valider() {
         if (dureeSoutenanceMin <= 0)
@@ -141,6 +127,10 @@ public class ConfigPlanning {
             throw new IllegalStateException("nbJoursSoutenances doit être positif.");
         if (dateDebut == null)
             throw new IllegalStateException("dateDebut ne peut pas être nulle.");
+        joursDisponibles.clear();
+        for (int i = 0; i < nbJoursSoutenances; i++) {
+            joursDisponibles.add(dateDebut.plusDays(i));
+        }
     }
 
     public String toString() {
@@ -148,8 +138,10 @@ public class ConfigPlanning {
             + "dureeSoutenance=" + dureeSoutenanceMin + "min"
             + ", journee=" + heureDebutJournee + "-" + heureFinJournee
             + ", pause=" + heureDebutPause + "-" + heureFinPause
+            + ", pauseMinimale=" + pauseMinimale 
+            + ", ecartMin=" + getEcartMinEntreSoutenances()
             + ", min/maxParProf=" + minSoutenanceParProfParJour + "/" + maxSoutenanceParProfParJour
             + ", nbMembresJury=" + nbMembresJury
-            + ", nbJours=" + joursDisponibles.size() + "}";
+            + ", nbJours=" + nbJoursSoutenances + "}";
     }
 }

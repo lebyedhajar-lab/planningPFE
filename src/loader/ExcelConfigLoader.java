@@ -69,7 +69,7 @@ public class ExcelConfigLoader {
                         config.setDateDebut(getDate(cellValeur));
                         break;
                     default:
-                        System.out.println("⚠️ Paramètre inconnu : " + parametre);
+                        System.out.println(" Paramètre inconnu : " + parametre);
                         break;
                 }
             }

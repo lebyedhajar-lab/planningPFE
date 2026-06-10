@@ -71,7 +71,7 @@ public class ContrainteValidator{
 	            s.getCreneau().getHeureDebut().toSecondOfDay()
 	        ) / 60;
 
-	        if (ecart > 0 && ecart < ecartMin) return false;
+	        if (ecart < ecartMin) return false;
 	    }
 	    return true;
 	}
