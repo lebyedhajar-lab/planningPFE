@@ -55,7 +55,7 @@ public class ContrainteRepository implements IdRepository<Contrainte> {
         }
         return true;
     }
-
+    
     public List<Enseignant> trouverConflits(Creneau c) {
         List<Enseignant> enseignantsEnConflit = new ArrayList<>();
         for (Contrainte contrainte : contraintes) {

@@ -14,7 +14,7 @@ public class DistributionJuryAlgorithm {
     private final int ecartMin;
 
     public DistributionJuryAlgorithm(ConfigPlanning config) {
-        this.nbMembres = config.getNbMembresJury() - 1; // 2
+        this.nbMembres = config.getNbMembresJury() - 1; 
         this.ecartMin  = config.getEcartMinEntreSoutenances();
     }
 
@@ -27,8 +27,7 @@ public class DistributionJuryAlgorithm {
         return compteur;
     }
 
-    public Enseignant enseignantLePlusDispo(
-            List<Enseignant> candidats) {
+    public Enseignant enseignantLePlusDispo(List<Enseignant> candidats) {
         if (candidats == null || candidats.isEmpty()) return null;
 
         int minCharge = Integer.MAX_VALUE;
@@ -50,6 +49,7 @@ public class DistributionJuryAlgorithm {
         Collections.shuffle(moinsCharges);
         return moinsCharges.get(0);
     }
+    
     private boolean dejaDansJuryMemeHoraire(Enseignant e, Creneau c) {
         for (Soutenance s : soutenances) {
             if (s.getCreneau().getDateJour().equals(c.getDateJour())
@@ -72,11 +72,11 @@ public class DistributionJuryAlgorithm {
     	if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
     	if (!s.getJury().contientEnseignant(e)) continue;
 
-    	// Écart entre fin existante → début nouvelle
+    	// Écart entre fin existante -> début nouvelle
     	long ecartApres = (c.getHeureDebut().toSecondOfDay() -
     	s.getCreneau().getHeureFin().toSecondOfDay()) / 60;
 
-    	// Écart entre fin nouvelle → début existante
+    	// Écart entre fin nouvelle -> début existante
     	long ecartAvant = (s.getCreneau().getHeureDebut().toSecondOfDay() -
     	c.getHeureFin().toSecondOfDay()) / 60;
 
@@ -97,11 +97,7 @@ public class DistributionJuryAlgorithm {
         return false;
     }
 
-    public Jury formerJury(Etudiant e,
-                           List<Enseignant> enseignants,
-                           String langue,
-                           Creneau creneau,
-                           ContrainteValidator validator) {
+    public Jury formerJury(Etudiant e, List<Enseignant> enseignants,String langue,Creneau creneau,ContrainteValidator validator) {
 
         Enseignant encadrant = e.getEncadrant();
 
@@ -144,29 +140,24 @@ public class DistributionJuryAlgorithm {
         // ── Membre 2 ──────────────────────────────────────────
         Enseignant membre2;
 
-        if (langue != null
-                && langue.equalsIgnoreCase("anglais")) {
+        if (langue != null&& langue.equalsIgnoreCase("anglais")) {
             // Soutenance anglais → anglophone obligatoire
             List<Enseignant> anglophones = new ArrayList<>();
             for (Enseignant ens : candidats) {
                 if (ens.isAnglophone()) anglophones.add(ens);
             }
             if (anglophones.isEmpty())
-                throw new IllegalStateException(
-                    "Pas de prof anglophone pour : "
-                    + e.getNom() + " " + e.getPrenom());
+                throw new IllegalStateException("Pas de prof anglophone pour : "+ e.getNom() + " " + e.getPrenom());
             membre2 = enseignantLePlusDispo(anglophones);
         } else {
-            // Soutenance français →
+            // Soutenance français ->
             // le moins chargé parmi TOUS les candidats restants
             // (informaticiens + maths + gestion + anglais)
             membre2 = enseignantLePlusDispo(candidats);
         }
 
         if (membre2 == null)
-            throw new IllegalStateException(
-                "Membre 2 null pour : "
-                + e.getNom() + " " + e.getPrenom());
+            throw new IllegalStateException( "Membre 2 null pour : "+ e.getNom() + " " + e.getPrenom());
 
         membres.add(membre2);
 
@@ -187,54 +178,43 @@ public class DistributionJuryAlgorithm {
             ContrainteValidator validator) {
 
         if (salles.isEmpty())
-            throw new IllegalStateException(
-                "Aucune salle disponible.");
+            throw new IllegalStateException("Aucune salle disponible.");
 
         // Filtrer étudiants sans encadrant
         List<Etudiant> etudiantsValides = new ArrayList<>();
         for (Etudiant et : etudiants) {
             if (et.getEncadrant() == null) {
-                System.out.println(
-                    "⚠️ Ignoré (encadrant null) : "
-                    + et.getNom() + " " + et.getPrenom());
+                System.out.println("Ignoré (encadrant null) : " + et.getNom() + " " + et.getPrenom());
             } else {
                 etudiantsValides.add(et);
             }
         }
 
         if (etudiantsValides.isEmpty())
-            throw new IllegalStateException(
-                "Aucun étudiant avec encadrant. "
-                + "Vérifiez EncadrantAffectationService.");
+            throw new IllegalStateException( "Aucun étudiant avec encadrant. "+ "Vérifiez EncadrantAffectationService.");
 
         int capaciteTotale = creneaux.size() * salles.size();
         if (etudiantsValides.size() > capaciteTotale)
-            throw new IllegalStateException(
-                "Créneaux insuffisants : " + capaciteTotale
-                + " pour " + etudiantsValides.size()
-                + " étudiants.");
+            throw new IllegalStateException("Créneaux insuffisants : " + capaciteTotale+ " pour " + etudiantsValides.size()+ " étudiants.");
 
         trierEtudiantsPourEquilibre(etudiantsValides);
 
         // Distribuer
         int i = soutenances.size()+1;
-        for (Etudiant et : etudiantsValides) {
+        for (Etudiant et : etudiantsValides) { 
         	Creneau creneau = null;
         	Salle salle = null;
         	Jury jury = null;
 
         	for (int c = 0; c < creneaux.size() && creneau == null; c++) {
         	    Creneau candidatCreneau = creneaux.get(c);
-        	    if (dejaDansJuryMemeHoraire(et.getEncadrant(), candidatCreneau)
-        	        || !respecteEcartMinimum(et.getEncadrant(), candidatCreneau)) {
+        	    if (dejaDansJuryMemeHoraire(et.getEncadrant(), candidatCreneau)|| !respecteEcartMinimum(et.getEncadrant(), candidatCreneau)) {
         	        continue;
         	    }
         	    for (int s2 = 0; s2 < salles.size(); s2++) {
         	        if (salleOccupee(salles.get(s2), candidatCreneau)) continue;
         	        try {
-        	            jury = formerJury(
-        	                et, enseignants, et.getLangue(),
-        	                candidatCreneau, validator);
+        	            jury = formerJury( et, enseignants, et.getLangue(),candidatCreneau, validator);
         	            creneau = candidatCreneau;
         	            salle = salles.get(s2);
         	            break;
@@ -245,16 +225,11 @@ public class DistributionJuryAlgorithm {
         	}
 
         	if (creneau == null || jury == null)
-        	    throw new IllegalStateException(
-        	        "Pas de créneau disponible pour : "
-        	        + et.getNom() + " " + et.getPrenom()
-        	        + " (écart minimum " + ecartMin + " min requis)");
+        	    throw new IllegalStateException("Pas de créneau disponible pour : "+ et.getNom() + " " + et.getPrenom()+ " (écart minimum " + ecartMin + " min requis)");
 
             String langue = et.getLangue();
 
-            Soutenance s = new Soutenance(
-                i, langue, dureeMin,
-                et, salle, creneau, jury);
+            Soutenance s = new Soutenance(i, langue, dureeMin,et, salle, creneau, jury);
 
             soutenances.add(s);
             i++;
@@ -264,51 +239,33 @@ public class DistributionJuryAlgorithm {
         corrigerViolationsEcart(enseignants, validator);
 
         // Rapport
-        System.out.println("\n=== Rapport Jury ===");
+        System.out.println("\n**Rapport Jury**");
         System.out.println("Total : " + soutenances.size());
         for (Enseignant ens : enseignants) {
             int charge = calculerCharge(ens);
             if (charge > 0)
-                System.out.println("  "
-                    + ens.getNom() + " "
-                    + ens.getPrenom()
-                    + " [" + ens.getSpecialite() + "]"
-                    + " → " + charge + " jury(s)");
+                System.out.println("  "+ ens.getNom() + " " + ens.getPrenom()+ " [" + ens.getSpecialite() + "]" + " -> " + charge + " jury(s)");
         }
         System.out.println("====================");
 
         return soutenances;
     }
 
-    /**
-     * Traite d'abord les encadrants les plus chargés, puis les soutenances
-     * en anglais en dernier pour ne pas surcharger les anglophones.
-     */
     private void trierEtudiantsPourEquilibre(List<Etudiant> etudiants) {
-        etudiants.sort(Comparator
-            .comparingInt((Etudiant e) ->
-                compterEtudiantsParEncadrant(e.getEncadrant(), etudiants))
-            .reversed()
-            .thenComparing(e ->
-                "anglais".equalsIgnoreCase(e.getLangue())));
+        etudiants.sort(Comparator.comparingInt((Etudiant e) -> compterEtudiantsParEncadrant(e.getEncadrant(), etudiants)) .reversed().thenComparing(e ->"anglais".equalsIgnoreCase(e.getLangue())));
     }
 
-    private int compterEtudiantsParEncadrant(Enseignant encadrant,
-                                              List<Etudiant> etudiants) {
+    private int compterEtudiantsParEncadrant(Enseignant encadrant,List<Etudiant> etudiants) {
         int count = 0;
         for (Etudiant e : etudiants) {
-            if (e.getEncadrant() != null
-                && e.getEncadrant().getId() == encadrant.getId()) {
+            if (e.getEncadrant() != null && e.getEncadrant().getId() == encadrant.getId()) {
                 count++;
             }
         }
         return count;
     }
 
-    /**
-     * Échange des membres de jury entre soutenances pour réduire l'écart
-     * min/max lorsque les contraintes le permettent.
-     */
+  
     private void reequilibrerMembresJury(List<Enseignant> enseignants,
                                           ContrainteValidator validator) {
         int maxIterations = soutenances.size() * 3;
@@ -402,8 +359,7 @@ public class DistributionJuryAlgorithm {
 
         List<Enseignant> membresApres = new ArrayList<>(jury.getMembres());
         membresApres.set(indexMembre, remplacant);
-        boolean aInformatique = encadrant.getSpecialite()
-            .equalsIgnoreCase("informatique");
+        boolean aInformatique = encadrant.getSpecialite().equalsIgnoreCase("informatique");
         for (Enseignant m : membresApres) {
             if (m.getSpecialite().equalsIgnoreCase("informatique")) {
                 aInformatique = true;
@@ -414,8 +370,7 @@ public class DistributionJuryAlgorithm {
     }
 
     /** Corrige les membres de jury qui violent encore l'écart minimum. */
-    private void corrigerViolationsEcart(List<Enseignant> enseignants,
-                                          ContrainteValidator validator) {
+    private void corrigerViolationsEcart(List<Enseignant> enseignants, ContrainteValidator validator) {
         int maxIter = soutenances.size() * enseignants.size();
         for (int n = 0; n < maxIter; n++) {
             boolean corrige = false;
