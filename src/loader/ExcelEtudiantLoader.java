@@ -19,6 +19,7 @@ public class ExcelEtudiantLoader {
 
     public void charger(EtudiantRepository etudiantRepo,
                         EnseignantRepository enseignantRepo) throws IOException {
+    	etudiantRepo.vider();
         List<Filiere> filieres = new ArrayList<>();
         int filiereId = 1;
 

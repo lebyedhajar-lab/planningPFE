@@ -8,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 
 public class ExcelEnseignantLoader {
-
     private final String cheminFichier;
 
     public ExcelEnseignantLoader(String cheminFichier) {
@@ -16,6 +15,8 @@ public class ExcelEnseignantLoader {
     }
 
     public void charger(EnseignantRepository enseignantRepo) throws IOException {
+    	
+    	enseignantRepo.vider();
 
         try (Workbook wb = new XSSFWorkbook(new FileInputStream(cheminFichier))) {
         	Sheet sheet = wb.getSheet("profs"); 
