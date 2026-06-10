@@ -5,8 +5,12 @@ import model.Soutenance;
 import repository.*;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
 import java.awt.*;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -36,7 +40,7 @@ public class HistoriquePlanningFrame extends JInternalFrame {
 
         JLabel info = new JLabel(
             "Chargez un planning sauvegardé sans le regénérer. "
-            + "L'Excel doit être chargé au préalable.");
+            + "L'Excel est rechargé automatiquement si nécessaire.");
         info.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         info.setForeground(Color.GRAY);
         root.add(info, BorderLayout.NORTH);
@@ -115,13 +119,6 @@ public class HistoriquePlanningFrame extends JInternalFrame {
             return;
         }
 
-        if (mainFrame.getEtudiantRepo().chargerTous().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Chargez d'abord le fichier Excel.",
-                "Données manquantes", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
         String id = modele.getValueAt(row, 3).toString();
         int confirm = JOptionPane.showConfirmDialog(this,
             "Charger le planning \"" + id + "\" ?\n"
@@ -130,12 +127,32 @@ public class HistoriquePlanningFrame extends JInternalFrame {
         if (confirm != JOptionPane.YES_OPTION) return;
 
         try {
+            int version = historiqueService.lireVersion(id);
+            String cheminExcel = historiqueService.lireCheminExcel(id);
+
+            if (version < 2) {
+                cheminExcel = preparerExcel(cheminExcel);
+                mainFrame.chargerExcel(cheminExcel);
+            } else if (mainFrame.getEtudiantRepo().chargerTous().isEmpty()) {
+                if (cheminExcel != null && !cheminExcel.isBlank()
+                        && Files.exists(Paths.get(cheminExcel))) {
+                    mainFrame.chargerExcel(cheminExcel);
+                }
+            }
+
             List<Soutenance> soutenances = historiqueService.charger(
                 id,
                 mainFrame.getEtudiantRepo(),
                 mainFrame.getEnseignantRepo(),
                 mainFrame.getSalleRepo());
+
             mainFrame.appliquerPlanning(soutenances);
+
+            if (version < 2) {
+                historiqueService.migrerVersV2(
+                    id, soutenances, mainFrame.getCheminExcel());
+            }
+
             JOptionPane.showMessageDialog(this,
                 soutenances.size() + " soutenance(s) chargée(s).",
                 "Succès", JOptionPane.INFORMATION_MESSAGE);
@@ -144,6 +161,40 @@ public class HistoriquePlanningFrame extends JInternalFrame {
                 "Impossible de charger :\n" + ex.getMessage(),
                 "Erreur", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /** Charge l'Excel enregistré ou demande à l'utilisateur de le sélectionner. */
+    private String preparerExcel(String cheminExcel) throws Exception {
+        if (cheminExcel != null && !cheminExcel.isBlank()
+                && Files.exists(Paths.get(cheminExcel))) {
+            return cheminExcel;
+        }
+
+        int choix = JOptionPane.showConfirmDialog(this,
+            "Le fichier Excel d'origine est introuvable.\n"
+            + "Voulez-vous le sélectionner manuellement ?",
+            "Excel requis", JOptionPane.YES_NO_OPTION);
+        if (choix != JOptionPane.YES_OPTION)
+            throw new IllegalStateException(
+                "Fichier Excel introuvable. Sélectionnez-le pour charger "
+                + "cet ancien planning.");
+
+        return demanderFichierExcel(cheminExcel);
+    }
+
+    private String demanderFichierExcel(String cheminSuggere) {
+        JFileChooser fc = new JFileChooser();
+        fc.setFileFilter(new FileNameExtensionFilter(
+            "Fichiers Excel (*.xlsx)", "xlsx"));
+        if (cheminSuggere != null && !cheminSuggere.isBlank()) {
+            File f = new File(cheminSuggere);
+            if (f.getParentFile() != null && f.getParentFile().exists())
+                fc.setCurrentDirectory(f.getParentFile());
+        }
+        if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+            throw new IllegalStateException("Chargement annulé.");
+
+        return fc.getSelectedFile().getAbsolutePath();
     }
 
     private void supprimerSelection(JTable table) {

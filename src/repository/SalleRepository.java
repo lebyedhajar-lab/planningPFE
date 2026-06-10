@@ -50,6 +50,14 @@ public class SalleRepository implements IdRepository<Salle> {
 	        return null;
 	    }
 
+	    public int prochainId() {
+	        int max = 0;
+	        for (Salle s : salles) {
+	            if (s.getId() > max) max = s.getId();
+	        }
+	        return max + 1;
+	    }
+
 	    public boolean setDisponible(int id, boolean dispo) {
 	        Salle s = trouverParId(id);
 	        if (s != null) {

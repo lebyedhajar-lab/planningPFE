@@ -222,6 +222,32 @@ public class MainFrame extends JFrame{
         addInternalFrame(new ExportFrame(soutenanceRepo));
     }
 
+    /** Charge config, profs, étudiants et salles depuis un fichier Excel. */
+    public void chargerExcel(String chemin) throws IOException {
+        ConfigPlanning tmp = new ExcelConfigLoader(chemin).chargerConfig();
+        copyConfig(tmp, config);
+
+        new ExcelEnseignantLoader(chemin).charger(enseignantRepo);
+        new ExcelEtudiantLoader(chemin).charger(etudiantRepo, enseignantRepo);
+        new ExcelSalleLoader(chemin).charger(salleRepo);
+
+        cheminExcel = chemin;
+    }
+
+    private void copyConfig(ConfigPlanning src, ConfigPlanning dst) {
+        dst.setDureeSoutenanceMin(src.getDureeSoutenanceMin());
+        dst.setHeureDebutJournee(src.getHeureDebutJournee());
+        dst.setHeureFinJournee(src.getHeureFinJournee());
+        dst.setHeureDebutPause(src.getHeureDebutPause());
+        dst.setHeureFinPause(src.getHeureFinPause());
+        dst.setPauseMinimale(src.getPauseMinimale());
+        dst.setMinSoutenancesParProfParJour(src.getMinSoutenanceParProfParJour());
+        dst.setMaxSoutenancesParProfParJour(src.getMaxSoutenanceParProfParJour());
+        dst.setNbMembresJury(src.getNbMembresJury());
+        dst.setNbJoursSoutenances(src.getNbJoursSoutenances());
+        dst.setDateDebut(src.getDateDebut());
+    }
+
     /** Restaure un planning depuis l'historique. */
     public void appliquerPlanning(java.util.List<model.Soutenance> soutenances) {
         soutenanceRepo.vider();

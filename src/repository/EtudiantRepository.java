@@ -28,6 +28,25 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
         return null;
     }
 
+    public Etudiant trouverParNomPrenom(String nom, String prenom) {
+        if (nom == null || prenom == null) return null;
+        for (Etudiant e : etudiants) {
+            if (e.getNom().equalsIgnoreCase(nom.trim())
+                && e.getPrenom().equalsIgnoreCase(prenom.trim())) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public int prochainId() {
+        int max = 0;
+        for (Etudiant e : etudiants) {
+            if (e.getId() > max) max = e.getId();
+        }
+        return max + 1;
+    }
+
     public boolean supprimer(int id) {
         return etudiants.removeIf(e -> e.getId() == id);
     }

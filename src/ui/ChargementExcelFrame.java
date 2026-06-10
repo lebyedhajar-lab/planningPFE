@@ -1,6 +1,5 @@
 package ui;
 
-import Config.ConfigPlanning;
 import loader.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -88,41 +87,15 @@ public class ChargementExcelFrame extends JInternalFrame {
         log("Chargement depuis : " + cheminChoisi);
 
         try {
-            // Config
             log("\n[1/4] Chargement configuration...");
-            new ExcelConfigLoader(cheminChoisi)
-                .chargerConfig();
-            // On recharge dans le config existant via loader
-            ConfigPlanning cfg = mainFrame.getConfig();
-            ExcelConfigLoader cfgLoader = new ExcelConfigLoader(cheminChoisi);
-            // On recharge et on copie les valeurs
-            ConfigPlanning tmp = cfgLoader.chargerConfig();
-            copyConfig(tmp, cfg);
-            log("  Config chargée : " + cfg);
-
-            // Enseignants
-            log("\n[2/4] Chargement enseignants...");
-            new ExcelEnseignantLoader(cheminChoisi)
-                .charger(mainFrame.getEnseignantRepo());
-            log( mainFrame.getEnseignantRepo()
-                .chargerTous().size() + " enseignants chargés.");
-
-            // Étudiants
-            log("\n[3/4] Chargement étudiants...");
-            new ExcelEtudiantLoader(cheminChoisi)
-                .charger(mainFrame.getEtudiantRepo(),
-                         mainFrame.getEnseignantRepo());
-            log(mainFrame.getEtudiantRepo()
-                .chargerTous().size() + " étudiants chargés.");
-
-            // Salles
-            log("\n[4/4] Chargement salles...");
-            new ExcelSalleLoader(cheminChoisi)
-                .charger(mainFrame.getSalleRepo());
-            log(mainFrame.getSalleRepo()
-                .chargerDisponibles().size() + " salles chargées.");
-
-            mainFrame.setCheminExcel(cheminChoisi);
+            mainFrame.chargerExcel(cheminChoisi);
+            log("  Config chargée : " + mainFrame.getConfig());
+            log("\n[2/4] Enseignants : "
+                + mainFrame.getEnseignantRepo().chargerTous().size());
+            log("[3/4] Étudiants : "
+                + mainFrame.getEtudiantRepo().chargerTous().size());
+            log("[4/4] Salles : "
+                + mainFrame.getSalleRepo().chargerDisponibles().size());
             log("Chargement terminé avec succès !");
 
         } catch (Exception ex) {
@@ -131,20 +104,6 @@ public class ChargementExcelFrame extends JInternalFrame {
                 "Erreur lors du chargement :\n" + ex.getMessage(),
                 "Erreur", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private void copyConfig(ConfigPlanning src, ConfigPlanning dst) {
-        dst.setDureeSoutenanceMin(src.getDureeSoutenanceMin());
-        dst.setHeureDebutJournee(src.getHeureDebutJournee());
-        dst.setHeureFinJournee(src.getHeureFinJournee());
-        dst.setHeureDebutPause(src.getHeureDebutPause());
-        dst.setHeureFinPause(src.getHeureFinPause());
-        dst.setPauseMinimale(src.getPauseMinimale());
-        dst.setMinSoutenancesParProfParJour(src.getMinSoutenanceParProfParJour());
-        dst.setMaxSoutenancesParProfParJour(src.getMaxSoutenanceParProfParJour());
-        dst.setNbMembresJury(src.getNbMembresJury());
-        dst.setNbJoursSoutenances(src.getNbJoursSoutenances());
-        dst.setDateDebut(src.getDateDebut());
     }
 
     private void log(String msg) {

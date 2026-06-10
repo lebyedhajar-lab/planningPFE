@@ -26,6 +26,29 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
         return null;
     }
 
+    public Enseignant trouverParNomPrenom(String nom, String prenom) {
+        if (nom == null || prenom == null) return null;
+        String n = nom.trim();
+        String p = prenom.trim();
+        for (Enseignant e : enseignants) {
+            if (e.getNom().equalsIgnoreCase(n) && e.getPrenom().equalsIgnoreCase(p)) {
+                return e;
+            }
+            if (e.getNom().equalsIgnoreCase(p) && e.getPrenom().equalsIgnoreCase(n)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public int prochainId() {
+        int max = 0;
+        for (Enseignant e : enseignants) {
+            if (e.getId() > max) max = e.getId();
+        }
+        return max + 1;
+    }
+
     public boolean supprimer(int id){
         return enseignants.removeIf(e -> e.getId() == id);
     }

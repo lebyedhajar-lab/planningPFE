@@ -46,7 +46,7 @@ public class ExportFrame extends JInternalFrame {
 
         // Boutons export
         JButton btnPlanning = buildExportBtn(
-            "📄 Exporter Planning (HTML)",
+            "📄 Exporter Planning (.docx)",
             () -> exporter(false));
         JButton btnFiches = buildExportBtn(
             "📝 Exporter Fiches de notation (.docx)",
