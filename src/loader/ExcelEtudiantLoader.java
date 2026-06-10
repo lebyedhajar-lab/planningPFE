@@ -47,8 +47,8 @@ public class ExcelEtudiantLoader {
                 String prenom   = cellPrenom != null ? cellPrenom.getStringCellValue().trim() : "";
                 String langue   = cellLangue != null ? cellLangue.getStringCellValue().trim() : "français";
                 String titrePFE = cellTitrePFE != null ? cellTitrePFE.getStringCellValue().trim() : "";
-
-                // ── Filière ───────────────────────────────────
+                
+                //filiere 
                 Filiere filiere = null;
                 if (cellFiliere != null && !cellFiliere.getStringCellValue().isBlank()) {
                     String nomFiliere = cellFiliere.getStringCellValue().trim();
@@ -64,8 +64,8 @@ public class ExcelEtudiantLoader {
                         System.out.println(" Filière créée : " + nomFiliere);
                     }
                 }
-
-                // ── Encadrant ─────────────────────────────────
+                
+                //encadrant 
                 Enseignant encadrant = null;
                 if (cellEncadrant != null && !cellEncadrant.getStringCellValue().isBlank()) {
                     String nomEncadrant = cellEncadrant.getStringCellValue().trim();
@@ -73,40 +73,28 @@ public class ExcelEtudiantLoader {
                     for (Enseignant e : enseignantRepo.chargerTous()) {
                         String v1 = e.getNom() + " " + e.getPrenom(); // Benali Mohammed
                         String v2 = e.getPrenom() + " " + e.getNom(); // Mohammed Benali
-                        if (v1.equalsIgnoreCase(nomEncadrant)
-                            || v2.equalsIgnoreCase(nomEncadrant)) {
+                        if (v1.equalsIgnoreCase(nomEncadrant) || v2.equalsIgnoreCase(nomEncadrant)) {
                             encadrant = e;
                             break;
                         }
                     }
-
-                    //  Avertissement si non trouvé
                     if (encadrant == null) {
-                        System.out.println("⚠️ Encadrant introuvable : '"
-                            + nomEncadrant + "' pour : " + nom + " " + prenom);
+                        System.out.println(" Encadrant introuvable : '"+ nomEncadrant + "' pour : " + nom + " " + prenom);
                         System.out.println("   Enseignants disponibles :");
                         for (Enseignant e : enseignantRepo.chargerTous()) {
-                            System.out.println("     → '" + e.getNom()
-                                + " " + e.getPrenom() + "'");
+                            System.out.println("     → '" + e.getNom() + " " + e.getPrenom() + "'");
                         }
                     }
                 } else {
-                    System.out.println(" Colonne encadrant vide pour : "
-                        + nom + " " + prenom);
+                    System.out.println(" Colonne encadrant vide pour : " + nom + " " + prenom);
                 }
 
-                Etudiant etudiant = new Etudiant(
-                    id++, nom, prenom, langue, filiere, encadrant, titrePFE);
+                Etudiant etudiant = new Etudiant(id++, nom, prenom, langue, filiere, encadrant, titrePFE);
                 etudiantRepo.sauvegarder(etudiant);
 
                 if (filiere != null) filiere.incrementerNbEtudiants();
 
-                System.out.println( nom + " " + prenom
-                    + " | " + langue
-                    + " | " + (filiere  != null ? filiere.getNom()   : "—")
-                    + " | encadrant: "
-                    + (encadrant != null ? encadrant.getNom() + " "
-                                        + encadrant.getPrenom() : " NULL"));
+                System.out.println( nom + " " + prenom+ " | " + langue+ " | " + (filiere  != null ? filiere.getNom()   : "—")+ " | encadrant: " + (encadrant != null ? encadrant.getNom() + " "+ encadrant.getPrenom() : " NULL"));
             }
         }
     }
