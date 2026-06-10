@@ -40,17 +40,12 @@ public class ExcelEnseignantLoader {
                 String prenom     = cellPrenom.getStringCellValue().trim();
                 String specialite = cellSpecialite.getStringCellValue().trim();
 
-                // Anglophone si spécialité = Anglais
                 boolean estAnglophone = specialite.equalsIgnoreCase("Anglais");
 
-                Enseignant enseignant = new Enseignant(
-                    id++, 0, nom, prenom, estAnglophone, specialite
-                );
+                Enseignant enseignant = new Enseignant(id++, 0, nom, prenom, estAnglophone, specialite);
 
                 enseignantRepo.sauvegarder(enseignant);
-                System.out.println( nom + " " + prenom
-                                 + " | " + specialite
-                                 + (estAnglophone ? " [ANGLOPHONE]" : ""));
+                System.out.println( nom + " " + prenom + " | " + specialite + (estAnglophone ? " [ANGLOPHONE]" : ""));
             }
         }
     }

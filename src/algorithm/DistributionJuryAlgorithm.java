@@ -66,20 +66,24 @@ public class DistributionJuryAlgorithm {
         return respecteEcartMinimum(e, c, null);
     }
 
-    private boolean respecteEcartMinimum(Enseignant e, Creneau c,
-                                         Soutenance exclure) {
-        for (Soutenance s : soutenances) {
-            if (exclure != null && s == exclure) continue;
-            if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
-            if (!s.getJury().contientEnseignant(e)) continue;
+    private boolean respecteEcartMinimum(Enseignant e, Creneau c,Soutenance exclure) {
+    	for (Soutenance s : soutenances) {
+    	if (exclure != null && s == exclure) continue;
+    	if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
+    	if (!s.getJury().contientEnseignant(e)) continue;
 
-            long ecart = Math.abs(
-                c.getHeureDebut().toSecondOfDay() -
-                s.getCreneau().getHeureDebut().toSecondOfDay()
-            ) / 60;
-            if (ecart > 0 && ecart < ecartMin) return false;
-        }
-        return true;
+    	// Écart entre fin existante → début nouvelle
+    	long ecartApres = (c.getHeureDebut().toSecondOfDay() -
+    	s.getCreneau().getHeureFin().toSecondOfDay()) / 60;
+
+    	// Écart entre fin nouvelle → début existante
+    	long ecartAvant = (s.getCreneau().getHeureDebut().toSecondOfDay() -
+    	c.getHeureFin().toSecondOfDay()) / 60;
+
+    	if (ecartApres >= 0 && ecartApres < ecartMin) return false;
+    	if (ecartAvant >= 0 && ecartAvant < ecartMin) return false;
+    	}
+    	return true;
     }
 
     private boolean salleOccupee(Salle s, Creneau c) {
