@@ -50,4 +50,8 @@ public class EnseignantRepository implements IdRepository<Enseignant> {
         }
         return resultat;
     }
+    
+    public void vider() {
+        enseignants.clear();
+    }
 }

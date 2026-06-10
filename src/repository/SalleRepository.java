@@ -13,6 +13,10 @@ public class SalleRepository implements IdRepository<Salle> {
 	    public void sauvegarder(Salle s) {
 	        salles.add(s);
 	    }
+	    
+	    public void vider() {
+	        salles.clear();
+	    }
 
 	    public List<Salle> chargerTous() {
 	        return new ArrayList<>(salles);

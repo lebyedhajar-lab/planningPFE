@@ -16,6 +16,7 @@ public class ExcelSalleLoader {
     }
 
     public void charger(SalleRepository salleRepo)throws IOException{
+    	salleRepo.vider();
 
         try (Workbook wb = new XSSFWorkbook(new FileInputStream(cheminFichier))){
             Sheet sheet = wb.getSheet("salles");

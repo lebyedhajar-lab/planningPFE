@@ -12,6 +12,10 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
     public void sauvegarder(Etudiant e) {
         etudiants.add(e);
     }
+    
+    public void vider() {
+        etudiants.clear();
+    }
 
     public List<Etudiant> chargerTous() {
         return new ArrayList<>(etudiants);
