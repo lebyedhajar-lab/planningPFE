@@ -83,7 +83,6 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
         return resultat;
     }
 
-
     public int compterParFiliere(int filiereId) {
         int count = 0;
         for (Etudiant e : etudiants) {

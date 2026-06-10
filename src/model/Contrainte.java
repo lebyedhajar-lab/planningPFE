@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Contrainte{
+	//Attributs:
 	private int id;
 	private Enseignant enseignant;
 	private LocalDate jour;
@@ -18,13 +19,12 @@ public class Contrainte{
 		this.heureFin = heureFin;
    	}
 	
+	//Méthodes :
 	public Enseignant getEnseignant(){return enseignant;}
 	public LocalDate getJour(){return jour; }
+	public boolean estDisponible(){return true;}
 	public int getId() {return id;}
 	public LocalTime getHeureFin()   { return heureFin; }
 	public LocalTime getHeureDebut() { return heureDebut; }
-	
-	public boolean estDisponible(){return true;}
-
 }
 
