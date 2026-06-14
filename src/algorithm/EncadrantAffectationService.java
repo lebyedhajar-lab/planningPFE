@@ -11,6 +11,7 @@ public class EncadrantAffectationService {
 
     public void affecter(List<Etudiant> etudiants,
                          List<Enseignant> enseignants) {
+    	
 
         List<Etudiant> sansEncadrant = new ArrayList<>();
         for (Etudiant etudiant : etudiants) {

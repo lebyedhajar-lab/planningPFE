@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DistributionJuryAlgorithm {
 
@@ -30,18 +32,27 @@ public class DistributionJuryAlgorithm {
     public Enseignant enseignantLePlusDispo(List<Enseignant> candidats) {
         if (candidats == null || candidats.isEmpty()) return null;
 
-        int minCharge = Integer.MAX_VALUE;
+        // ── Calculer la charge UNE SEULE FOIS par enseignant ──
+        Map<Integer, Integer> charges = new HashMap<>();
         for (Enseignant e : candidats) {
-            minCharge = Math.min(minCharge, calculerCharge(e));
+            charges.put(e.getId(), calculerCharge(e));
         }
 
+        // ── Trouver la charge minimale ─────────────────────────
+        int minCharge = Integer.MAX_VALUE;
+        for (int charge : charges.values()) {
+            if (charge < minCharge) minCharge = charge;
+        }
+
+        // ── Collecter tous les profs avec cette charge minimale ─
         List<Enseignant> moinsCharges = new ArrayList<>();
         for (Enseignant e : candidats) {
-            if (calculerCharge(e) == minCharge) {
+            if (charges.get(e.getId()) == minCharge) {
                 moinsCharges.add(e);
             }
         }
 
+        // ── Retourner aléatoirement si égalité ────────────────
         if (moinsCharges.size() == 1) {
             return moinsCharges.get(0);
         }
@@ -61,7 +72,7 @@ public class DistributionJuryAlgorithm {
         return false;
     }
 
-    /** Écart minimum entre deux débuts de soutenance (même logique que EcranVerification). */
+ 
     private boolean respecteEcartMinimum(Enseignant e, Creneau c) {
         return respecteEcartMinimum(e, c, null);
     }
@@ -141,7 +152,7 @@ public class DistributionJuryAlgorithm {
         Enseignant membre2;
 
         if (langue != null&& langue.equalsIgnoreCase("anglais")) {
-            // Soutenance anglais → anglophone obligatoire
+            // Soutenance anglais -> anglophone obligatoire
             List<Enseignant> anglophones = new ArrayList<>();
             for (Enseignant ens : candidats) {
                 if (ens.isAnglophone()) anglophones.add(ens);
@@ -252,7 +263,7 @@ public class DistributionJuryAlgorithm {
     }
 
     private void trierEtudiantsPourEquilibre(List<Etudiant> etudiants) {
-        etudiants.sort(Comparator.comparingInt((Etudiant e) -> compterEtudiantsParEncadrant(e.getEncadrant(), etudiants)) .reversed().thenComparing(e ->"anglais".equalsIgnoreCase(e.getLangue())));
+        etudiants.sort(Comparator.comparingInt((Etudiant e) -> compterEtudiantsParEncadrant(e.getEncadrant(), etudiants)).reversed().thenComparing(e ->"anglais".equalsIgnoreCase(e.getLangue())));
     }
 
     private int compterEtudiantsParEncadrant(Enseignant encadrant,List<Etudiant> etudiants) {

@@ -67,4 +67,5 @@ public class ContrainteRepository implements IdRepository<Contrainte> {
         }
         return enseignantsEnConflit;
     }
+    public void vider() { contraintes.clear(); }
 }

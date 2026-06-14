@@ -25,7 +25,7 @@ public class VoirPlanningFrame extends JInternalFrame{
     private void initUI() {
     	String[] cols = {
     		    "#", "Étudiant", "Filière", "Date", "Heure", "Salle",
-    		    "Encadrant", "Membre 1", "Membre 2", "Langue"
+    		    "Encadrant", "Membre 1", "Membre 2"
     		};
         List<Soutenance> list = soutenanceRepo.chargerTous();
         list.sort((a, b) -> {
@@ -59,7 +59,7 @@ public class VoirPlanningFrame extends JInternalFrame{
              ? membres.get(0).getNom() + " " + membres.get(0).getPrenom() : "—";
             data[i][8] = membres.size() > 1
              ? membres.get(1).getNom() + " " + membres.get(1).getPrenom() : "—";
-            data[i][9] = s.getLangue();
+       
         }
 
         DefaultTableModel model = new DefaultTableModel(data, cols) {

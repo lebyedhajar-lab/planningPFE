@@ -1,8 +1,6 @@
-package ui ; 
+package ui;
 
 import javax.swing.*;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -13,34 +11,28 @@ import repository.*;
 import algorithm.*;
 import statistiques.DashboardService;
 
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame {
 
     // ── Repositories ──────────────────────────────────────────
-	private ConfigPlanning config = new ConfigPlanning();
-    private final EnseignantRepository  enseignantRepo  = new EnseignantRepository();
-    private final EtudiantRepository    etudiantRepo    = new EtudiantRepository();
-    private final SalleRepository       salleRepo       = new SalleRepository();
-    private final SoutenanceRepository  soutenanceRepo  = new SoutenanceRepository();
-    private final ContrainteRepository  contrainteRepo  = new ContrainteRepository();
-    private final CreneauRepository     creneauRepo     = new CreneauRepository();
+    private ConfigPlanning config = new ConfigPlanning();
+    private final EnseignantRepository enseignantRepo  = new EnseignantRepository();
+    private final EtudiantRepository   etudiantRepo    = new EtudiantRepository();
+    private final SalleRepository      salleRepo       = new SalleRepository();
+    private final SoutenanceRepository soutenanceRepo  = new SoutenanceRepository();
+    private final ContrainteRepository contrainteRepo  = new ContrainteRepository();
+    private final CreneauRepository    creneauRepo     = new CreneauRepository();
 
     private DashboardService dashboardService;
-
-    // ── Desktop ───────────────────────────────────────────────
     private JDesktopPane desktop;
-
-    // ── Chemin Excel ──────────────────────────────────────────
     private String cheminExcel = null;
 
     // ── Couleurs ──────────────────────────────────────────────
-    private static final Color COLOR_SIDEBAR  = new Color(30, 30, 45);
-    private static final Color COLOR_HEADER   = new Color(50, 50, 70);
-    private static final Color COLOR_BTN      = new Color(83, 74, 183);
-    private static final Color COLOR_BTN_HVR  = new Color(103, 94, 210);
-    private static final Color COLOR_DESKTOP  = new Color(240, 240, 248);
-    private static final Color COLOR_WHITE    = Color.WHITE;
-    private static final Font  FONT_MENU      = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font  FONT_TITLE     = new Font("Segoe UI", Font.BOLD, 14);
+    private static final Color COLOR_SIDEBAR = new Color(30, 30, 45);
+    private static final Color COLOR_HEADER  = new Color(50, 50, 70);
+    private static final Color COLOR_DESKTOP = new Color(240, 240, 248);
+    private static final Color COLOR_WHITE   = Color.WHITE;
+    private static final Font  FONT_MENU     = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font  FONT_TITLE    = new Font("Segoe UI", Font.BOLD, 14);
 
     public MainFrame() {
         setTitle("Planning PFE — Système de gestion");
@@ -53,27 +45,21 @@ public class MainFrame extends JFrame{
 
     private void initUI() {
         setLayout(new BorderLayout());
-
-        // ── Sidebar ───────────────────────────────────────────
         add(buildSidebar(), BorderLayout.WEST);
-
-        // ── Desktop ───────────────────────────────────────────
         desktop = new JDesktopPane();
         desktop.setBackground(COLOR_DESKTOP);
         add(desktop, BorderLayout.CENTER);
-
-        // ── Header ────────────────────────────────────────────
         add(buildHeader(), BorderLayout.NORTH);
     }
 
-    // ── Header
-    private JPanel buildHeader(){
+    private JPanel buildHeader() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(COLOR_HEADER);
         header.setPreferredSize(new Dimension(0, 50));
         header.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
-        JLabel title = new JLabel("Planning PFE — Système de gestion des soutenances");
+        JLabel title = new JLabel(
+            "Planning PFE — Système de gestion des soutenances");
         title.setFont(FONT_TITLE);
         title.setForeground(COLOR_WHITE);
         header.add(title, BorderLayout.WEST);
@@ -85,7 +71,6 @@ public class MainFrame extends JFrame{
         return header;
     }
 
-    // ── Sidebar ───────────────────────────────────────────────
     private JPanel buildSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
@@ -93,7 +78,6 @@ public class MainFrame extends JFrame{
         sidebar.setPreferredSize(new Dimension(200, 0));
         sidebar.setBorder(BorderFactory.createEmptyBorder(16, 10, 16, 10));
 
-        // Logo
         JLabel logo = new JLabel("PFE Planner", SwingConstants.CENTER);
         logo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         logo.setForeground(COLOR_WHITE);
@@ -101,24 +85,23 @@ public class MainFrame extends JFrame{
         logo.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         sidebar.add(logo);
 
-        // Boutons
-        sidebar.add(buildSidebarBtn(" Charger Excel",      this::ouvrirChargementExcel));
+        sidebar.add(buildSidebarBtn(" Charger Excel",    this::ouvrirChargementExcel));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Générer Planning",   this::ouvrirGenerationPlanning));
+        sidebar.add(buildSidebarBtn(" Générer Planning", this::ouvrirGenerationPlanning));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Voir Planning",      this::ouvrirVoirPlanning));
+        sidebar.add(buildSidebarBtn(" Voir Planning",    this::ouvrirVoirPlanning));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Enseignants",       this::ouvrirEnseignants));
+        sidebar.add(buildSidebarBtn(" Enseignants",      this::ouvrirEnseignants));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Étudiants",          this::ouvrirEtudiants));
+        sidebar.add(buildSidebarBtn(" Étudiants",        this::ouvrirEtudiants));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Dashboard",          this::ouvrirDashboard));
+        sidebar.add(buildSidebarBtn(" Dashboard",        this::ouvrirDashboard));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Vérification", this::ouvrirVerification)); // ← ici
+        sidebar.add(buildSidebarBtn(" Vérification",     this::ouvrirVerification));
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Historique",       this::ouvrirHistorique));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Exporter",           this::ouvrirExport));
+        sidebar.add(buildSidebarBtn(" Exporter",         this::ouvrirExport));
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -152,7 +135,6 @@ public class MainFrame extends JFrame{
         btn.addActionListener(e -> action.run());
         return btn;
     }
-   
 
     private void addInternalFrame(JInternalFrame frame) {
         desktop.add(frame);
@@ -187,7 +169,7 @@ public class MainFrame extends JFrame{
     }
 
     private void ouvrirEnseignants() {
-        addInternalFrame(new EnseignantsFrame(enseignantRepo, soutenanceRepo)); 
+        addInternalFrame(new EnseignantsFrame(enseignantRepo, soutenanceRepo));
     }
 
     private void ouvrirEtudiants() {
@@ -195,10 +177,11 @@ public class MainFrame extends JFrame{
     }
 
     private void ouvrirDashboard() {
-    	dashboardService = new DashboardService(
-    		    soutenanceRepo, etudiantRepo, enseignantRepo, salleRepo, config);
-        addInternalFrame(new DashboardFrame( dashboardService, enseignantRepo));
+        dashboardService = new DashboardService(
+            soutenanceRepo, etudiantRepo, enseignantRepo, salleRepo, config);
+        addInternalFrame(new DashboardFrame(dashboardService, enseignantRepo));
     }
+
     private void ouvrirVerification() {
         if (soutenanceRepo.chargerTous().isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -208,6 +191,7 @@ public class MainFrame extends JFrame{
         }
         addInternalFrame(new EcranVerification(soutenanceRepo, config));
     }
+
     private void ouvrirHistorique() {
         addInternalFrame(new HistoriquePlanningFrame(this));
     }
@@ -215,15 +199,23 @@ public class MainFrame extends JFrame{
     private void ouvrirExport() {
         if (soutenanceRepo.chargerTous().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                "Aucune soutenance à exporter.",
+                "Aucune soutenance à exporter.\nGénérez d'abord le planning.",
                 "Export impossible", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        addInternalFrame(new ExportFrame(soutenanceRepo));
+        // Passer this (MainFrame) au lieu de soutenanceRepo
+        addInternalFrame(new ExportFrame(this));
     }
 
-    /** Charge config, profs, étudiants et salles depuis un fichier Excel. */
     public void chargerExcel(String chemin) throws IOException {
+        // Vider toutes les données avant rechargement 
+        soutenanceRepo.vider();
+        enseignantRepo.vider();
+        etudiantRepo.vider();
+        salleRepo.vider();
+        contrainteRepo.vider();
+
+        //Recharger depuis Excel 
         ConfigPlanning tmp = new ExcelConfigLoader(chemin).chargerConfig();
         copyConfig(tmp, config);
 
@@ -248,7 +240,6 @@ public class MainFrame extends JFrame{
         dst.setDateDebut(src.getDateDebut());
     }
 
-    /** Restaure un planning depuis l'historique. */
     public void appliquerPlanning(java.util.List<model.Soutenance> soutenances) {
         soutenanceRepo.vider();
         for (model.Enseignant ens : enseignantRepo.chargerTous()) {
@@ -263,18 +254,18 @@ public class MainFrame extends JFrame{
         }
     }
 
-    // ── Getters pour sous-fenêtres ────────────────────────────
-    public ConfigPlanning       getConfig()         { return config; }
-    public EnseignantRepository getEnseignantRepo() { return enseignantRepo; }
-    public EtudiantRepository   getEtudiantRepo()   { return etudiantRepo; }
+    // ── Getters ───────────────────────────────────────────────
+    public ConfigPlanning       getConfig()          { return config; }
+    public EnseignantRepository getEnseignantRepo()  { return enseignantRepo; }
+    public EtudiantRepository   getEtudiantRepo()    { return etudiantRepo; }
     public SalleRepository      getSalleRepo()       { return salleRepo; }
     public SoutenanceRepository getSoutenanceRepo()  { return soutenanceRepo; }
-    public String getCheminExcel()                   { return cheminExcel; }
+    public ContrainteRepository getContrainteRepo()  { return contrainteRepo; }
+    public String               getCheminExcel()     { return cheminExcel; }
     public void setCheminExcel(String chemin)        { this.cheminExcel = chemin; }
-    public void setConfig(ConfigPlanning config) {this.config = config;}
+    public void setConfig(ConfigPlanning config)     { this.config = config; }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainFrame::new);
     }
 }
-

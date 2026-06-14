@@ -42,6 +42,7 @@ public class PlanningGenerator {
         List<Enseignant> enseignants = enseignantRepo.chargerTous();
         List<Salle>      salles      = salleRepo.chargerDisponibles();
         List<Creneau>    creneaux    = genererCreneaux();
+        
 
         int capaciteTotale = creneaux.size() * salles.size();
 
@@ -59,9 +60,7 @@ public class PlanningGenerator {
                 "Planning impossible : " + etudiants.size()
                 + " étudiants pour " + capaciteTotale + " places.");
 
-        List<Soutenance> soutenances =
-            strategy.genererPlanning(
-                etudiants, enseignants, salles, creneaux);
+        List<Soutenance> soutenances =strategy.genererPlanning( etudiants, enseignants, salles, creneaux);
 
         for (Soutenance s : soutenances)
             soutenanceRepo.sauvegarder(s);

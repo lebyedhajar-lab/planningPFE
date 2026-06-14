@@ -72,4 +72,5 @@ public class FicheNotationRepository implements IdRepository<FicheNotation> {
         }
         return result;
     }
+    public void vider() { fiches.clear(); }
 }

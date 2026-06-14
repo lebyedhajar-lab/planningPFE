@@ -18,7 +18,7 @@ public class ExportDocx {
 
         XWPFDocument doc = new XWPFDocument();
 
-        // ── Titre ─────────────────────────────────────────────
+        // ── Titre 
         XWPFParagraph titre = doc.createParagraph();
         titre.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun runTitre = titre.createRun();
@@ -27,7 +27,7 @@ public class ExportDocx {
         runTitre.setFontSize(16);
         runTitre.setColor("1F3864");
 
-        // ── Sous-titre ────────────────────────────────────────
+        // ── Sous-titre 
         XWPFParagraph sousTitre = doc.createParagraph();
         sousTitre.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun runSous = sousTitre.createRun();
@@ -40,7 +40,7 @@ public class ExportDocx {
         runSous.setColor("595959");
         runSous.addBreak();
 
-        // ── Tableau ───────────────────────────────────────────
+        // ── Tableau 
         XWPFTable table = doc.createTable(
             soutenances.size() + 1, 7);
         table.setWidth("100%");
@@ -48,7 +48,7 @@ public class ExportDocx {
         // En-têtes
         String[] headers = {
             "Étudiant", "Filière", "Encadrant",
-            "Membres Jury", "Date / Heure", "Salle", "Langue"
+            "Membres Jury", "Date / Heure", "Salle"
         };
         XWPFTableRow headerRow = table.getRow(0);
         for (int j = 0; j < headers.length; j++) {
@@ -63,7 +63,7 @@ public class ExportDocx {
             run.setFontSize(10);
         }
 
-        // ── Lignes de données ─────────────────────────────────
+        // ── Lignes de données 
         for (int i = 0; i < soutenances.size(); i++) {
             Soutenance s    = soutenances.get(i);
             String bgColor  = (i % 2 == 0) ? "D9E1F2" : "FFFFFF";
@@ -91,12 +91,9 @@ public class ExportDocx {
             String salle    = s.getSalle() != null
                 ? s.getSalle().getNom() : "—";
 
-            String langue   = s.getLangue() != null
-                ? s.getLangue() : "—";
-
             String[] values = {
                 etudiant, filiere, encadrant,
-                membres, dateHeure, salle, langue
+                membres, dateHeure, salle
             };
 
             XWPFTableRow row = table.getRow(i + 1);
@@ -113,7 +110,7 @@ public class ExportDocx {
             }
         }
 
-        // ── Sauvegarder ───────────────────────────────────────
+        // ── Sauvegarder 
         FileOutputStream out = new FileOutputStream(cheminFichier);
         doc.write(out);
         out.close();

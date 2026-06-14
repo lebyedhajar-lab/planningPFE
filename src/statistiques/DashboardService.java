@@ -31,16 +31,15 @@ public class DashboardService {
 
     }
 
-    // ════════════════════════════════════════════════════════════
+    //
     // STATISTIQUES DE BASE
-    // ════════════════════════════════════════════════════════════
+  
 
     // ─── Nb soutenances par prof ─────────────────────────────────
     public int nbSoutenancesParProf(Enseignant prof) {
         int count = 0;
         for (Soutenance s : soutenanceRepo.chargerTous()) {
-            if (s.getJury() != null
-                && s.getJury().contientEnseignant(prof)) {
+            if (s.getJury() != null&& s.getJury().contientEnseignant(prof)) {
                     count++;
             }
         }
@@ -49,8 +48,7 @@ public class DashboardService {
 
     // ─── Nb étudiants encadrés par prof ──────────────────────────
     public int nbEtudiantsParProf(Enseignant prof) {
-        return etudiantRepo
-            .trouverParEncadrant(prof.getId()).size();
+        return etudiantRepo.trouverParEncadrant(prof.getId()).size();
     }
 
     // ─── Nb soutenances par filière ──────────────────────────────
@@ -68,7 +66,7 @@ public class DashboardService {
     }
 
     // ─── Récupérer filières depuis les étudiants ─────────────────
-    // FiliereRepository supprimé → on extrait les filières
+    // FiliereRepository supprimé ->on extrait les filières
     // directement depuis les étudiants
     public List<Filiere> getFilieres(){
         List<Filiere> filieres  = new ArrayList<>();

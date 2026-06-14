@@ -66,10 +66,7 @@ public class ContrainteValidator{
 	        if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
 	        if (!estDansJury(e, s.getJury())) continue;
 
-	        long ecart = Math.abs(
-	            c.getHeureDebut().toSecondOfDay() -
-	            s.getCreneau().getHeureDebut().toSecondOfDay()
-	        ) / 60;
+	        long ecart = Math.abs(c.getHeureDebut().toSecondOfDay() -s.getCreneau().getHeureDebut().toSecondOfDay()) / 60;
 
 	        if (ecart < ecartMin) return false;
 	    }
@@ -84,5 +81,4 @@ public class ContrainteValidator{
 	    }
 	    return false;
 	}
-
 }

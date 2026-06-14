@@ -2,7 +2,6 @@ package ui;
 
 import export.PlanningExporter;
 import model.Soutenance;
-import repository.SoutenanceRepository;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -10,14 +9,15 @@ import java.util.List;
 
 public class ExportFrame extends JInternalFrame {
 
-    private final SoutenanceRepository soutenanceRepo;
+    // Passer MainFrame au lieu de SoutenanceRepository
+    private final MainFrame mainFrame;
     private JLabel labelDossier;
     private String dossierChoisi = null;
     private static final Color COLOR_PRIMARY = new Color(83, 74, 183);
 
-    public ExportFrame(SoutenanceRepository soutenanceRepo) {
+    public ExportFrame(MainFrame mainFrame) {
         super("Exporter le Planning", true, true, true, true);
-        this.soutenanceRepo = soutenanceRepo;
+        this.mainFrame = mainFrame;
         setSize(460, 280);
         setLocation(200, 150);
         initUI();
@@ -46,14 +46,14 @@ public class ExportFrame extends JInternalFrame {
 
         // Boutons export
         JButton btnPlanning = buildExportBtn(
-            "📄 Exporter Planning (.docx)",
+            " Exporter Planning (.docx)",
             () -> exporter(false));
         JButton btnFiches = buildExportBtn(
-            "📝 Exporter Fiches de notation (.docx)",
+            " Exporter Fiches de notation (.docx)",
             () -> exporter(true));
         JButton btnTout = buildExportBtn(
-            "📦 Tout exporter",
-            () -> exporterTout());
+            " Tout exporter",
+            this::exporterTout);
 
         root.add(btnPlanning);
         root.add(Box.createVerticalStrut(8));
@@ -85,6 +85,8 @@ public class ExportFrame extends JInternalFrame {
     }
 
     private void exporter(boolean fichesOnly) {
+  
+    	
         if (dossierChoisi == null) {
             JOptionPane.showMessageDialog(this,
                 "Choisissez un dossier de destination.",
@@ -92,15 +94,40 @@ public class ExportFrame extends JInternalFrame {
             return;
         }
         try {
+            // Toujours lire depuis mainFrame au moment de l'export
+            List<Soutenance> list = mainFrame.getSoutenanceRepo().chargerTous();
+
+         // ← Ajouter ce log
+         System.out.println("=== EXPORT ===");
+         System.out.println("Nb soutenances à exporter : " + list.size());
+         if (!list.isEmpty()) {
+             System.out.println("1ère soutenance : " 
+                 + list.get(0).getEtudiant().getNom()
+                 + " | " + list.get(0).getCreneau().getDateJour()
+                 + " " + list.get(0).getCreneau().getHeureDebut());
+         }
+
+            if (list.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Aucune soutenance à exporter.\n"
+                    + "Générez d'abord le planning.",
+                    "Export impossible", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             PlanningExporter exporter = new PlanningExporter();
-            List<Soutenance> list = soutenanceRepo.chargerTous();
             if (fichesOnly)
-                exporter.exporterFiches(list, dossierChoisi + File.separator);
+                exporter.exporterFiches(
+                    list, dossierChoisi + File.separator);
             else
                 exporter.exporterPlanning(list, dossierChoisi);
+
             JOptionPane.showMessageDialog(this,
-                "Export réussi dans : " + dossierChoisi,
+                "Export réussi !\n"
+                + list.size() + " soutenances exportées.\n"
+                + "Dossier : " + dossierChoisi,
                 "Succès", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                 "Erreur export : " + ex.getMessage(),
@@ -116,11 +143,24 @@ public class ExportFrame extends JInternalFrame {
             return;
         }
         try {
-            new PlanningExporter().exporterTout(
-                soutenanceRepo.chargerTous(), dossierChoisi);
+            // Toujours lire depuis mainFrame au moment de l'export
+            List<Soutenance> list =
+                mainFrame.getSoutenanceRepo().chargerTous();
+
+            if (list.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Aucune soutenance à exporter.",
+                    "Export impossible", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            new PlanningExporter().exporterTout(list, dossierChoisi);
+
             JOptionPane.showMessageDialog(this,
-                "Export complet réussi !",
+                "Export complet réussi !\n"
+                + list.size() + " soutenances exportées.",
                 "Succès", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                 "Erreur : " + ex.getMessage(),

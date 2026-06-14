@@ -87,6 +87,17 @@ public class ChargementExcelFrame extends JInternalFrame {
         log("Chargement depuis : " + cheminChoisi);
 
         try {
+            // ── Vider les anciennes données avant rechargement ────
+            log("\n[0] Nettoyage des anciennes données...");
+            mainFrame.getSoutenanceRepo().vider();
+            mainFrame.getEtudiantRepo().vider();
+            mainFrame.getEnseignantRepo().vider();
+            mainFrame.getSalleRepo().vider();
+
+            // Réinitialiser les encadrants
+            log("    OK - données effacées.");
+
+            // ── Chargement normal ─────────────────────────────────
             log("\n[1/4] Chargement configuration...");
             mainFrame.chargerExcel(cheminChoisi);
             log("  Config chargée : " + mainFrame.getConfig());
@@ -96,16 +107,15 @@ public class ChargementExcelFrame extends JInternalFrame {
                 + mainFrame.getEtudiantRepo().chargerTous().size());
             log("[4/4] Salles : "
                 + mainFrame.getSalleRepo().chargerDisponibles().size());
-            log("Chargement terminé avec succès !");
+            log("\nChargement terminé ");
 
         } catch (Exception ex) {
-            log("\n❌ Erreur : " +ex.getMessage());
+            log("\n❌ Erreur : " + ex.getMessage());
             JOptionPane.showMessageDialog(this,
                 "Erreur lors du chargement :\n" + ex.getMessage(),
                 "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void log(String msg) {
         logArea.append(msg + "\n");
         logArea.setCaretPosition(logArea.getDocument().getLength());

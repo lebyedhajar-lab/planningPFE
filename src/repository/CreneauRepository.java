@@ -62,4 +62,5 @@ public class CreneauRepository implements IdRepository<Creneau> {
         }
         return true;
     }
+    public void vider() { creneaux.clear(); }
 }

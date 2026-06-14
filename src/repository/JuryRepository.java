@@ -123,4 +123,5 @@ public class JuryRepository implements IdRepository<Jury> {
         }
         return count;
     }
+    public void vider() { jurys.clear(); }
 }

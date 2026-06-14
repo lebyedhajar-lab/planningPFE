@@ -78,8 +78,7 @@ public class SoutenanceRepository implements IdRepository<Soutenance> {
 
     public boolean salleOccupee(int salleId, int creneauId) {
         for (Soutenance s : soutenances) {
-            if (s.getSalle() != null && s.getCreneau() != null
-                && s.getSalle().getId() == salleId
+            if (s.getSalle() != null && s.getCreneau() != null && s.getSalle().getId() == salleId
                 && s.getCreneau().getId() == creneauId) {
                 return true;
             }

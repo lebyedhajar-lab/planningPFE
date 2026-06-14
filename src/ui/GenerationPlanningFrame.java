@@ -30,7 +30,7 @@ public class GenerationPlanningFrame extends JInternalFrame {
                                     SalleRepository salleRepo,
                                     SoutenanceRepository soutenanceRepo,
                                     ContrainteRepository contrainteRepo) {
-        super("Génération du Planning", true, true, true, true);
+        super("Generation du Planning", true, true, true, true);
         this.mainFrame      = mainFrame;
         this.config         = config;
         this.enseignantRepo = enseignantRepo;
@@ -49,14 +49,14 @@ public class GenerationPlanningFrame extends JInternalFrame {
 
         JPanel infoPanel = new JPanel(new GridLayout(4, 2, 6, 6));
         infoPanel.setBorder(BorderFactory.createTitledBorder(
-            "Configuration chargée"));
-        infoPanel.add(new JLabel("Date début :"));
+            "Configuration chargee"));
+        infoPanel.add(new JLabel("Date debut :"));
         infoPanel.add(new JLabel(config.getDateDebut() != null
-            ? config.getDateDebut().toString() : "—"));
+            ? config.getDateDebut().toString() : "-"));
         infoPanel.add(new JLabel("Nb jours :"));
         infoPanel.add(new JLabel(
             String.valueOf(config.getNbJoursSoutenances())));
-        infoPanel.add(new JLabel("Durée soutenance :"));
+        infoPanel.add(new JLabel("Duree soutenance :"));
         infoPanel.add(new JLabel(
             config.getDureeSoutenanceMin() + " min"));
         infoPanel.add(new JLabel("Nb membres jury :"));
@@ -70,10 +70,10 @@ public class GenerationPlanningFrame extends JInternalFrame {
         logArea.setBackground(new Color(245, 245, 248));
         JScrollPane scroll = new JScrollPane(logArea);
         scroll.setBorder(BorderFactory.createTitledBorder(
-            "Journal de génération"));
+            "Journal de generation"));
         root.add(scroll, BorderLayout.CENTER);
 
-        JButton btnGenerer = new JButton("Générer le Planning");
+        JButton btnGenerer = new JButton("Generer le Planning");
         btnGenerer.setBackground(COLOR_PRIMARY);
         btnGenerer.setForeground(Color.WHITE);
         btnGenerer.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -106,28 +106,31 @@ public class GenerationPlanningFrame extends JInternalFrame {
         });
         System.setOut(ps);
 
-        log("Démarrage de la génération...");
-        log("  Étudiants  : " + etudiantRepo.chargerTous().size());
+        log("Demarrage de la generation...");
+        log("  Etudiants  : " + etudiantRepo.chargerTous().size());
         log("  Enseignants: " + enseignantRepo.chargerTous().size());
         log("  Salles     : " + salleRepo.chargerDisponibles().size());
         log("  Nb membres jury : " + config.getNbMembresJury());
 
         try {
+            // Nettoyage
+            log("\n[0] Nettoyage...");
             soutenanceRepo.vider();
             for (Enseignant ens : enseignantRepo.chargerTous()) {
                 ens.reinitialiserSoutenances();
             }
+            log("    OK - soutenances videes, compteurs reinitialises.");
 
-            // Étape 1 : Affecter encadrants
+            // Etape 1 : Affecter encadrants
             log("\n[1] Affectation des encadrants...");
             new EncadrantAffectationService()
                 .affecter(
                     etudiantRepo.chargerTous(),
                     enseignantRepo.chargerTous());
-            log("✅ Encadrants affectés.");
+            log("    OK - Encadrants affectes.");
 
-            // Étape 2 : Générer planning
-            log("\n[2] Génération du planning...");
+            // Etape 2 : Generer planning
+            log("\n[2] Generation du planning...");
             ContrainteValidator validator =
                 new ContrainteValidator(contrainteRepo, soutenanceRepo);
 
@@ -144,19 +147,27 @@ public class GenerationPlanningFrame extends JInternalFrame {
                 soutenanceRepo);
 
             List<Soutenance> soutenances = generator.generer();
-            log("\n Planning généré : "
+            log("\n[OK] Planning genere : "
                 + soutenances.size() + " soutenances.");
             generator.afficherRapport(soutenances);
 
-            String id = new PlanningHistoriqueService().sauvegarder(
-                soutenances, mainFrame.getCheminExcel());
-            log("\n✅ Sauvegardé dans l'historique : " + id);
+            // Etape 3 : Sauvegarder historique
+            log("\n[3] Sauvegarde dans l'historique...");
+            try {
+                String hid = new PlanningHistoriqueService()
+                    .sauvegarder(soutenances,
+                                 mainFrame.getCheminExcel());
+                log("    OK - id : " + hid);
+            } catch (Exception ex) {
+                log("    AVERTISSEMENT - Historique non sauvegarde : "
+                    + ex.getMessage());
+            }
 
         } catch (Exception ex) {
-            log("\n❌ Erreur : " + ex.getMessage());
+            log("\n[ERREUR] : " + ex.getMessage());
             JOptionPane.showMessageDialog(this,
                 "Erreur : " + ex.getMessage(),
-                "Génération échouée", JOptionPane.ERROR_MESSAGE);
+                "Generation echouee", JOptionPane.ERROR_MESSAGE);
         }
     }
 

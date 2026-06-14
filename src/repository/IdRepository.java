@@ -8,5 +8,5 @@ public interface IdRepository<T> {
     List<T> chargerTous();
     T trouverParId(int id);
     boolean supprimer(int id) ;
-  
+    void vider();
 }
