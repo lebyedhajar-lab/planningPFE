@@ -108,10 +108,10 @@ public class EcranVerification extends JInternalFrame {
             lancerVerification();
             int nbProblemes = compterProblemes();
             if (nbProblemes == 0) {
-                labelResume.setText("✔ Aucun problème détecté. Le planning est valide.");
+                labelResume.setText(" Aucun problème détecté. Le planning est valide.");
                 labelResume.setForeground(new Color(0, 120, 0));
             } else {
-                labelResume.setText("✘ " + nbProblemes + " problème(s) détecté(s).");
+                labelResume.setText(" " + nbProblemes + " problème(s) détecté(s).");
                 labelResume.setForeground(new Color(180, 0, 0));
             }
         });

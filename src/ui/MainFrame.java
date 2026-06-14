@@ -97,6 +97,7 @@ public class MainFrame extends JFrame {
         sidebar.add(buildSidebarBtn(" Dashboard",        this::ouvrirDashboard));
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Vérification",     this::ouvrirVerification));
+        sidebar.add(buildSidebarBtn(" Vérification", this::ouvrirVerification)); 
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Historique",       this::ouvrirHistorique));
         sidebar.add(Box.createVerticalStrut(6));
@@ -203,7 +204,7 @@ public class MainFrame extends JFrame {
             return;
         }
         // Passer this (MainFrame) au lieu de soutenanceRepo
-        addInternalFrame(new ExportFrame(this));
+        addInternalFrame(new ExportFrame(soutenanceRepo, etudiantRepo, this));
     }
 
     public void chargerExcel(String chemin) throws IOException {
