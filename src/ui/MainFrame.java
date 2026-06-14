@@ -21,21 +21,28 @@ public class MainFrame extends JFrame {
     private final SoutenanceRepository soutenanceRepo  = new SoutenanceRepository();
     private final ContrainteRepository contrainteRepo  = new ContrainteRepository();
     private final CreneauRepository    creneauRepo     = new CreneauRepository();
+  
 
     private DashboardService dashboardService;
+
+    //  Desktop
     private JDesktopPane desktop;
+
+    //  Chemin Excel 
     private String cheminExcel = null;
 
-    // ── Couleurs ──────────────────────────────────────────────
-    private static final Color COLOR_SIDEBAR = new Color(30, 30, 45);
-    private static final Color COLOR_HEADER  = new Color(50, 50, 70);
-    private static final Color COLOR_DESKTOP = new Color(240, 240, 248);
-    private static final Color COLOR_WHITE   = Color.WHITE;
-    private static final Font  FONT_MENU     = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font  FONT_TITLE    = new Font("Segoe UI", Font.BOLD, 14);
+    //  Couleurs 
+    private static final Color COLOR_SIDEBAR  = new Color(30, 30, 45);
+    private static final Color COLOR_HEADER   = new Color(50, 50, 70);
+    private static final Color COLOR_BTN      = new Color(83, 74, 183);
+    private static final Color COLOR_BTN_HVR  = new Color(103, 94, 210);
+    private static final Color COLOR_DESKTOP  = new Color(240, 240, 248);
+    private static final Color COLOR_WHITE    = Color.WHITE;
+    private static final Font  FONT_MENU      = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font  FONT_TITLE     = new Font("Segoe UI", Font.BOLD, 14);
 
     public MainFrame() {
-        setTitle("Planning PFE — Système de gestion");
+        setTitle("Planning PFE - Système de gestion");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1200, 750);
         setLocationRelativeTo(null);
@@ -44,33 +51,25 @@ public class MainFrame extends JFrame {
     }
 
     private void initUI() {
-        setLayout(new BorderLayout());
-        add(buildSidebar(), BorderLayout.WEST);
-        desktop = new JDesktopPane();
-        desktop.setBackground(COLOR_DESKTOP);
-        add(desktop, BorderLayout.CENTER);
-        add(buildHeader(), BorderLayout.NORTH);
+	    setLayout(new BorderLayout());
+	    add(buildSidebar(), BorderLayout.WEST);
+	    desktop = new JDesktopPane();
+	    desktop.setBackground(COLOR_DESKTOP);
+	    add(desktop, BorderLayout.CENTER);
+	    add(buildHeader(), BorderLayout.NORTH);
     }
 
-    private JPanel buildHeader() {
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(COLOR_HEADER);
-        header.setPreferredSize(new Dimension(0, 50));
-        header.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
-        JLabel title = new JLabel(
-            "Planning PFE — Système de gestion des soutenances");
-        title.setFont(FONT_TITLE);
-        title.setForeground(COLOR_WHITE);
-        header.add(title, BorderLayout.WEST);
 
-        JLabel status = new JLabel("Prêt");
-        status.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        status.setForeground(new Color(180, 180, 200));
-        header.add(status, BorderLayout.EAST);
-        return header;
-    }
-
+	private JPanel buildHeader() {
+		JPanel header = new JPanel(new BorderLayout());
+		header.setBackground(COLOR_HEADER);
+		header.setPreferredSize(new Dimension(0, 50));
+		header.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+		JLabel title = new JLabel( "Planning PFE — Système de gestion des soutenances");
+		return header;
+	}
+	
     private JPanel buildSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));

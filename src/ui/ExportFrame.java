@@ -85,8 +85,6 @@ public class ExportFrame extends JInternalFrame {
     }
 
     private void exporter(boolean fichesOnly) {
-  
-    	
         if (dossierChoisi == null) {
             JOptionPane.showMessageDialog(this,
                 "Choisissez un dossier de destination.",
@@ -95,17 +93,8 @@ public class ExportFrame extends JInternalFrame {
         }
         try {
             // Toujours lire depuis mainFrame au moment de l'export
-            List<Soutenance> list = mainFrame.getSoutenanceRepo().chargerTous();
-
-         // ← Ajouter ce log
-         System.out.println("=== EXPORT ===");
-         System.out.println("Nb soutenances à exporter : " + list.size());
-         if (!list.isEmpty()) {
-             System.out.println("1ère soutenance : " 
-                 + list.get(0).getEtudiant().getNom()
-                 + " | " + list.get(0).getCreneau().getDateJour()
-                 + " " + list.get(0).getCreneau().getHeureDebut());
-         }
+            List<Soutenance> list =
+                mainFrame.getSoutenanceRepo().chargerTous();
 
             if (list.isEmpty()) {
                 JOptionPane.showMessageDialog(this,

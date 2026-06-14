@@ -165,6 +165,8 @@ public class GenerationPlanningFrame extends JInternalFrame {
 
         } catch (Exception ex) {
             log("\n[ERREUR] : " + ex.getMessage());
+            ex.printStackTrace();
+            log("\n Erreur : " + ex.getMessage());
             JOptionPane.showMessageDialog(this,
                 "Erreur : " + ex.getMessage(),
                 "Generation echouee", JOptionPane.ERROR_MESSAGE);

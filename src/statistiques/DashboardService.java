@@ -31,9 +31,6 @@ public class DashboardService {
 
     }
 
-    //
-    // STATISTIQUES DE BASE
-  
 
     // ─── Nb soutenances par prof ─────────────────────────────────
     public int nbSoutenancesParProf(Enseignant prof) {
@@ -95,9 +92,7 @@ public class DashboardService {
         return getFilieres().size();
     }
 
-    // ════════════════════════════════════════════════════════════
     // STATISTIQUES CONFIG — depuis ConfigPlanning
-    // ════════════════════════════════════════════════════════════
 
     // ─── Nb créneaux par jour (matin + après-midi) ───────────────
     public int nbCreneauxParJour() {
@@ -132,9 +127,7 @@ public class DashboardService {
              + " - " + config.getHeureFinJournee();
     }
 
-    // ════════════════════════════════════════════════════════════
     // EQUILIBRE
-    // ════════════════════════════════════════════════════════════
 
     // ─── Moyenne soutenances par prof ────────────────────────────
     public double calculerMoyenneSoutenances() {
@@ -224,9 +217,7 @@ public class DashboardService {
         return true;
     }
 
-    // ════════════════════════════════════════════════════════════
     // EXTREMES
-    // ════════════════════════════════════════════════════════════
 
     public Enseignant profLePlusCharge() {
         List<Enseignant> profs = enseignantRepo.chargerTous();
@@ -264,9 +255,7 @@ public class DashboardService {
         return max;
     }
 
-    // ════════════════════════════════════════════════════════════
     // RAPPORTS CONSOLE
-    // ════════════════════════════════════════════════════════════
 
     public void afficherRapport() {
         System.out.println("============ DASHBOARD ============");
