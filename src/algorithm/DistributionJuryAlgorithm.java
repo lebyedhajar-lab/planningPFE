@@ -72,11 +72,11 @@ public class DistributionJuryAlgorithm {
     	if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
     	if (!s.getJury().contientEnseignant(e)) continue;
 
-    	// Écart entre fin existante → début nouvelle
+    	// Écart entre fin existante -> début nouvelle
     	long ecartApres = (c.getHeureDebut().toSecondOfDay() -
     	s.getCreneau().getHeureFin().toSecondOfDay()) / 60;
 
-    	// Écart entre fin nouvelle → début existante
+    	// Écart entre fin nouvelle -> début existante
     	long ecartAvant = (s.getCreneau().getHeureDebut().toSecondOfDay() -
     	c.getHeureFin().toSecondOfDay()) / 60;
 
@@ -195,7 +195,7 @@ public class DistributionJuryAlgorithm {
         for (Etudiant et : etudiants) {
             if (et.getEncadrant() == null) {
                 System.out.println(
-                    "⚠️ Ignoré (encadrant null) : "
+                    " Ignoré (encadrant null) : "
                     + et.getNom() + " " + et.getPrenom());
             } else {
                 etudiantsValides.add(et);
@@ -273,7 +273,7 @@ public class DistributionJuryAlgorithm {
                     + ens.getNom() + " "
                     + ens.getPrenom()
                     + " [" + ens.getSpecialite() + "]"
-                    + " → " + charge + " jury(s)");
+                    + " -> " + charge + " jury(s)");
         }
         System.out.println("====================");
 
@@ -284,7 +284,7 @@ public class DistributionJuryAlgorithm {
      * Traite d'abord les encadrants les plus chargés, puis les soutenances
      * en anglais en dernier pour ne pas surcharger les anglophones.
      */
-    private void trierEtudiantsPourEquilibre(List<Etudiant> etudiants) {
+    private void trierEtudiantsPourEquilibre1(List<Etudiant> etudiants) {
         etudiants.sort(Comparator
             .comparingInt((Etudiant e) ->
                 compterEtudiantsParEncadrant(e.getEncadrant(), etudiants))
@@ -292,7 +292,32 @@ public class DistributionJuryAlgorithm {
             .thenComparing(e ->
                 "anglais".equalsIgnoreCase(e.getLangue())));
     }
+    private void trierEtudiantsPourEquilibre(List<Etudiant> etudiants) {
+        // Précalculer les charges AVANT le tri pour éviter l'incohérence
+        java.util.Map<Integer, Integer> chargesParEncadrant = new java.util.HashMap<>();
+        for (Etudiant e : etudiants) {
+            if (e.getEncadrant() != null) {
+                int id = e.getEncadrant().getId();
+                if (!chargesParEncadrant.containsKey(id)) {
+                    chargesParEncadrant.put(id, compterEtudiantsParEncadrant(e.getEncadrant(), etudiants));
+                }
+            }
+        }
 
+        etudiants.sort((a, b) -> {
+            int chargeA = a.getEncadrant() != null
+                ? chargesParEncadrant.getOrDefault(a.getEncadrant().getId(), 0) : 0;
+            int chargeB = b.getEncadrant() != null
+                ? chargesParEncadrant.getOrDefault(b.getEncadrant().getId(), 0) : 0;
+
+            int cmp = Integer.compare(chargeB, chargeA); // reversed
+            if (cmp != 0) return cmp;
+
+            int langueA = "anglais".equalsIgnoreCase(a.getLangue()) ? 1 : 0;
+            int langueB = "anglais".equalsIgnoreCase(b.getLangue()) ? 1 : 0;
+            return Integer.compare(langueA, langueB);
+        });
+    }
     private int compterEtudiantsParEncadrant(Enseignant encadrant,
                                               List<Etudiant> etudiants) {
         int count = 0;
@@ -317,7 +342,7 @@ public class DistributionJuryAlgorithm {
             if (surcharge == null) break;
 
             List<Enseignant> triesParCharge = new ArrayList<>(enseignants);
-            triesParCharge.sort(Comparator.comparingInt(this::calculerCharge));
+            triesParCharge.sort((a, b) -> Integer.compare(calculerCharge(a), calculerCharge(b)));
 
             boolean echange = false;
             for (Enseignant sousCharge : triesParCharge) {

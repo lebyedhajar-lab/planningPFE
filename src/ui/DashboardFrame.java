@@ -247,7 +247,7 @@ public class DashboardFrame extends JInternalFrame {
         addInfo(panel, "Horaires journée",
             dashboardService.getHorairesJournee());
         addInfo(panel, "Planning équilibré ?",
-            dashboardService.estPlanningEquilibre() ? "✅ Oui" : "⚠️ Non");
+            dashboardService.estPlanningEquilibre() ? " Oui" : " Non");
 
         return panel;
     }

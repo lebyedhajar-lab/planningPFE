@@ -15,7 +15,7 @@ import statistiques.DashboardService;
 
 public class MainFrame extends JFrame{
 
-    // ── Repositories ──────────────────────────────────────────
+    //  Repositories 
 	private ConfigPlanning config = new ConfigPlanning();
     private final EnseignantRepository  enseignantRepo  = new EnseignantRepository();
     private final EtudiantRepository    etudiantRepo    = new EtudiantRepository();
@@ -26,13 +26,13 @@ public class MainFrame extends JFrame{
 
     private DashboardService dashboardService;
 
-    // ── Desktop ───────────────────────────────────────────────
+    //  Desktop
     private JDesktopPane desktop;
 
-    // ── Chemin Excel ──────────────────────────────────────────
+    //  Chemin Excel 
     private String cheminExcel = null;
 
-    // ── Couleurs ──────────────────────────────────────────────
+    //  Couleurs 
     private static final Color COLOR_SIDEBAR  = new Color(30, 30, 45);
     private static final Color COLOR_HEADER   = new Color(50, 50, 70);
     private static final Color COLOR_BTN      = new Color(83, 74, 183);
@@ -43,7 +43,7 @@ public class MainFrame extends JFrame{
     private static final Font  FONT_TITLE     = new Font("Segoe UI", Font.BOLD, 14);
 
     public MainFrame() {
-        setTitle("Planning PFE — Système de gestion");
+        setTitle("Planning PFE - Système de gestion");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1200, 750);
         setLocationRelativeTo(null);
@@ -53,29 +53,26 @@ public class MainFrame extends JFrame{
 
     private void initUI() {
         setLayout(new BorderLayout());
-
-        // ── Sidebar ───────────────────────────────────────────
+        // Sidebar
         add(buildSidebar(), BorderLayout.WEST);
-
-        // ── Desktop ───────────────────────────────────────────
+        //Desktop 
         desktop = new JDesktopPane();
         desktop.setBackground(COLOR_DESKTOP);
         add(desktop, BorderLayout.CENTER);
-
-        // ── Header ────────────────────────────────────────────
+        //  Header 
         add(buildHeader(), BorderLayout.NORTH);
     }
 
-    // ── Header
+    //  Header
     private JPanel buildHeader(){
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(COLOR_HEADER);
         header.setPreferredSize(new Dimension(0, 50));
         header.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
-        JLabel title = new JLabel("Planning PFE — Système de gestion des soutenances");
+        JLabel title = new JLabel("Planificateur PFE — Système de gestion des soutenances");
         title.setFont(FONT_TITLE);
-        title.setForeground(COLOR_WHITE);
+        title.setForeground(COLOR_WHITE); 
         header.add(title, BorderLayout.WEST);
 
         JLabel status = new JLabel("Prêt");

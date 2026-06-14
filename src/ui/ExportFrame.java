@@ -46,13 +46,13 @@ public class ExportFrame extends JInternalFrame {
 
         // Boutons export
         JButton btnPlanning = buildExportBtn(
-            "📄 Exporter Planning (.docx)",
+            " Exporter Planning (.docx)",
             () -> exporter(false));
         JButton btnFiches = buildExportBtn(
-            "📝 Exporter Fiches de notation (.docx)",
+            " Exporter Fiches de notation (.docx)",
             () -> exporter(true));
         JButton btnTout = buildExportBtn(
-            "📦 Tout exporter",
+            " Tout exporter",
             () -> exporterTout());
 
         root.add(btnPlanning);
@@ -84,7 +84,7 @@ public class ExportFrame extends JInternalFrame {
         }
     }
 
-    private void exporter(boolean fichesOnly) {
+    private void exporter1(boolean fichesOnly) {
         if (dossierChoisi == null) {
             JOptionPane.showMessageDialog(this,
                 "Choisissez un dossier de destination.",
@@ -94,6 +94,40 @@ public class ExportFrame extends JInternalFrame {
         try {
             PlanningExporter exporter = new PlanningExporter();
             List<Soutenance> list = soutenanceRepo.chargerTous();
+            if (fichesOnly)
+                exporter.exporterFiches(list, dossierChoisi + File.separator);
+            else
+                exporter.exporterPlanning(list, dossierChoisi);
+            JOptionPane.showMessageDialog(this,
+                "Export réussi dans : " + dossierChoisi,
+                "Succès", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                "Erreur export : " + ex.getMessage(),
+                "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void exporter(boolean fichesOnly) {
+        if (dossierChoisi == null) {
+            JOptionPane.showMessageDialog(this,
+                "Choisissez un dossier de destination.",
+                "Erreur", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            List<Soutenance> list = soutenanceRepo.chargerTous();
+            
+            // LOG pour déboguer
+            System.out.println("=== Export : " + list.size() + " soutenances ===");
+            for (int i = 0; i < Math.min(3, list.size()); i++) {
+                Soutenance s = list.get(i);
+                System.out.println("  [" + s.getId() + "] " 
+                    + s.getEtudiant().getNom() 
+                    + " | " + s.getCreneau().getHeureDebut()
+                    + " | salle " + s.getSalle().getNom());
+            }
+            
+            PlanningExporter exporter = new PlanningExporter();
             if (fichesOnly)
                 exporter.exporterFiches(list, dossierChoisi + File.separator);
             else
