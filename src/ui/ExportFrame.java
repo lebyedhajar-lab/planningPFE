@@ -11,23 +11,24 @@ import java.util.List;
 
 public class ExportFrame extends JInternalFrame {
 
-    private MainFrame mainFrame = new MainFrame();
+	private MainFrame mainFrame;
     private final SoutenanceRepository soutenanceRepo;
     private final EtudiantRepository etudiantRepo; 
     private JLabel labelDossier;
     private String dossierChoisi = null;
     private static final Color COLOR_PRIMARY = new Color(83, 74, 183);
 
-    public ExportFrame(SoutenanceRepository soutenanceRepo, EtudiantRepository etudiantRepo,MainFrame mainFrame ) {
-        super("Exporter le Planning", true, true, true, true);
-        this.mainFrame = MainFrame();
-        setSize(460, 280);
-        this.soutenanceRepo = soutenanceRepo;
-        this.etudiantRepo = etudiantRepo; 
-        setSize(460, 320);
-        setLocation(200, 150);
-        initUI();
-    }
+    public ExportFrame(SoutenanceRepository soutenanceRepo,
+                           EtudiantRepository etudiantRepo,
+                           MainFrame mainFrame) {
+            super("Exporter le Planning", true, true, true, true);
+            this.mainFrame = mainFrame;
+            this.soutenanceRepo = soutenanceRepo;
+            this.etudiantRepo = etudiantRepo;
+            setSize(460, 320);
+            setLocation(200, 150);
+            initUI();
+        }
 
     private MainFrame MainFrame() {
 		// TODO Auto-generated method stub
@@ -148,7 +149,7 @@ public class ExportFrame extends JInternalFrame {
             return;
         }
         try {
-            List<Soutenance> list = soutenanceRepo.chargerTous();
+        	List<Soutenance> list = mainFrame.getSoutenanceRepo().chargerTous();
             new PlanningExporter().exporterPV(list, dossierChoisi);
             JOptionPane.showMessageDialog(this,
                 "PV exporté avec succès dans : " + dossierChoisi,
