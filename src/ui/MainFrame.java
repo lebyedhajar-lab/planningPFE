@@ -22,7 +22,6 @@ public class MainFrame extends JFrame {
     private final ContrainteRepository contrainteRepo  = new ContrainteRepository();
     private final CreneauRepository    creneauRepo     = new CreneauRepository();
   
-
     private DashboardService dashboardService;
 
     //  Desktop
@@ -97,7 +96,6 @@ public class MainFrame extends JFrame {
         sidebar.add(buildSidebarBtn(" Dashboard",        this::ouvrirDashboard));
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Vérification",     this::ouvrirVerification));
-        sidebar.add(buildSidebarBtn(" Vérification", this::ouvrirVerification)); 
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Historique",       this::ouvrirHistorique));
         sidebar.add(Box.createVerticalStrut(6));
