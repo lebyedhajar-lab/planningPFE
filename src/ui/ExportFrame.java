@@ -1,8 +1,8 @@
 package ui;
 
-import export.PlanningExporter;
+import export.*;
 import model.Soutenance;
-import repository.SoutenanceRepository;
+import repository.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -11,14 +11,16 @@ import java.util.List;
 public class ExportFrame extends JInternalFrame {
 
     private final SoutenanceRepository soutenanceRepo;
+    private final EtudiantRepository etudiantRepo; 
     private JLabel labelDossier;
     private String dossierChoisi = null;
     private static final Color COLOR_PRIMARY = new Color(83, 74, 183);
 
-    public ExportFrame(SoutenanceRepository soutenanceRepo) {
+    public ExportFrame(SoutenanceRepository soutenanceRepo, EtudiantRepository etudiantRepo) {
         super("Exporter le Planning", true, true, true, true);
         this.soutenanceRepo = soutenanceRepo;
-        setSize(460, 280);
+        this.etudiantRepo = etudiantRepo; 
+        setSize(460, 320);
         setLocation(200, 150);
         initUI();
     }
@@ -45,19 +47,25 @@ public class ExportFrame extends JInternalFrame {
         root.add(Box.createVerticalStrut(16));
 
         // Boutons export
+        JButton btnAffectation = buildExportBtn(
+        	    " Exporter Affectations encadrants (.docx)",
+        	    () -> exporterAffectations());
+
+        	root.add(btnAffectation);
+        	root.add(Box.createVerticalStrut(8));
         JButton btnPlanning = buildExportBtn(
             " Exporter Planning (.docx)",
             () -> exporter(false));
-        JButton btnFiches = buildExportBtn(
-            " Exporter Fiches de notation (.docx)",
-            () -> exporter(true));
+        JButton btnPV = buildExportBtn(
+        	    " Exporter PV (dossiers par prof)",
+        	    () -> exporterPV());
         JButton btnTout = buildExportBtn(
             " Tout exporter",
             () -> exporterTout());
-
-        root.add(btnPlanning);
+        
+        root.add(btnPV);
         root.add(Box.createVerticalStrut(8));
-        root.add(btnFiches);
+        root.add(btnPlanning);
         root.add(Box.createVerticalStrut(8));
         root.add(btnTout);
 
@@ -84,29 +92,6 @@ public class ExportFrame extends JInternalFrame {
         }
     }
 
-    private void exporter1(boolean fichesOnly) {
-        if (dossierChoisi == null) {
-            JOptionPane.showMessageDialog(this,
-                "Choisissez un dossier de destination.",
-                "Erreur", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        try {
-            PlanningExporter exporter = new PlanningExporter();
-            List<Soutenance> list = soutenanceRepo.chargerTous();
-            if (fichesOnly)
-                exporter.exporterFiches(list, dossierChoisi + File.separator);
-            else
-                exporter.exporterPlanning(list, dossierChoisi);
-            JOptionPane.showMessageDialog(this,
-                "Export réussi dans : " + dossierChoisi,
-                "Succès", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
-                "Erreur export : " + ex.getMessage(),
-                "Erreur", JOptionPane.ERROR_MESSAGE);
-        }
-    }
     private void exporter(boolean fichesOnly) {
         if (dossierChoisi == null) {
             JOptionPane.showMessageDialog(this,
@@ -141,6 +126,25 @@ public class ExportFrame extends JInternalFrame {
                 "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
+    private void exporterPV() {
+        if (dossierChoisi == null) {
+            JOptionPane.showMessageDialog(this,
+                "Choisissez un dossier de destination.",
+                "Erreur", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            List<Soutenance> list = soutenanceRepo.chargerTous();
+            new PlanningExporter().exporterPV(list, dossierChoisi);
+            JOptionPane.showMessageDialog(this,
+                "PV exporté avec succès dans : " + dossierChoisi,
+                "Succès", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                "Erreur : " + ex.getMessage(),
+                "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private void exporterTout() {
         if (dossierChoisi == null) {
@@ -154,6 +158,25 @@ public class ExportFrame extends JInternalFrame {
                 soutenanceRepo.chargerTous(), dossierChoisi);
             JOptionPane.showMessageDialog(this,
                 "Export complet réussi !",
+                "Succès", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                "Erreur : " + ex.getMessage(),
+                "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void exporterAffectations() {
+        if (dossierChoisi == null) {
+            JOptionPane.showMessageDialog(this,
+                "Choisissez un dossier de destination.",
+                "Erreur", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            new PlanningExporter().exporterAffectations(
+                etudiantRepo.chargerTous(), dossierChoisi);
+            JOptionPane.showMessageDialog(this,
+                "Affectations exportées avec succès !",
                 "Succès", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,

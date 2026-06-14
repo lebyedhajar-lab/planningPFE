@@ -111,7 +111,7 @@ public class MainFrame extends JFrame{
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Dashboard",          this::ouvrirDashboard));
         sidebar.add(Box.createVerticalStrut(6));
-        sidebar.add(buildSidebarBtn(" Vérification", this::ouvrirVerification)); // ← ici
+        sidebar.add(buildSidebarBtn(" Vérification", this::ouvrirVerification)); 
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarBtn(" Historique",       this::ouvrirHistorique));
         sidebar.add(Box.createVerticalStrut(6));
@@ -216,7 +216,7 @@ public class MainFrame extends JFrame{
                 "Export impossible", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        addInternalFrame(new ExportFrame(soutenanceRepo));
+        addInternalFrame(new ExportFrame(soutenanceRepo,etudiantRepo));
     }
 
     /** Charge config, profs, étudiants et salles depuis un fichier Excel. */
