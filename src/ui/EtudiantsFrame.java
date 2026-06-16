@@ -20,7 +20,7 @@ public class EtudiantsFrame extends JInternalFrame {
     }
 
     private void initUI() {
-        String[] cols = { "ID", "Nom", "Prénom", "Filière", "Langue", "Encadrant", "Titre PFE" };
+        String[] cols = { "ID", "Nom", "Prénom", "Filière", "Encadrant", "Titre PFE" };
         List<Etudiant> list = etudiantRepo.chargerTous();
         Object[][] data = new Object[list.size()][cols.length];
 
@@ -30,11 +30,10 @@ public class EtudiantsFrame extends JInternalFrame {
             data[i][1] = e.getNom();
             data[i][2] = e.getPrenom();
             data[i][3] = e.getFiliere() != null ? e.getFiliere().getNom() : "—";
-            data[i][4] = e.getLangue();
-            data[i][5] = e.getEncadrant() != null
+            data[i][4] = e.getEncadrant() != null
                        ? e.getEncadrant().getNom() + " " + e.getEncadrant().getPrenom()
                        : "—";
-            data[i][6] = e.getTitrePFE();
+            data[i][5] = e.getTitrePFE();
         }
 
         DefaultTableModel model = new DefaultTableModel(data, cols) {
