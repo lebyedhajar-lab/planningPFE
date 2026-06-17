@@ -18,14 +18,14 @@ import java.util.*;
 
 public class AffectationExporter {
 
-    // Couleurs par filière (hex sans #)
+ 
     private static final String[] COULEURS = {
-        "C6EFCE", // vert clair
-        "BDD7EE", // bleu clair
-        "FFE699", // jaune
-        "F4CCCC", // rose
-        "D9D2E9", // violet
-        "FCE5CD"  // orange
+        "C6EFCE", 
+        "BDD7EE", 
+        "FFE699", 
+        "F4CCCC", 
+        "D9D2E9", 
+        "FCE5CD"  
     };
 
     public void exporter(List<Etudiant> etudiants,
@@ -34,7 +34,6 @@ public class AffectationExporter {
 
         XWPFDocument document = new XWPFDocument();
 
-        // ── MARGES ────────────────────────────────────────────
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
         CTPageMar pageMar = sectPr.addNewPgMar();
         pageMar.setTop(BigInteger.valueOf(720));
@@ -44,11 +43,9 @@ public class AffectationExporter {
 
         int totalWidth = 10080;
 
-        // ── EN-TÊTE ───────────────────────────────────────────
         ajouterEntete(document, totalWidth);
 
-        // ── REGROUPER PAR ENCADRANT ───────────────────────────
-        // Map : encadrant → liste étudiants
+       
         Map<Integer, Enseignant> encadrants = new LinkedHashMap<>();
         Map<Integer, List<Etudiant>> affectations = new LinkedHashMap<>();
 
@@ -59,7 +56,6 @@ public class AffectationExporter {
             affectations.computeIfAbsent(id, k -> new ArrayList<>()).add(e);
         }
 
-        // ── COULEURS PAR FILIÈRE ──────────────────────────────
         Map<String, String> couleurParFiliere = new LinkedHashMap<>();
         int idx = 0;
         for (Etudiant e : etudiants) {
@@ -71,25 +67,21 @@ public class AffectationExporter {
             }
         }
 
-        // ── LÉGENDE FILIÈRES ──────────────────────────────────
         ajouterLegende(document, couleurParFiliere);
 
-        // ── TABLEAU AFFECTATIONS ──────────────────────────────
-        // Calculer le nombre max d'étudiants par encadrant
+  
         int maxEtudiants = 0;
         for (List<Etudiant> list : affectations.values()) {
             maxEtudiants = Math.max(maxEtudiants, list.size());
         }
 
-        int nbCols = 1 + maxEtudiants; // Encadrant + étudiants
+        int nbCols = 1 + maxEtudiants; 
         XWPFTable table = document.createTable(1 + affectations.size(), nbCols);
         table.setWidth(totalWidth);
 
-        // Largeurs colonnes
         int colEncadrant = 2500;
         int colEtudiant = (totalWidth - colEncadrant) / maxEtudiants;
 
-        // ── EN-TÊTE TABLEAU ───────────────────────────────────
         XWPFTableRow rowHeader = table.getRow(0);
         setCellule(rowHeader.getCell(0), "Encadrant", colEncadrant, "1F497D", true, "FFFFFF");
         for (int i = 0; i < maxEtudiants; i++) {
@@ -97,7 +89,6 @@ public class AffectationExporter {
                 "Etudiant " + (i + 1), colEtudiant, "1F497D", true, "FFFFFF");
         }
 
-        // ── LIGNES ENCADRANTS ─────────────────────────────────
         int rowIdx = 1;
         for (Map.Entry<Integer, Enseignant> entry : encadrants.entrySet()) {
             Enseignant enc = entry.getValue();
@@ -127,14 +118,12 @@ public class AffectationExporter {
             rowIdx++;
         }
 
-        // ── SAUVEGARDER ───────────────────────────────────────
         try (FileOutputStream out = new FileOutputStream(cheminFichier)) {
             document.write(out);
         }
         document.close();
     }
 
-    // ── HELPERS ───────────────────────────────────────────────
 
     private void ajouterEntete(XWPFDocument doc, int totalWidth)
             throws IOException, InvalidFormatException {
@@ -215,7 +204,6 @@ public class AffectationExporter {
             XWPFRun r = p.createRun();
             r.setText("  " + entry.getKey() + "  ");
             r.setFontSize(11);
-            // Couleur de fond via la cellule — on utilise un tableau 1x1
         }
         // Légende via tableau coloré
         XWPFTable tableLeg = doc.createTable(1, couleurs.size());

@@ -17,7 +17,6 @@ public class ExportDocx {
     private static final String BLANC      = "FFFFFF";
     private static final String BLEU_TITRE = "2E5496";
 
-    // ── Palette profs : 32 couleurs douces bien distinctes ────
     private static final String[] PALETTE_PROFS = {
         "FFD6D6", "FFE8CC", "FFFACC", "D6F5D6", "CCF5FF",
         "D6D6FF", "F5CCF5", "FFB3B3", "FFDAB3", "FFF5B3",
@@ -28,33 +27,27 @@ public class ExportDocx {
         "E0FFFF", "D8BFD8"
     };
 
-    // ── Palette filières ──────────────────────────────────────
     private static final String[] PALETTE_FILIERES = {
         "DDEBF7", "E2EFDA", "FCE4D6", "FFF2CC",
         "EDE7F6", "FCE4EC", "E0F7FA", "F3E5F5",
         "E8F5E9", "FFF8E1", "E3F2FD", "FBE9E7"
     };
 
-    // ── Palette créneaux horaires ─────────────────────────────
     private static final String[] PALETTE_CRENEAUX = {
         "EBF5FB", "E9F7EF", "FEF9E7", "FDEDEC",
         "F0F3FF", "E8D5F5", "FFF3E0", "E8F5E9",
         "E3F2FD", "FCE4EC"
     };
 
-    // ── Année universitaire dynamique ─────────────────────────
     private static String anneeUniversitaire() {
         int annee = LocalDate.now().getYear();
-        // Si on est entre septembre et décembre → année N/N+1
-        // Sinon (jan→août) → année N-1/N
+
+
         int mois = LocalDate.now().getMonthValue();
         int debut = (mois >= 9) ? annee : annee - 1;
         return "Annee Universitaire " + debut + "/" + (debut + 1);
     }
 
-    // ── Clé unique d'un prof : "NOM Prenom" ──────────────────
-    // Utilisé à la place de getId() pour éviter tout bug
-    // si deux profs ont le même id ou id=0
     private static String cleProf(Enseignant e) {
         if (e == null) return "";
         return (e.getNom() + " " + e.getPrenom()).trim().toUpperCase();
@@ -64,8 +57,7 @@ public class ExportDocx {
 
         XWPFDocument doc = new XWPFDocument();
 
-        // ── 1. Mapper TOUS les profs -> couleur unique ──────────
-        // Clé = "NOM PRENOM" en majuscules (robuste même si getId()==0)
+       
         Map<String, String> couleurParProf = new LinkedHashMap<>();
         Map<String, String> nomAffichParProf = new LinkedHashMap<>();
         int profIdx = 0;
@@ -103,7 +95,6 @@ public class ExportDocx {
             }
         }
 
-        // ── 2. Mapper filières -> couleur ──────────────────────
         Map<String, String> couleurParFiliere = new LinkedHashMap<>();
         int filIdx = 0;
         for (Soutenance s : soutenances) {
@@ -118,7 +109,6 @@ public class ExportDocx {
             }
         }
 
-        // ── 3. Mapper créneaux (heure) -> couleur ──────────────
         Map<LocalTime, String> couleurParCreneau = new LinkedHashMap<>();
         int crIdx = 0;
         for (Soutenance s : soutenances) {
@@ -132,7 +122,6 @@ public class ExportDocx {
             }
         }
 
-        // ── En-tête ───────────────────────────────────────────
         para(doc, "Ecole Nationale des Sciences Appliquees - Al Hoceima",
             true, 12, BLEU_TITRE, ParagraphAlignment.CENTER);
         para(doc, "Departement Mathematiques et Informatique",
@@ -140,12 +129,11 @@ public class ExportDocx {
         para(doc, "", false, 4, "000000", ParagraphAlignment.CENTER);
         para(doc, "Planning des soutenances des Projets de Fin d'Etude",
             true, 14, BLEU_FONCE, ParagraphAlignment.CENTER);
-        //  Fix 3 : année dynamique
+
         para(doc, anneeUniversitaire(),
             false, 11, BLEU_FONCE, ParagraphAlignment.CENTER);
         para(doc, "", false, 4, "000000", ParagraphAlignment.CENTER);
 
-        // ── Tableau principal ─────────────────────────────────
         XWPFTable table = doc.createTable(soutenances.size() + 1, 9);
         table.setWidth("100%");
 
@@ -171,13 +159,11 @@ public class ExportDocx {
         for (int i = 0; i < soutenances.size(); i++) {
             Soutenance s = soutenances.get(i);
 
-            // Couleur créneau
             String bgCreneau = BLANC;
             if (s.getCreneau() != null)
                 bgCreneau = couleurParCreneau.getOrDefault(
                     s.getCreneau().getHeureDebut(), BLANC);
 
-            //  Fix 1 : couleur PROPRE à chaque prof via cleProf()
             String bgEncadrant = BLANC;
             String bgMembre1   = BLANC;
             String bgMembre2   = BLANC;

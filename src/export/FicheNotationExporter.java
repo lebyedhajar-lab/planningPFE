@@ -12,13 +12,10 @@ import java.io.IOException;
 import java.util.List;
 import java.math.BigInteger;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
-// CTTabStop, STTabJc, CTPPr, CTTabs sont inclus dans le wildcard ci-dessus
 
 public class FicheNotationExporter {
 
-    // ── HELPERS ───────────────────────────────────────────────────────────────
 
-    /** Paragraph vide (ligne vide) */
     private void ajouterLigneVide(XWPFDocument doc) {
         XWPFParagraph p = doc.createParagraph();
         XWPFRun r = p.createRun();
@@ -26,7 +23,6 @@ public class FicheNotationExporter {
         r.setFontSize(11);
     }
 
-    /** Paragraphe texte simple */
     private void ajouterLigne(XWPFDocument doc, String texte) {
         XWPFParagraph p = doc.createParagraph();
         XWPFRun r = p.createRun();
@@ -34,7 +30,6 @@ public class FicheNotationExporter {
         r.setFontSize(12);
     }
 
-    /** Crée un run bold+underline dans un paragraphe existant */
     private XWPFRun runBoldUnderline(XWPFParagraph p, String texte) {
         XWPFRun r = p.createRun();
         r.setText(texte);
@@ -44,7 +39,6 @@ public class FicheNotationExporter {
         return r;
     }
 
-    /** Applique une bordure complète à toutes les cellules d'un tableau */
     private void setBorduresTableau(XWPFTable table) {
         CTTblPr tblPr = table.getCTTbl().getTblPr();
         if (tblPr == null) tblPr = table.getCTTbl().addNewTblPr();
@@ -62,7 +56,6 @@ public class FicheNotationExporter {
         }
     }
 
-    /** Largeur d'une cellule en twips (DXA) */
     private void setCellWidth(XWPFTableCell cell, int twips) {
         CTTcPr tcPr = cell.getCTTc().isSetTcPr()
             ? cell.getCTTc().getTcPr() : cell.getCTTc().addNewTcPr();
@@ -71,14 +64,10 @@ public class FicheNotationExporter {
         w.setType(STTblWidth.DXA);
     }
 
-    /**
-     * Crée une ligne jury : "– Pr. NOM" à gauche et "Président/Rapporteur" à droite
-     * grâce à un tab stop aligné à droite (comme dans le modèle du prof).
-     */
+ 
     private void ajouterLigneJury(XWPFDocument doc, String nomPart, String role) {
         XWPFParagraph p = doc.createParagraph();
 
-        // Tab stop à droite à ~10080 twips (fin de la zone de texte)
         CTPPr pPr = p.getCTP().isSetPPr() ? p.getCTP().getPPr() : p.getCTP().addNewPPr();
         CTTabs tabs = pPr.isSetTabs() ? pPr.getTabs() : pPr.addNewTabs();
         CTTabStop tab = tabs.addNewTab();
@@ -97,14 +86,12 @@ public class FicheNotationExporter {
         rRole.setFontSize(12);
     }
 
-    // ── MÉTHODE PRINCIPALE ────────────────────────────────────────────────────
 
     public void genererFiche(Soutenance soutenance, String cheminFichier)
             throws IOException, InvalidFormatException {
 
         XWPFDocument document = new XWPFDocument();
 
-        // Marges de page (A4, marges réduites pour ressembler au modèle)
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
         CTPageMar pageMar = sectPr.addNewPgMar();
         pageMar.setTop(BigInteger.valueOf(720));
@@ -112,8 +99,7 @@ public class FicheNotationExporter {
         pageMar.setLeft(BigInteger.valueOf(1080));
         pageMar.setRight(BigInteger.valueOf(1080));
 
-        // ── EN-TÊTE : tableau 1 ligne x 3 colonnes (logo | texte | logo) ──────
-        // Largeur totale ~9360 twips (page A4 avec marges 1080 gauche+droite = 12240-2160 = 10080)
+       
         int totalWidth = 10080;
         int logoCol   = 1400;
         int textCol   = totalWidth - 2 * logoCol; // 7280
@@ -121,7 +107,7 @@ public class FicheNotationExporter {
         XWPFTable tableHeader = document.createTable(1, 3);
         tableHeader.setWidth(totalWidth);
         CTTblPr hPr = tableHeader.getCTTbl().getTblPr();
-        // Supprimer les bordures de l'en-tête (invisible)
+
         CTTblBorders hb = hPr.isSetTblBorders() ? hPr.getTblBorders() : hPr.addNewTblBorders();
         for (CTBorder b : new CTBorder[]{
                 hb.addNewTop(), hb.addNewBottom(),
@@ -159,14 +145,14 @@ public class FicheNotationExporter {
         rU.setBold(true);
         rU.setFontSize(13);
 
-        // "Ecole Nationale..."
+        // "Ecole Nationale"
         XWPFParagraph pE = cellTexte.addParagraph();
         pE.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun rE = pE.createRun();
         rE.setText("Ecole Nationale des Sciences Appliqu\u00e9es d\u2019Al-Hoceima - Maroc");
         rE.setFontSize(10);
 
-        // "Département..."
+        // "Département"
         XWPFParagraph pD = cellTexte.addParagraph();
         pD.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun rD = pD.createRun();
@@ -174,7 +160,7 @@ public class FicheNotationExporter {
         rD.setBold(true);
         rD.setFontSize(12);
 
-        // "Fiche d'évaluation..."
+        // "Fiche d'évaluation"
         XWPFParagraph pF = cellTexte.addParagraph();
         pF.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun rF = pF.createRun();
@@ -210,7 +196,6 @@ public class FicheNotationExporter {
 
         ajouterLigneVide(document);
 
-        // ── NOM ÉTUDIANT ──────────────────────────────────────────────────────
         XWPFParagraph pNom = document.createParagraph();
         runBoldUnderline(pNom, "Nom - Pr\u00e9nom de l\u2019\u00e9l\u00e8ve ing\u00e9nieur :");
 
@@ -221,7 +206,6 @@ public class FicheNotationExporter {
             + " " + soutenance.getEtudiant().getPrenom());
         rNomVal.setFontSize(12);
 
-     // ── FILIÈRE ───────────────────────────────────────────────────────────
         XWPFParagraph pFil = document.createParagraph();
         runBoldUnderline(pFil, "Filière :");
 
@@ -229,7 +213,6 @@ public class FicheNotationExporter {
         rFil.setText("     " + soutenance.getEtudiant().getFiliere().getNom());
         rFil.setFontSize(12);
 
-        // ── TITRE PFE ─────────────────────────────────────────────────────────
         XWPFParagraph pTitre = document.createParagraph();
         runBoldUnderline(pTitre, "Intitul\u00e9 du rapport :");
 
@@ -238,7 +221,6 @@ public class FicheNotationExporter {
         rTitreVal.setText("    \u2013 " + soutenance.getEtudiant().getTitrePFE());
         rTitreVal.setFontSize(12);
 
-        // ── ENCADRANT ─────────────────────────────────────────────────────────
         XWPFParagraph pEnc = document.createParagraph();
         runBoldUnderline(pEnc, "L\u2019encadrant (e) interne:");
 
@@ -249,31 +231,26 @@ public class FicheNotationExporter {
             + " " + soutenance.getJury().getEncadrant().getPrenom());
         rEncVal.setFontSize(12);
 
-        // ── MEMBRES DU JURY ───────────────────────────────────────────────────
         XWPFParagraph pJury = document.createParagraph();
         runBoldUnderline(pJury, "Membres du jury :");
 
         List<Enseignant> membres = soutenance.getJury().getMembres();
 
-        // ── Jury : tirets comme dans le modèle du prof ────────────────────────
-        // Ligne Président
         String nomPresident = membres.size() > 0
             ? membres.get(0).getNom() + " " + membres.get(0).getPrenom() : "………………………………………………………";
         ajouterLigneJury(document, "    \u2013  Pr.  " + nomPresident, "Pr\u00e9sident");
 
-        // Ligne Rapporteur 1
+        
         String nomRap1 = membres.size() > 1
             ? membres.get(1).getNom() + " " + membres.get(1).getPrenom() : "………………………………………………………";
         ajouterLigneJury(document, "    \u2013  Pr.  " + nomRap1, "Rapporteur");
 
-        // Ligne Rapporteur 2 (encadrant)
         String nomRap2 = soutenance.getJury().getEncadrant().getNom()
             + " " + soutenance.getJury().getEncadrant().getPrenom();
         ajouterLigneJury(document, "    \u2013  Pr.  " + nomRap2, "Rapporteur");
 
         ajouterLigneVide(document);
 
-        // ── NOTE DU CONTENU ───────────────────────────────────────────────────
         XWPFParagraph pNoteC = document.createParagraph();
         runBoldUnderline(pNoteC, "Note du Contenu");
         XWPFRun rNoteCStar = pNoteC.createRun();
@@ -294,7 +271,6 @@ public class FicheNotationExporter {
         rC.setBold(true);
         rC.setFontSize(12);
 
-        // ── NOTE DU MÉMOIRE ───────────────────────────────────────────────────
         XWPFParagraph pNoteM = document.createParagraph();
         runBoldUnderline(pNoteM, "Note du M\u00e9moire");
 
@@ -304,7 +280,6 @@ public class FicheNotationExporter {
         rM.setBold(true);
         rM.setFontSize(12);
 
-        // ── NOTE DE LA SOUTENANCE ─────────────────────────────────────────────
         XWPFParagraph pNoteS = document.createParagraph();
         runBoldUnderline(pNoteS, "Note de la Soutenance");
 
@@ -316,12 +291,10 @@ public class FicheNotationExporter {
 
         ajouterLigneVide(document);
 
-        // ── TABLEAU MOYENNE ───────────────────────────────────────────────────
         XWPFTable tableMoy = document.createTable(2, 1);
         tableMoy.setWidth(totalWidth);
         setBorduresTableau(tableMoy);
 
-        // Ligne 1 — "MOYENNE"
         XWPFTableCell cellMoyTitle = tableMoy.getRow(0).getCell(0);
         setCellWidth(cellMoyTitle, totalWidth);
         XWPFParagraph pMoyTitle = cellMoyTitle.getParagraphs().get(0);
@@ -331,7 +304,6 @@ public class FicheNotationExporter {
         rMoyTitle.setBold(true);
         rMoyTitle.setFontSize(12);
 
-        // Ligne 2 — Formule
         XWPFTableCell cellFormule = tableMoy.getRow(1).getCell(0);
         setCellWidth(cellFormule, totalWidth);
         XWPFParagraph pFormule = cellFormule.getParagraphs().get(0);
@@ -367,7 +339,6 @@ public class FicheNotationExporter {
 
         ajouterLigneVide(document);
 
-        // ── DATE ──────────────────────────────────────────────────────────────
         XWPFParagraph pDate = document.createParagraph();
         XWPFRun rDate = pDate.createRun();
         rDate.setText("Le : \t……………………");
@@ -375,7 +346,6 @@ public class FicheNotationExporter {
 
         ajouterLigneVide(document);
 
-        // ── SIGNATURES ────────────────────────────────────────────────────────
         XWPFParagraph pSigLabel = document.createParagraph();
         XWPFRun rSigLabel = pSigLabel.createRun();
         rSigLabel.setText("Signature des membres du jury :");
@@ -383,11 +353,11 @@ public class FicheNotationExporter {
 
         ajouterLigneVide(document);
 
-        // Tableau signatures : 1 ligne x 3 colonnes (un par membre)
+
         int sigColWidth = totalWidth / 3;
         XWPFTable tableSig = document.createTable(1, 3);
         tableSig.setWidth(totalWidth);
-        // Bordures invisibles pour la table de signatures
+
         CTTblPr sPr = tableSig.getCTTbl().getTblPr();
         CTTblBorders sb = sPr.isSetTblBorders() ? sPr.getTblBorders() : sPr.addNewTblBorders();
         for (CTBorder b : new CTBorder[]{
@@ -416,14 +386,12 @@ public class FicheNotationExporter {
             r.setFontSize(12);
         }
 
-        // ── SAUVEGARDER ───────────────────────────────────────────────────────
         try (FileOutputStream out = new FileOutputStream(cheminFichier)) {
             document.write(out);
         }
         document.close();
     }
 
-    // ── GÉNÉRATION EN LOT ─────────────────────────────────────────────────────
 
     public void genererToutesLesFiches(List<Soutenance> soutenances, String dossier)
             throws IOException, InvalidFormatException {

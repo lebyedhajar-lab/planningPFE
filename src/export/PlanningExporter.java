@@ -18,18 +18,18 @@ public class PlanningExporter {
 
 
     public void exporterPlanning(List<Soutenance> soutenances,String chemin) throws IOException {
-    	// ── Trier par date puis heure puis salle ──────────────
+
     	List<Soutenance> tries = new ArrayList<>(soutenances);
     	tries.sort((a, b) -> {
-    		// Comparer par date
+
     		int cmp = a.getCreneau().getDateJour().compareTo(b.getCreneau().getDateJour());
     		if (cmp != 0) return cmp;
 
-    		// Même date → comparer par heure
+
     		cmp = a.getCreneau().getHeureDebut().compareTo(b.getCreneau().getHeureDebut());
     		if (cmp != 0) return cmp;
 
-    		// Même heure → comparer par salle
+
     		return a.getSalle().getNom().compareTo(b.getSalle().getNom());
     	});
 
