@@ -2,7 +2,6 @@ package export;
 
 import model.*;
 import org.apache.poi.xwpf.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,185 +13,142 @@ public class ExportDocx {
     private static final DateTimeFormatter FMT =
         DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    // ── Couleurs header ───────────────────────────────────────
-    private static final String BLEU_FONCE  = "1F3864";
-    private static final String BLANC       = "FFFFFF";
-    private static final String BLEU_TITRE  = "2E5496";
+    private static final String BLEU_FONCE = "1F3864";
+    private static final String BLANC      = "FFFFFF";
+    private static final String BLEU_TITRE = "2E5496";
 
-    // ── Couleurs par filière ──────────────────────────────────
-    private static final Map<String, String> COULEURS_FILIERES
-        = new LinkedHashMap<>();
-    static {
-        COULEURS_FILIERES.put("GL",   "DDEBF7"); // bleu clair
-        COULEURS_FILIERES.put("ID",   "E2EFDA"); // vert clair
-        COULEURS_FILIERES.put("TDIA", "FCE4D6"); // orange clair
+    // ── Palette profs : 32 couleurs douces bien distinctes ────
+    private static final String[] PALETTE_PROFS = {
+        "FFD6D6", "FFE8CC", "FFFACC", "D6F5D6", "CCF5FF",
+        "D6D6FF", "F5CCF5", "FFB3B3", "FFDAB3", "FFF5B3",
+        "B3FFB3", "B3EEFF", "B3B3FF", "EEB3EE", "FF9999",
+        "FFCC99", "FFFF99", "99FF99", "99EEFF", "9999FF",
+        "EE99EE", "FFD700", "98FB98", "87CEEB", "DDA0DD",
+        "F08080", "90EE90", "ADD8E6", "FFB6C1", "FFDEAD",
+        "E0FFFF", "D8BFD8"
+    };
+
+    // ── Palette filières ──────────────────────────────────────
+    private static final String[] PALETTE_FILIERES = {
+        "DDEBF7", "E2EFDA", "FCE4D6", "FFF2CC",
+        "EDE7F6", "FCE4EC", "E0F7FA", "F3E5F5",
+        "E8F5E9", "FFF8E1", "E3F2FD", "FBE9E7"
+    };
+
+    // ── Palette créneaux horaires ─────────────────────────────
+    private static final String[] PALETTE_CRENEAUX = {
+        "EBF5FB", "E9F7EF", "FEF9E7", "FDEDEC",
+        "F0F3FF", "E8D5F5", "FFF3E0", "E8F5E9",
+        "E3F2FD", "FCE4EC"
+    };
+
+    // ── Année universitaire dynamique ─────────────────────────
+    private static String anneeUniversitaire() {
+        int annee = LocalDate.now().getYear();
+        // Si on est entre septembre et décembre → année N/N+1
+        // Sinon (jan→août) → année N-1/N
+        int mois = LocalDate.now().getMonthValue();
+        int debut = (mois >= 9) ? annee : annee - 1;
+        return "Annee Universitaire " + debut + "/" + (debut + 1);
     }
 
-    // ── Couleurs par prof (palette variée) ────────────────────
-    private static final String[] COULEURS_PROFS = {
-        "FFE699", "C6EFCE", "FCE4D6", "FFF2CC",
-        "E8D5F5", "FADADD", "D5F5E3", "FAE5D3",
-        "D6EAF8", "FDEBD0", "E8F8F5", "FDEDEC",
-        "EBF5FB", "F9EBEA", "E9F7EF", "FEF9E7",
-        "F0F3FF", "FDF2E9", "E8F4FD", "D0E4F5",
-        "F4CCCC", "D9D9D9", "FADADD", "D5F5E3"
-    };
+    // ── Clé unique d'un prof : "NOM Prenom" ──────────────────
+    // Utilisé à la place de getId() pour éviter tout bug
+    // si deux profs ont le même id ou id=0
+    private static String cleProf(Enseignant e) {
+        if (e == null) return "";
+        return (e.getNom() + " " + e.getPrenom()).trim().toUpperCase();
+    }
 
-    // ── Couleurs par jour ─────────────────────────────────────
-    private static final String[] COULEURS_JOURS = {
-        "EBF5FB", "E9F7EF", "FEF9E7",
-        "FDEDEC", "F0F3FF", "E8D5F5"
-    };
-
-    public void generer(List<Soutenance> soutenances,
-                        String cheminFichier) throws IOException {
+    public void generer(List<Soutenance> soutenances,String cheminFichier) throws IOException {
 
         XWPFDocument doc = new XWPFDocument();
 
-        // ── Mapper encadrants -> couleurs ──────────────────────
-        Map<Integer, String> couleurParProf = new LinkedHashMap<>();
-        int idx = 0;
+        // ── 1. Mapper TOUS les profs -> couleur unique ──────────
+        // Clé = "NOM PRENOM" en majuscules (robuste même si getId()==0)
+        Map<String, String> couleurParProf = new LinkedHashMap<>();
+        Map<String, String> nomAffichParProf = new LinkedHashMap<>();
+        int profIdx = 0;
+
         for (Soutenance s : soutenances) {
-            if (s.getJury() != null
-                    && s.getJury().getEncadrant() != null) {
-                int id = s.getJury().getEncadrant().getId();
-                if (!couleurParProf.containsKey(id)) {
-                    couleurParProf.put(id,
-                        COULEURS_PROFS[idx % COULEURS_PROFS.length]);
-                    idx++;
+            if (s.getJury() == null) continue;
+
+            // Encadrant
+            Enseignant enc = s.getJury().getEncadrant();
+            if (enc != null) {
+                String cle = cleProf(enc);
+                if (!couleurParProf.containsKey(cle)) {
+                    couleurParProf.put(cle,
+                        PALETTE_PROFS[profIdx % PALETTE_PROFS.length]);
+                    nomAffichParProf.put(cle,
+                        enc.getNom() + " " + enc.getPrenom());
+                    profIdx++;
+                }
+            }
+
+            // Membres
+            if (s.getJury().getMembres() != null) {
+                for (Enseignant m : s.getJury().getMembres()) {
+                    if (m != null) {
+                        String cle = cleProf(m);
+                        if (!couleurParProf.containsKey(cle)) {
+                            couleurParProf.put(cle,
+                                PALETTE_PROFS[profIdx % PALETTE_PROFS.length]);
+                            nomAffichParProf.put(cle,
+                                m.getNom() + " " + m.getPrenom());
+                            profIdx++;
+                        }
+                    }
                 }
             }
         }
 
-        // ── Mapper filières -> couleurs ────────────────────────
+        // ── 2. Mapper filières -> couleur ──────────────────────
         Map<String, String> couleurParFiliere = new LinkedHashMap<>();
+        int filIdx = 0;
         for (Soutenance s : soutenances) {
             if (s.getEtudiant() != null
                     && s.getEtudiant().getFiliere() != null) {
                 String nom = s.getEtudiant().getFiliere().getNom();
                 if (!couleurParFiliere.containsKey(nom)) {
                     couleurParFiliere.put(nom,
-                        COULEURS_FILIERES.getOrDefault(nom,
-                            COULEURS_PROFS[(couleurParFiliere.size() + 8)
-                                % COULEURS_PROFS.length]));
+                        PALETTE_FILIERES[filIdx % PALETTE_FILIERES.length]);
+                    filIdx++;
                 }
             }
         }
 
-        // ── Mapper jours -> couleurs ───────────────────────────
-        Map<LocalDate, String> couleurParJour = new LinkedHashMap<>();
-        int jIdx = 0;
+        // ── 3. Mapper créneaux (heure) -> couleur ──────────────
+        Map<LocalTime, String> couleurParCreneau = new LinkedHashMap<>();
+        int crIdx = 0;
         for (Soutenance s : soutenances) {
             if (s.getCreneau() != null) {
-                LocalDate j = s.getCreneau().getDateJour();
-                if (!couleurParJour.containsKey(j)) {
-                    couleurParJour.put(j,
-                        COULEURS_JOURS[jIdx % COULEURS_JOURS.length]);
-                    jIdx++;
+                LocalTime h = s.getCreneau().getHeureDebut();
+                if (!couleurParCreneau.containsKey(h)) {
+                    couleurParCreneau.put(h,
+                        PALETTE_CRENEAUX[crIdx % PALETTE_CRENEAUX.length]);
+                    crIdx++;
                 }
             }
         }
 
-        // ── En-tête institution ───────────────────────────────
+        // ── En-tête ───────────────────────────────────────────
         para(doc, "Ecole Nationale des Sciences Appliquees - Al Hoceima",
             true, 12, BLEU_TITRE, ParagraphAlignment.CENTER);
         para(doc, "Departement Mathematiques et Informatique",
             false, 11, BLEU_TITRE, ParagraphAlignment.CENTER);
         para(doc, "", false, 4, "000000", ParagraphAlignment.CENTER);
-
-        // ── Titre ─────────────────────────────────────────────
-        para(doc,
-            "Planning des soutenances des Projets de Fin d'Etude",
+        para(doc, "Planning des soutenances des Projets de Fin d'Etude",
             true, 14, BLEU_FONCE, ParagraphAlignment.CENTER);
-        para(doc, "Annee Universitaire 2024/2025",
+        //  Fix 3 : année dynamique
+        para(doc, anneeUniversitaire(),
             false, 11, BLEU_FONCE, ParagraphAlignment.CENTER);
-        para(doc,
-            "Genere le " + LocalDate.now().format(FMT)
-            + "  |  Total : " + soutenances.size()
-            + " soutenance(s)",
-            false, 10, "595959", ParagraphAlignment.CENTER);
-        para(doc, "", false, 4, "000000", ParagraphAlignment.CENTER);
-
-        // ── Légende filières ──────────────────────────────────
-        para(doc, "Legende Filieres :", true, 10,
-            "000000", ParagraphAlignment.LEFT);
-
-        XWPFTable legendeTable = doc.createTable(1,
-            couleurParFiliere.size());
-        legendeTable.setWidth("60%");
-        XWPFTableRow legendeRow = legendeTable.getRow(0);
-        int lIdx = 0;
-        for (Map.Entry<String, String> e
-                : couleurParFiliere.entrySet()) {
-            XWPFTableCell lCell = legendeRow.getCell(lIdx++);
-            lCell.setColor(e.getValue());
-            lCell.getParagraphs().get(0)
-                .setAlignment(ParagraphAlignment.CENTER);
-            XWPFRun lRun = lCell.getParagraphs()
-                .get(0).createRun();
-            lRun.setText(e.getKey());
-            lRun.setBold(true);
-            lRun.setFontSize(9);
-            lRun.setFontFamily("Calibri");
-        }
-        para(doc, "", false, 4, "000000", ParagraphAlignment.CENTER);
-
-        // ── Légende encadrants ────────────────────────────────
-        para(doc, "Legende Encadrants :", true, 10,
-            "000000", ParagraphAlignment.LEFT);
-
-        // Créer tableau légende profs (5 par ligne)
-        List<Map.Entry<Integer, String>> profEntries =
-            new ArrayList<>(couleurParProf.entrySet());
-
-        // Trouver le nom de chaque prof
-        Map<Integer, String> nomParProf = new LinkedHashMap<>();
-        for (Soutenance s : soutenances) {
-            if (s.getJury() != null
-                    && s.getJury().getEncadrant() != null) {
-                Enseignant enc = s.getJury().getEncadrant();
-                nomParProf.put(enc.getId(),
-                    enc.getNom() + " " + enc.getPrenom());
-            }
-        }
-
-        int colsParLigne = 5;
-        int nbLignes = (int) Math.ceil(
-            (double) profEntries.size() / colsParLigne);
-
-        XWPFTable legendeProfs = doc.createTable(nbLignes, colsParLigne);
-        legendeProfs.setWidth("100%");
-        for (int li = 0; li < nbLignes; li++) {
-            XWPFTableRow lr = legendeProfs.getRow(li);
-            for (int ci = 0; ci < colsParLigne; ci++) {
-                int pIdx = li * colsParLigne + ci;
-                XWPFTableCell lc = lr.getCell(ci);
-                if (pIdx < profEntries.size()) {
-                    int profId = profEntries.get(pIdx).getKey();
-                    String couleur = profEntries.get(pIdx).getValue();
-                    lc.setColor(couleur);
-                    lc.getParagraphs().get(0)
-                        .setAlignment(ParagraphAlignment.CENTER);
-                    XWPFRun lr2 = lc.getParagraphs()
-                        .get(0).createRun();
-                    lr2.setText(nomParProf.getOrDefault(profId, ""));
-                    lr2.setFontSize(8);
-                    lr2.setFontFamily("Calibri");
-                } else {
-                    lc.setColor(BLANC);
-                    lc.getParagraphs().get(0).createRun()
-                        .setText("");
-                }
-            }
-        }
         para(doc, "", false, 4, "000000", ParagraphAlignment.CENTER);
 
         // ── Tableau principal ─────────────────────────────────
-        XWPFTable table = doc.createTable(
-            soutenances.size() + 1, 9);
+        XWPFTable table = doc.createTable(soutenances.size() + 1, 9);
         table.setWidth("100%");
 
-        // En-têtes
         String[] headers = {
             "ID", "Encadrant", "Membre jury 1",
             "Membre jury 2", "Date", "Heure",
@@ -204,8 +160,7 @@ public class ExportDocx {
             cell.setColor(BLEU_FONCE);
             cell.getParagraphs().get(0)
                 .setAlignment(ParagraphAlignment.CENTER);
-            XWPFRun run = cell.getParagraphs()
-                .get(0).createRun();
+            XWPFRun run = cell.getParagraphs().get(0).createRun();
             run.setText(headers[j]);
             run.setBold(true);
             run.setColor(BLANC);
@@ -213,9 +168,36 @@ public class ExportDocx {
             run.setFontFamily("Calibri");
         }
 
-        // Lignes données
         for (int i = 0; i < soutenances.size(); i++) {
             Soutenance s = soutenances.get(i);
+
+            // Couleur créneau
+            String bgCreneau = BLANC;
+            if (s.getCreneau() != null)
+                bgCreneau = couleurParCreneau.getOrDefault(
+                    s.getCreneau().getHeureDebut(), BLANC);
+
+            //  Fix 1 : couleur PROPRE à chaque prof via cleProf()
+            String bgEncadrant = BLANC;
+            String bgMembre1   = BLANC;
+            String bgMembre2   = BLANC;
+
+            if (s.getJury() != null) {
+                Enseignant enc = s.getJury().getEncadrant();
+                if (enc != null)
+                    bgEncadrant = couleurParProf.getOrDefault(
+                        cleProf(enc), BLANC);
+
+                List<Enseignant> membres = s.getJury().getMembres();
+                if (membres != null) {
+                    if (membres.size() > 0 && membres.get(0) != null)
+                        bgMembre1 = couleurParProf.getOrDefault(
+                            cleProf(membres.get(0)), BLANC);
+                    if (membres.size() > 1 && membres.get(1) != null)
+                        bgMembre2 = couleurParProf.getOrDefault(
+                            cleProf(membres.get(1)), BLANC);
+                }
+            }
 
             // Couleur filière
             String nomFiliere = s.getEtudiant() != null
@@ -224,36 +206,21 @@ public class ExportDocx {
             String bgFiliere = couleurParFiliere
                 .getOrDefault(nomFiliere, BLANC);
 
-            // Couleur prof
-            String bgProf = BLANC;
-            if (s.getJury() != null
-                    && s.getJury().getEncadrant() != null) {
-                bgProf = couleurParProf.getOrDefault(
-                    s.getJury().getEncadrant().getId(), BLANC);
-            }
-
-            // Couleur jour
-            String bgJour = BLANC;
-            if (s.getCreneau() != null) {
-                bgJour = couleurParJour.getOrDefault(
-                    s.getCreneau().getDateJour(), BLANC);
-            }
-
             // Valeurs
+            List<Enseignant> membres = s.getJury() != null
+                ? s.getJury().getMembres() : new ArrayList<>();
             String encadrant = s.getJury() != null
                 && s.getJury().getEncadrant() != null
                 ? s.getJury().getEncadrant().getNom() + " "
                   + s.getJury().getEncadrant().getPrenom() : "-";
-
-            List<Enseignant> membres = s.getJury() != null
-                ? s.getJury().getMembres() : new ArrayList<>();
-            String membre1 = membres.size() > 0
+            String membre1 = membres != null && membres.size() > 0
+                && membres.get(0) != null
                 ? membres.get(0).getNom() + " "
                   + membres.get(0).getPrenom() : "-";
-            String membre2 = membres.size() > 1
+            String membre2 = membres != null && membres.size() > 1
+                && membres.get(1) != null
                 ? membres.get(1).getNom() + " "
                   + membres.get(1).getPrenom() : "-";
-
             String date  = s.getCreneau() != null
                 ? s.getCreneau().getDateJour().format(FMT) : "-";
             String heure = s.getCreneau() != null
@@ -265,25 +232,22 @@ public class ExportDocx {
             String prenom = s.getEtudiant() != null
                 ? s.getEtudiant().getPrenom() : "-";
 
-            String[] values = {
+            String[] values   = {
                 String.valueOf(i + 1),
                 encadrant, membre1, membre2,
                 date, heure, salle, nom, prenom
             };
-
-            // Couleurs par colonne
             String[] bgColors = {
-                bgJour,    // ID      -> couleur du jour
-                bgProf,    // Encadrant - couleur du prof
-                bgProf,    // Membre 1  → couleur du prof
-                bgProf,    // Membre 2  → couleur du prof
-                bgJour,    // Date      → couleur du jour
-                bgJour,    // Heure     → couleur du jour
-                bgJour,    // Salle     → couleur du jour
-                bgFiliere, // Nom       → couleur filière
-                bgFiliere  // Prénom    → couleur filière
+                bgCreneau,  
+                bgEncadrant, 
+                bgMembre1,  
+                bgMembre2,   
+                bgCreneau,   
+                bgCreneau,   
+                bgCreneau,   
+                bgFiliere,   
+                bgFiliere    
             };
-
             boolean[] centered = {
                 true, false, false, false,
                 true, true, true, false, false
@@ -298,17 +262,14 @@ public class ExportDocx {
                 if (centered[j])
                     cell.getParagraphs().get(0)
                         .setAlignment(ParagraphAlignment.CENTER);
-                XWPFRun run = cell.getParagraphs()
-                    .get(0).createRun();
+                XWPFRun run = cell.getParagraphs().get(0).createRun();
                 run.setText(values[j]);
                 run.setFontSize(9);
                 run.setFontFamily("Calibri");
             }
         }
 
-        // ── Sauvegarder ───────────────────────────────────────
-        try (FileOutputStream out =
-                new FileOutputStream(cheminFichier)) {
+        try (FileOutputStream out = new FileOutputStream(cheminFichier)) {
             doc.write(out);
         }
         doc.close();
