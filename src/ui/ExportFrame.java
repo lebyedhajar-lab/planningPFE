@@ -31,7 +31,6 @@ public class ExportFrame extends JInternalFrame {
         }
 
     private MainFrame MainFrame() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -110,7 +109,6 @@ public class ExportFrame extends JInternalFrame {
             return;
         }
         try {
-            // Toujours lire depuis mainFrame au moment de l'export
             List<Soutenance> list =
                 mainFrame.getSoutenanceRepo().chargerTous();
 
@@ -169,7 +167,6 @@ public class ExportFrame extends JInternalFrame {
             return;
         }
         try {
-            // Toujours lire depuis mainFrame au moment de l'export
             List<Soutenance> list =
                 mainFrame.getSoutenanceRepo().chargerTous();
 

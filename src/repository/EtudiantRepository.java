@@ -52,7 +52,6 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
     }
 
 
-    // Tous les étudiants d'une filière donnée
     public List<Etudiant> trouverParFiliere(int filiereId) {
         List<Etudiant> resultat = new ArrayList<>();
         for (Etudiant e : etudiants) {
@@ -64,8 +63,7 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
         return resultat;
     }
 
-    // Étudiants encadrés par un prof donné
-    // Utilisé pour générer le PV/prof/nom.prenom.docx
+   
     public List<Etudiant> trouverParEncadrant(int encadrantId) {
         List<Etudiant> resultat = new ArrayList<>();
         for (Etudiant e : etudiants) {
@@ -88,8 +86,7 @@ public class EtudiantRepository implements IdRepository<Etudiant> {
         return resultat;
     }
 
-    // Combinaison filière + langue
-    // Utilisé directement par PlanningService pour distribuer les jurys
+    
     public List<Etudiant> trouverParFiliereEtLangue(int filiereId, String langue) {
         List<Etudiant> resultat = new ArrayList<>();
         for (Etudiant e : etudiants) {

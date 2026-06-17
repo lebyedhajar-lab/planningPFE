@@ -38,10 +38,8 @@ public class DashboardFrame extends JInternalFrame {
         root.setBackground(COLOR_BG);
         root.setBorder(BorderFactory.createEmptyBorder(12, 14, 14, 14));
 
-        // Stats cards
         root.add(buildStatCards(), BorderLayout.NORTH);
 
-        // Tabs
         root.add(buildTabs(), BorderLayout.CENTER);
 
         setContentPane(root);

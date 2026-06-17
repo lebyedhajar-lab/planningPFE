@@ -92,7 +92,7 @@ public class ExcelConfigLoader {
         }
         if (cell.getCellType() == CellType.STRING) {
             String s = cell.getStringCellValue().trim();
-            // "08:00" ou "8:00"
+
             if (s.matches("\\d:\\d{2}")) s = "0" + s;
             return LocalTime.parse(s);
         }
@@ -101,12 +101,12 @@ public class ExcelConfigLoader {
     }
     private LocalDate getDate(Cell cell) {
         if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-            // Date Excel native
+
             return cell.getLocalDateTimeCellValue().toLocalDate();
         }
         if (cell.getCellType() == CellType.STRING) {
             String s = cell.getStringCellValue().trim();
-            // Accepte "2026-06-01" ou "01/06/2026"
+
             if (s.matches("\\d{2}/\\d{2}/\\d{4}"))
                 return LocalDate.parse(s, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             return LocalDate.parse(s);

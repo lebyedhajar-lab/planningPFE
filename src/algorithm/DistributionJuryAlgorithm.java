@@ -32,19 +32,16 @@ public class DistributionJuryAlgorithm {
     public Enseignant enseignantLePlusDispo(List<Enseignant> candidats) {
         if (candidats == null || candidats.isEmpty()) return null;
 
-        // ── Calculer la charge UNE SEULE FOIS par enseignant ──
         Map<Integer, Integer> charges = new HashMap<>();
         for (Enseignant e : candidats) {
             charges.put(e.getId(), calculerCharge(e));
         }
 
-        // ── Trouver la charge minimale ─────────────────────────
         int minCharge = Integer.MAX_VALUE;
         for (int charge : charges.values()) {
             if (charge < minCharge) minCharge = charge;
         }
 
-        // ── Collecter tous les profs avec cette charge minimale ─
         List<Enseignant> moinsCharges = new ArrayList<>();
         for (Enseignant e : candidats) {
             if (charges.get(e.getId()) == minCharge) {
@@ -52,7 +49,6 @@ public class DistributionJuryAlgorithm {
             }
         }
 
-        // ── Retourner aléatoirement si égalité ────────────────
         if (moinsCharges.size() == 1) {
             return moinsCharges.get(0);
         }
@@ -72,7 +68,6 @@ public class DistributionJuryAlgorithm {
         return false;
     }
 
-    /** Écart minimum entre deux débuts de soutenance (même logique que EcranVerification). */
     private boolean respecteEcartMinimum(Enseignant e, Creneau c) {
         return respecteEcartMinimum(e, c, null);
     }
@@ -83,11 +78,9 @@ public class DistributionJuryAlgorithm {
     	if (!s.getCreneau().getDateJour().equals(c.getDateJour())) continue;
     	if (!s.getJury().contientEnseignant(e)) continue;
 
-    	// Écart entre fin existante -> début nouvelle
     	long ecartApres = (c.getHeureDebut().toSecondOfDay() -
     	s.getCreneau().getHeureFin().toSecondOfDay()) / 60;
 
-    	// Écart entre fin nouvelle -> début existante
     	long ecartAvant = (s.getCreneau().getHeureDebut().toSecondOfDay() -
     	c.getHeureFin().toSecondOfDay()) / 60;
 
@@ -116,7 +109,6 @@ public class DistributionJuryAlgorithm {
 
         Enseignant encadrant = e.getEncadrant();
 
-        // Filtrer : exclure encadrant + indisponibles
         List<Enseignant> candidats = new ArrayList<>();
         for (Enseignant ens : enseignants) {
             if (ens.getId() == encadrant.getId()) continue;
@@ -127,7 +119,6 @@ public class DistributionJuryAlgorithm {
             candidats.add(ens);
         }
 
-        // Séparer informaticiens et tous les autres
         List<Enseignant> informaticiens = new ArrayList<>();
         List<Enseignant> tousLesAutres  = new ArrayList<>();
         for (Enseignant ens : candidats) {

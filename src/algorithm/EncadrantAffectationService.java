@@ -9,8 +9,7 @@ import java.util.List;
 
 public class EncadrantAffectationService {
 
-    public void affecter(List<Etudiant> etudiants,
-                         List<Enseignant> enseignants) {
+    public void affecter(List<Etudiant> etudiants,List<Enseignant> enseignants) {
     	
 
         List<Etudiant> sansEncadrant = new ArrayList<>();
@@ -40,9 +39,7 @@ public class EncadrantAffectationService {
         }
     }
 
-    // ── Compter les étudiants déjà encadrés par cet enseignant ──
-    private int compterEtudiantsEncadres(Enseignant ens,
-                                          List<Etudiant> etudiants) {
+    private int compterEtudiantsEncadres(Enseignant ens, List<Etudiant> etudiants) {
         int count = 0;
         for (Etudiant e : etudiants) {
             if (e.getEncadrant() != null

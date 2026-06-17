@@ -27,7 +27,6 @@ public class ChargementExcelFrame extends JInternalFrame {
         JPanel root = new JPanel(new BorderLayout(10, 10));
         root.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        // ── Sélection fichier ─────────────────────────────────
         JPanel topPanel = new JPanel(new BorderLayout(8, 0));
         labelFichier = new JLabel("Aucun fichier sélectionné");
         labelFichier.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -43,7 +42,6 @@ public class ChargementExcelFrame extends JInternalFrame {
         topPanel.add(btnChoisir,   BorderLayout.EAST);
         root.add(topPanel, BorderLayout.NORTH);
 
-        // ── Log ───────────────────────────────────────────────
         logArea = new JTextArea();
         logArea.setEditable(false);
         logArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
@@ -52,7 +50,6 @@ public class ChargementExcelFrame extends JInternalFrame {
         scroll.setBorder(BorderFactory.createTitledBorder("Journal de chargement"));
         root.add(scroll, BorderLayout.CENTER);
 
-        // ── Bouton charger ────────────────────────────────────
         JButton btnCharger = new JButton("Charger les données");
         btnCharger.setBackground(COLOR_PRIMARY);
         btnCharger.setForeground(Color.WHITE);
@@ -87,17 +84,14 @@ public class ChargementExcelFrame extends JInternalFrame {
         log("Chargement depuis : " + cheminChoisi);
 
         try {
-            // ── Vider les anciennes données avant rechargement ────
             log("\n[0] Nettoyage des anciennes données...");
             mainFrame.getSoutenanceRepo().vider();
             mainFrame.getEtudiantRepo().vider();
             mainFrame.getEnseignantRepo().vider();
             mainFrame.getSalleRepo().vider();
 
-            // Réinitialiser les encadrants
             log("    OK - données effacées.");
 
-            // ── Chargement normal ─────────────────────────────────
             log("\n[1/4] Chargement configuration...");
             mainFrame.chargerExcel(cheminChoisi);
             log("  Config chargée : " + mainFrame.getConfig());

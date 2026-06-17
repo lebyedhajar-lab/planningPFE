@@ -102,11 +102,10 @@ public class VoirPlanningFrame extends JInternalFrame {
                         .createEmptyBorder(0, 6, 0, 6));
                     if (!sel) {
                         setBackground(row % 2 == 0
-                            ? new Color(217, 226, 243) // bleu clair
+                            ? new Color(217, 226, 243)
                             : Color.WHITE);
                         setForeground(Color.BLACK);
                     }
-                    // Centrer ID, Date, Heure, Salle
                     if (col == 0 || col == 4
                         || col == 5 || col == 6) {
                         setHorizontalAlignment(CENTER);

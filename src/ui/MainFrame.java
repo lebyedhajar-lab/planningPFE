@@ -13,7 +13,6 @@ import statistiques.DashboardService;
 
 public class MainFrame extends JFrame {
 
-    // ── Repositories ──────────────────────────────────────────
     private ConfigPlanning config = new ConfigPlanning();
     private final EnseignantRepository enseignantRepo  = new EnseignantRepository();
     private final EtudiantRepository   etudiantRepo    = new EtudiantRepository();
@@ -201,7 +200,6 @@ public class MainFrame extends JFrame {
                 "Export impossible", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        // Passer this (MainFrame) au lieu de soutenanceRepo
         addInternalFrame(new ExportFrame(soutenanceRepo, etudiantRepo, this));
     }
 
@@ -252,7 +250,6 @@ public class MainFrame extends JFrame {
         }
     }
 
-    // ── Getters ───────────────────────────────────────────────
     public ConfigPlanning       getConfig()          { return config; }
     public EnseignantRepository getEnseignantRepo()  { return enseignantRepo; }
     public EtudiantRepository   getEtudiantRepo()    { return etudiantRepo; }

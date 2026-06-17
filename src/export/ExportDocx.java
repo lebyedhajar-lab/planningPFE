@@ -10,8 +10,7 @@ import java.util.*;
 
 public class ExportDocx {
 
-    private static final DateTimeFormatter FMT =
-        DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private static final String BLEU_FONCE = "1F3864";
     private static final String BLANC      = "FFFFFF";
@@ -98,12 +97,10 @@ public class ExportDocx {
         Map<String, String> couleurParFiliere = new LinkedHashMap<>();
         int filIdx = 0;
         for (Soutenance s : soutenances) {
-            if (s.getEtudiant() != null
-                    && s.getEtudiant().getFiliere() != null) {
+            if (s.getEtudiant() != null && s.getEtudiant().getFiliere() != null) {
                 String nom = s.getEtudiant().getFiliere().getNom();
                 if (!couleurParFiliere.containsKey(nom)) {
-                    couleurParFiliere.put(nom,
-                        PALETTE_FILIERES[filIdx % PALETTE_FILIERES.length]);
+                    couleurParFiliere.put(nom, PALETTE_FILIERES[filIdx % PALETTE_FILIERES.length]);
                     filIdx++;
                 }
             }
@@ -146,8 +143,7 @@ public class ExportDocx {
         for (int j = 0; j < headers.length; j++) {
             XWPFTableCell cell = headerRow.getCell(j);
             cell.setColor(BLEU_FONCE);
-            cell.getParagraphs().get(0)
-                .setAlignment(ParagraphAlignment.CENTER);
+            cell.getParagraphs().get(0).setAlignment(ParagraphAlignment.CENTER);
             XWPFRun run = cell.getParagraphs().get(0).createRun();
             run.setText(headers[j]);
             run.setBold(true);
@@ -186,11 +182,8 @@ public class ExportDocx {
             }
 
             // Couleur filière
-            String nomFiliere = s.getEtudiant() != null
-                && s.getEtudiant().getFiliere() != null
-                ? s.getEtudiant().getFiliere().getNom() : "";
-            String bgFiliere = couleurParFiliere
-                .getOrDefault(nomFiliere, BLANC);
+            String nomFiliere = s.getEtudiant() != null && s.getEtudiant().getFiliere() != null ? s.getEtudiant().getFiliere().getNom() : "";
+            String bgFiliere = couleurParFiliere.getOrDefault(nomFiliere, BLANC);
 
             // Valeurs
             List<Enseignant> membres = s.getJury() != null

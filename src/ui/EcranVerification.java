@@ -26,21 +26,17 @@ public class EcranVerification extends JInternalFrame {
         setSize(850, 550);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        //soutenanceRepo = new SoutenanceRepository();
 
-        // ── Panel principal ──────────────────────────────────────
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // ── Titre ────────────────────────────────────────────────
         JLabel titre = new JLabel("Vérification du Planning", SwingConstants.CENTER);
         titre.setFont(new Font("Calibri", Font.BOLD, 20));
         titre.setForeground(new Color(31, 56, 100));
         titre.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         panel.add(titre, BorderLayout.NORTH);
 
-        // ── Tableau des erreurs ──────────────────────────────────
         String[] colonnes = { "Type de problème", "Détail", "Statut" };
         modele = new DefaultTableModel(colonnes, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
@@ -54,7 +50,6 @@ public class EcranVerification extends JInternalFrame {
         tableau.getTableHeader().setForeground(Color.WHITE);
         tableau.setGridColor(new Color(200, 200, 200));
 
-        // Colorer la colonne Statut
         tableau.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             public Component getTableCellRendererComponent(JTable t, Object val,
                     boolean sel, boolean foc, int row, int col) {
@@ -73,20 +68,17 @@ public class EcranVerification extends JInternalFrame {
             }
         });
 
-        // Taille colonne Statut
         tableau.getColumnModel().getColumn(2).setMaxWidth(100);
         tableau.getColumnModel().getColumn(2).setMinWidth(100);
 
         JScrollPane scrollPane = new JScrollPane(tableau);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // ── Label résumé ─────────────────────────────────────────
         JLabel labelResume = new JLabel("Cliquez sur 'Vérifier' pour lancer l'analyse.", SwingConstants.LEFT);
         labelResume.setFont(new Font("Calibri", Font.ITALIC, 12));
         labelResume.setForeground(new Color(100, 100, 100));
         labelResume.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 
-        // ── Boutons ──────────────────────────────────────────────
         JPanel panelBas = new JPanel(new BorderLayout());
         panelBas.setBackground(Color.WHITE);
 
@@ -103,7 +95,6 @@ public class EcranVerification extends JInternalFrame {
         panelBas.add(panelBoutons, BorderLayout.EAST);
         panel.add(panelBas, BorderLayout.SOUTH);
 
-        // ── Actions ──────────────────────────────────────────────
         btnVerifier.addActionListener(e -> {
             lancerVerification();
             int nbProblemes = compterProblemes();
@@ -121,7 +112,6 @@ public class EcranVerification extends JInternalFrame {
         add(panel);
     }
 
-    // ── Lancer toutes les vérifications ─────────────────────────
     private void lancerVerification() {
         modele.setRowCount(0);
         List<Soutenance> soutenances = soutenanceRepo.chargerTous();
@@ -132,7 +122,6 @@ public class EcranVerification extends JInternalFrame {
         verifierRepartitionEncadrants(soutenances);
     }
 
-    // Vérification 1 : deux soutenances dans la même salle au même moment
     private void verifierChevauchementSalles(List<Soutenance> soutenances) {
         boolean ok = true;
         for (int i = 0; i < soutenances.size(); i++) {
@@ -156,7 +145,6 @@ public class EcranVerification extends JInternalFrame {
         if (ok) modele.addRow(new Object[]{ "Chevauchement salles", "Aucun conflit de salle", "OK" });
     }
 
-    // Vérification 2 : prof dans deux soutenances au même horaire
     private void verifierProfDansDeux(List<Soutenance> soutenances) {
         boolean ok = true;
         for (int i = 0; i < soutenances.size(); i++) {
@@ -185,7 +173,6 @@ public class EcranVerification extends JInternalFrame {
         if (ok) modele.addRow(new Object[]{ "Prof dans 2 jurys", "Aucun conflit d'horaire prof", "OK" });
     }
 
-    // Vérification 3 : écart minimum de 60 min entre soutenances d'un même prof
     private void verifierEcartMinimum(List<Soutenance> soutenances) {
         boolean ok = true;
         for (int i = 0; i < soutenances.size(); i++) {
@@ -221,7 +208,6 @@ public class EcranVerification extends JInternalFrame {
             "Tous les écarts respectés (≥ " + ecartMin + " min)", "OK" });
     }
 
-    // Vérification 4 : répartition déséquilibrée des encadrants
     private void verifierRepartitionEncadrants(List<Soutenance> soutenances) {
         Map<String, Integer> charges = new LinkedHashMap<>();
         for (Soutenance s : soutenances) {

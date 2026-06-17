@@ -17,19 +17,16 @@ public class DeliberationService {
         this.resultats = new ArrayList<>();
     }
 
-    // ─── Saisir la note dans une fiche ───────────────────────────
     public void saisirNote(FicheNotation fiche, double note, String appreciation) {
         fiche.saisirNote(note, appreciation, LocalDate.now()); // modifie directement l'objet
     }
 
-    // ─── Générer le résultat d'un étudiant ───────────────────────
     public ResultatDeliberation genererResultat(Etudiant etudiant, FicheNotation fiche) {
         ResultatDeliberation resultat = new ResultatDeliberation(etudiant, fiche);
         resultats.add(resultat);
         return resultat;
     }
 
-    // ─── Générer tous les résultats ──────────────────────────────
     public List<ResultatDeliberation> genererTousLesResultats(List<FicheNotation> fiches) {
         resultats.clear();
         for (FicheNotation fiche : fiches) {
@@ -42,7 +39,6 @@ public class DeliberationService {
         return new ArrayList<>(resultats);
     }
 
-    // ─── Filtrer les admis ───────────────────────────────────────
     public List<ResultatDeliberation> getAdmis() {
         List<ResultatDeliberation> admis = new ArrayList<>();
         for (ResultatDeliberation r : resultats) {
@@ -51,7 +47,6 @@ public class DeliberationService {
         return admis;
     }
 
-    // ─── Filtrer les rattrapages ─────────────────────────────────
     public List<ResultatDeliberation> getRattrapage() {
         List<ResultatDeliberation> rattrapage = new ArrayList<>();
         for (ResultatDeliberation r : resultats) {
@@ -60,7 +55,6 @@ public class DeliberationService {
         return rattrapage;
     }
 
-    // ─── Filtrer les ajournés ────────────────────────────────────
     public List<ResultatDeliberation> getAjournes() {
         List<ResultatDeliberation> ajournes = new ArrayList<>();
         for (ResultatDeliberation r : resultats) {
@@ -69,7 +63,6 @@ public class DeliberationService {
         return ajournes;
     }
 
-    // ─── Vérifier si toutes les fiches sont remises ──────────────
     public boolean toutesLesFichesRemises() {
         List<FicheNotation> fiches = ficheRepo.chargerTous();
         for (FicheNotation f : fiches) {
@@ -78,7 +71,6 @@ public class DeliberationService {
         return true;
     }
 
-    // ─── Getter résultats ────────────────────────────────────────
     public List<ResultatDeliberation> getResultats() {
         return new ArrayList<>(resultats);
     }

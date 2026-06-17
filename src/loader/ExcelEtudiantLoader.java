@@ -71,8 +71,8 @@ public class ExcelEtudiantLoader {
                     String nomEncadrant = cellEncadrant.getStringCellValue().trim();
 
                     for (Enseignant e : enseignantRepo.chargerTous()) {
-                        String v1 = e.getNom() + " " + e.getPrenom(); // Benali Mohammed
-                        String v2 = e.getPrenom() + " " + e.getNom(); // Mohammed Benali
+                        String v1 = e.getNom() + " " + e.getPrenom(); 
+                        String v2 = e.getPrenom() + " " + e.getNom(); 
                         if (v1.equalsIgnoreCase(nomEncadrant) || v2.equalsIgnoreCase(nomEncadrant)) {
                             encadrant = e;
                             break;
