@@ -55,4 +55,4 @@ src/
 
 ## Auteurs
 
-Projet réalisé dans le cadre du Projet de Fin d'Études (PFE) à l'ENSAH (École Nationale des Sciences Appliquées d'Al-Hoceima).
+Projet réalisé dans le cadre du projet de fin de module à l'ENSAH (École Nationale des Sciences Appliquées d'Al-Hoceima).
